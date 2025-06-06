@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Calendar System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .admin-section {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .admin-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .schools-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .school-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 300px;
+            height: 200px;
+            background: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .school-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .school-button.wlhs {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .school-button.wvhs {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .school-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .school-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .admin-mode .school-button {
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+        }
+
+        .admin-mode .school-button:hover::after {
+            content: '✏️ Edit';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .preview-image {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e1e8ed;
+            color: #333;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            max-width: 400px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .status-success { background: #10b981; }
+        .status-error { background: #ef4444; }
+        .status-info { background: #3b82f6; }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .schools-container {
+                gap: 20px;
+            }
+
+            .school-button {
+                width: 250px;
+                height: 180px;
+            }
+
+            .school-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-section">
+        <button class="admin-btn" id="adminBtn">Admin Login</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>School Calendar System</h1>
+            <p>Select your school to view the calendar</p>
+        </div>
+
+        <div class="schools-container" id="schoolsContainer">
+            <!-- School buttons will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeLoginModal">&times;</button>
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" required>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="cancelLogin">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit School Button Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeEditModal">&times;</button>
+            <h2 id="editModalTitle">Edit School Button</h2>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="schoolTitle">School Name</label>
+                    <input type="text" id="schoolTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="schoolImage">School Image (optional)</label>
+                    <div class="file-upload">
+                        <input type="file" id="schoolImage" accept="image/*">
+                        <div class="upload-text">
+                            <strong>Click to upload image</strong><br>
+                            or drag and drop<br>
+                            <small>PNG, JPG up to 5MB</small>
+                        </div>
+                        <img id="imagePreview" class="preview-image" style="display: none;">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class HomePage {
+            constructor() {
+                this.adminSession = localStorage.getItem('adminSession');
+                this.isAdminMode = false;
+                this.apiBaseUrl = window.location.origin + '/api';
+                this.currentEditingSchool = null;
+
+                this.initializeEventListeners();
+                this.loadSchoolButtons();
+                this.checkAdminSession();
+            }
+
+            initializeEventListeners() {
+                // Admin login
+                document.getElementById('adminBtn').addEventListener('click', () => this.showLoginModal());
+                document.getElementById('closeLoginModal').addEventListener('click', () => this.hideLoginModal());
+                document.getElementById('cancelLogin').addEventListener('click', () => this.hideLoginModal());
+                document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+
+                // Edit modal
+                document.getElementById('closeEditModal').addEventListener('click', () => this.hideEditModal());
+                document.getElementById('cancelEdit').addEventListener('click', () => this.hideEditModal());
+                document.getElementById('editForm').addEventListener('submit', (e) => this.handleEdit(e));
+
+                // File upload preview
+                document.getElementById('schoolImage').addEventListener('change', (e) => this.previewImage(e));
+
+                // Close modals when clicking outside
+                document.getElementById('loginModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'loginModal') this.hideLoginModal();
+                });
+                document.getElementById('editModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'editModal') this.hideEditModal();
+                });
+            }
+
+            async checkAdminSession() {
+                if (!this.adminSession) return;
+
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/admin/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionId: this.adminSession })
+                    });
+
+                    const data = await response.json();
+                    if (data.valid) {
+                        this.enableAdminMode();
+                    } else {
+                        localStorage.removeItem('adminSession');
+                        this.adminSession = null;
+                    }
+                } catch (error) {
+                    console.error('Error verifying admin session:', error);
+                    localStorage.removeItem('adminSession');
+                    this.adminSession = null;
+                }
+            }
+
+            async loadSchoolButtons() {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/home/buttons`);
+                    const buttons = await response.json();
+
+                    const container = document.getElementById('schoolsContainer');
+                    container.innerHTML = '';
+
+                    for (const button of buttons) {
+                        const buttonElement = this.createSchoolButton(button);
+                        container.appendChild(buttonElement);
+                    }
+                } catch (error) {
+                    console.error('Error loading school buttons:', error);
+                    this.createDefaultButtons();
+                }
+            }
+
+            createDefaultButtons() {
+                const container = document.getElementById('schoolsContainer');
+                container.innerHTML = '';
+
+                const defaultButtons = [
+                    { school: 'wlhs', title: 'West Linn High School', image_data: null },
+                    { school: 'wvhs', title: 'West Valley High School', image_data: null }
+                ];
+
+                for (const button of defaultButtons) {
+                    const buttonElement = this.createSchoolButton(button);
+                    container.appendChild(buttonElement);
+                }
+            }
+
+            createSchoolButton(button) {
+                const link = document.createElement('a');
+                link.href = `/${button.school}`;
+                link.className = `school-button ${button.school}`;
+
+                if (this.isAdminMode) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.editSchoolButton(button.school);
+                    });
+                }
+
+                if (button.image_data) {
+                    const img = document.createElement('img');
+                    img.src = `data:${button.image_type};base64,${button.image_data}`;
+                    img.className = 'school-image';
+                    img.alt = button.title;
+                    link.appendChild(img);
+                }
+
+                const title = document.createElement('div');
+                title.className = 'school-title';
+                title.textContent = button.title;
+                link.appendChild(title);
+
+                return link;
+            }
+
+            showLoginModal() {
+                if (this.isAdminMode) {
+                    this.logout();
+                } else {
+                    document.getElementById('loginModal').style.display = 'block';
+                    document.getElementById('adminPassword').focus();
+                }
+            }
+
+            hideLoginModal() {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('loginForm').reset();
+            }
+
+            async handleLogin(e) {
+                e.preventDefault();
+
+                const password = document.getElementById('adminPassword').value;
+
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/admin/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.adminSession = data.sessionId;
+                        localStorage.setItem('adminSession', this.adminSession);
+                        this.enableAdminMode();
+                        this.hideLoginModal();
+                        this.showMessage('Admin mode enabled', 'success');
+                    } else {
+                        this.showMessage('Invalid password', 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showMessage('Login failed', 'error');
+                }
+            }
+
+            async logout() {
+                try {
+                    if (this.adminSession) {
+                        await fetch(`${this.apiBaseUrl}/admin/logout`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sessionId: this.adminSession })
+                        });
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+
+                localStorage.removeItem('adminSession');
+                this.adminSession = null;
+                this.disableAdminMode();
+                this.showMessage('Logged out of admin mode', 'info');
+            }
+
+            enableAdminMode() {
+                this.isAdminMode = true;
+                document.body.classList.add('admin-mode');
+                document.getElementById('adminBtn').textContent = 'Logout Admin';
+                this.loadSchoolButtons(); // Reload to add edit functionality
+            }
+
+            disableAdminMode() {
+                this.isAdminMode = false;
+                document.body.classList.remove('admin-mode');
+                document.getElementById('adminBtn').textContent = 'Admin Login';
+                this.loadSchoolButtons(); // Reload to remove edit functionality
+            }
+
+            editSchoolButton(school) {
+                this.currentEditingSchool = school;
+                document.getElementById('editModalTitle').textContent = 
+                    `Edit ${school.toUpperCase()} Button`;
+
+                // Load current data
+                this.loadCurrentButtonData(school);
+                document.getElementById('editModal').style.display = 'block';
+            }
+
+            async loadCurrentButtonData(school) {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/home/buttons/${school}`);
+                    const button = await response.json();
+
+                    document.getElementById('schoolTitle').value = button.title || '';
+
+                    const preview = document.getElementById('imagePreview');
+                    if (button.image_data) {
+                        preview.src = `data:${button.image_type};base64,${button.image_data}`;
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error loading button data:', error);
+                }
+            }
+
+            previewImage(e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById('imagePreview');
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            }
+
+            hideEditModal() {
+                document.getElementById('editModal').style.display = 'none';
+                document.getElementById('editForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                this.currentEditingSchool = null;
+            }
+
+            async handleEdit(e) {
+                e.preventDefault();
+
+                const title = document.getElementById('schoolTitle').value;
+                const imageFile = document.getElementById('schoolImage').files[0];
+
+                try {
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    if (imageFile) {
+                        formData.append('image', imageFile);
+                    }
+
+                    const response = await fetch(`${this.apiBaseUrl}/home/buttons/${this.currentEditingSchool}`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-Admin-Session': this.adminSession
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        this.hideEditModal();
+                        this.loadSchoolButtons();
+                        this.showMessage('School button updated successfully', 'success');
+                    } else {
+                        throw new Error('Failed to update button');
+                    }
+                } catch (error) {
+                    console.error('Error updating button:', error);
+                    this.showMessage('Failed to update button', 'error');
+                }
+            }
+
+            showMessage(message, type = 'info') {
+                const messageEl = document.createElement('div');
+                messageEl.className = `status-message status-${type}`;
+                messageEl.textContent = message;
+
+                document.body.appendChild(messageEl);
+
+                setTimeout(() => {
+                    messageEl.style.transform = 'translateX(0)';
+                    messageEl.style.opacity = '1';
+                }, 10);
+
+                setTimeout(() => {
+                    messageEl.style.transform = 'translateX(100%)';
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (messageEl.parentNode) {
+                            messageEl.parentNode.removeChild(messageEl);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize the home page
+        document.addEventListener('DOMContentLoaded', () => {
+            new HomePage();
+        });
+    </script>
+</body>
+</html>
