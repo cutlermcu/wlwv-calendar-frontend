@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Calendar System</title>
+    <title>School Calendar System - WLHS & WVHS</title>
     <style>
         * {
             margin: 0;
@@ -12,277 +12,435 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
+            color: #1a1a1a;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            padding: 20px;
         }
 
         .header {
-            margin-bottom: 50px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
         }
 
         .header h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .header p {
             font-size: 1.2rem;
-            color: #666;
+            opacity: 0.9;
         }
 
-        .admin-section {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .admin-btn {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
 
-        .admin-btn:hover {
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .schools-container {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .school-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 300px;
-            height: 200px;
+        .tab.active {
             background: white;
-            border: none;
+            color: #667eea;
+        }
+
+        .screen {
+            background: white;
             border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            color: inherit;
-            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             overflow: hidden;
-        }
-
-        .school-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .school-button.wlhs {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .school-button.wvhs {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .school-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 15px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .school-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .admin-mode .school-button {
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-        }
-
-        .admin-mode .school-button:hover::after {
-            content: '✏️ Edit';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-        }
-
-        .modal {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
         }
 
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
+        .screen.active {
+            display: block;
+        }
+
+        /* Setup Screen */
+        .setup-screen {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .setup-form {
             max-width: 500px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            text-align: left;
         }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #555;
+            color: #374151;
         }
 
-        .form-group input,
-        .form-group textarea {
+        .form-input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .form-input:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .file-upload {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .file-upload:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-
-        .file-upload input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .preview-image {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 25px;
-            cursor: pointer;
+            border-radius: 8px;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
         }
 
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
         .btn-secondary {
-            background: #e1e8ed;
-            color: #333;
+            background: #e5e7eb;
+            color: #374151;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .btn-secondary:hover {
+            background: #d1d5db;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
+        /* Calendar Styles */
+        .calendar-page {
+            padding: 0;
+            height: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .month-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            font-size: 24px;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            color: #999;
+            transition: all 0.3s ease;
         }
 
-        .close-btn:hover {
-            color: #333;
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .current-month {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .admin-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle.active {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .calendar-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+        }
+
+        .calendar-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            margin: 1px;
+        }
+
+        .day-header {
+            background: #334155;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 12px;
+            min-height: 120px;
+            position: relative;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #f1f5f9;
+            box-shadow: inset 0 0 0 2px #667eea;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            background: #f8fafc;
+            color: #94a3b8;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-labels {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .ab-label {
+            background: #667eea;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .ab-label:hover {
+            background: #5a67d8;
+        }
+
+        .day-type-label {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .day-type-label:hover {
+            opacity: 0.8;
+        }
+
+        .day-type-holiday { background: #ef4444; color: white; }
+        .day-type-staff-development { background: #10b981; color: white; }
+        .day-type-grading { background: #f59e0b; color: white; }
+        .day-type-furlough { background: #6b7280; color: white; }
+        .day-type-finals { background: #8b5cf6; color: white; }
+
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 8px;
+        }
+
+        .event {
+            background: #667eea;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-add {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-day:hover .quick-add {
+            opacity: 1;
+        }
+
+        /* Dropdown Styles */
+        .admin-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 120px;
+            display: none;
+        }
+
+        .admin-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s ease;
+            color: #374151;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .dropdown-item.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.error {
+            background: #ef4444;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -292,426 +450,1140 @@
             100% { transform: rotate(360deg); }
         }
 
-        .status-message {
+        /* Modal Styles */
+        .modal {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            z-index: 10000;
-            max-width: 400px;
-            transform: translateX(100%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
             opacity: 0;
+            visibility: hidden;
             transition: all 0.3s ease;
         }
 
-        .status-success { background: #10b981; }
-        .status-error { background: #ef4444; }
-        .status-info { background: #3b82f6; }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .connection-status.connected {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #bbf7d0;
+        }
+
+        .connection-status.disconnected {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
 
         @media (max-width: 768px) {
             .container {
-                margin: 20px;
-                padding: 30px 20px;
+                padding: 10px;
             }
 
-            .header h1 {
-                font-size: 2rem;
+            .calendar-header {
+                flex-direction: column;
+                gap: 15px;
             }
 
-            .schools-container {
-                gap: 20px;
+            .calendar-controls {
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
-            .school-button {
-                width: 250px;
-                height: 180px;
-            }
-
-            .school-title {
-                font-size: 1.2rem;
+            .calendar-day {
+                min-height: 80px;
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="admin-section">
-        <button class="admin-btn" id="adminBtn">Admin Login</button>
-    </div>
-
     <div class="container">
         <div class="header">
-            <h1>School Calendar System</h1>
-            <p>Select your school to view the calendar</p>
+            <h1>🎓 School Calendar System</h1>
+            <p>Real-time synchronized calendar for West Linn and West Valley High Schools</p>
         </div>
 
-        <div class="schools-container" id="schoolsContainer">
-            <!-- School buttons will be loaded here -->
+        <div class="tabs">
+            <button class="tab active" onclick="showScreen('setup')">🔧 Setup</button>
+            <button class="tab" onclick="showScreen('calendar')">📅 Calendar</button>
+            <button class="tab" onclick="showScreen('admin')">⚙️ Admin</button>
         </div>
-    </div>
 
-    <!-- Admin Login Modal -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeLoginModal">&times;</button>
-            <h2>Admin Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="adminPassword">Password</label>
-                    <input type="password" id="adminPassword" required>
+        <!-- Setup Screen -->
+        <div class="screen active" id="setup">
+            <div class="setup-screen">
+                <h2>Database Setup</h2>
+                <p style="margin-bottom: 30px;">Configure your Neon database connection to get started</p>
+
+                <div id="connectionStatus" class="connection-status disconnected">
+                    <span>🔴</span>
+                    <span>Not connected to database</span>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" id="cancelLogin">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Login</button>
+
+                <form class="setup-form" id="setupForm">
+                    <div class="form-group">
+                        <label class="form-label">Neon Database URL</label>
+                        <input type="text" class="form-input" id="dbUrl" 
+                               placeholder="postgresql://username:password@host/database?sslmode=require" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API Base URL</label>
+                        <input type="text" class="form-input" id="apiUrl" 
+                               value="http://localhost:3000/api" required>
+                        <small style="color: #6b7280; font-size: 0.85rem;">Make sure your backend server is running on this URL</small>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="loading" id="setupLoading" style="display: none;"></span>
+                            Connect & Initialize
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="testConnection()">
+                            Test Connection
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="debugAPI()">
+                            Debug API
+                        </button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: left;">
+                    <h3>Backend Setup Instructions:</h3>
+                    <ol style="margin-left: 20px; line-height: 1.6;">
+                        <li>Create a new Node.js project: <code>npm init -y</code></li>
+                        <li>Install dependencies: <code>npm install express cors pg dotenv</code></li>
+                        <li>Create the backend server (see backend code below)</li>
+                        <li>Set up your Neon database with the required tables</li>
+                        <li>Start the server: <code>node server.js</code></li>
+                        <li>Enter your database URL and test the connection</li>
+                    </ol>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
 
-    <!-- Edit School Button Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeEditModal">&times;</button>
-            <h2 id="editModalTitle">Edit School Button</h2>
-            <form id="editForm">
-                <div class="form-group">
-                    <label for="schoolTitle">School Name</label>
-                    <input type="text" id="schoolTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="schoolImage">School Image (optional)</label>
-                    <div class="file-upload">
-                        <input type="file" id="schoolImage" accept="image/*">
-                        <div class="upload-text">
-                            <strong>Click to upload image</strong><br>
-                            or drag and drop<br>
-                            <small>PNG, JPG up to 5MB</small>
+        <!-- Calendar Screen -->
+        <div class="screen" id="calendar">
+            <div class="calendar-page">
+                <div class="calendar-header">
+                    <div class="calendar-title" id="calendarTitle">
+                        🦁 West Linn High School Calendar
+                    </div>
+                    <div class="calendar-controls">
+                        <div class="month-nav">
+                            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                            <div class="current-month" id="currentMonth">June 2025</div>
+                            <button class="nav-btn" onclick="changeMonth(1)">›</button>
                         </div>
-                        <img id="imagePreview" class="preview-image" style="display: none;">
+                        <select id="schoolSelect" onchange="changeSchool()">
+                            <option value="wlhs">🦁 West Linn HS</option>
+                            <option value="wvhs">🏔️ West Valley HS</option>
+                        </select>
+                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
+                            Admin Mode: OFF
+                        </button>
                     </div>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+                <div class="calendar-main">
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                </div>
+
+                <div class="status-bar">
+                    <div class="sync-status">
+                        <div class="sync-indicator" id="syncIndicator"></div>
+                        <span id="syncStatus">Checking connection...</span>
+                    </div>
+                    <div id="lastUpdate">Last updated: Never</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Screen -->
+        <div class="screen" id="admin">
+            <div style="padding: 30px;">
+                <h2>Admin Panel</h2>
+                <p>Database administration and bulk operations</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="initializeDatabase()">
+                        Initialize Database Tables
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAllData()" style="margin-left: 10px;">
+                        Clear All Data
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                    <h3>Database Status</h3>
+                    <div id="dbStatus">Checking...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Event</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label class="form-label">Event Title</label>
+                    <input type="text" class="form-input" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="eventDescription" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
     <script>
-        class HomePage {
-            constructor() {
-                this.adminSession = localStorage.getItem('adminSession');
-                this.isAdminMode = false;
-                this.apiBaseUrl = window.location.origin + '/api';
-                this.currentEditingSchool = null;
+        // Global State
+        const state = {
+            currentDate: new Date(),
+            selectedSchool: 'wlhs',
+            adminMode: false,
+            events: {},
+            daySchedules: {},
+            dayTypes: {},
+            apiUrl: '',
+            connected: false
+        };
 
-                this.initializeEventListeners();
-                this.loadSchoolButtons();
-                this.checkAdminSession();
+        // API Configuration - Better Replit detection
+        let API_BASE_URL = '';
+
+        // Detect if running in Replit (improved detection)
+        if (window.location.hostname.includes('.repl.co') || 
+            window.location.hostname.includes('.replit.dev') ||
+            window.location.hostname.includes('replit')) {
+            API_BASE_URL = `${window.location.origin}/api`;
+            console.log('🔍 Detected Replit environment');
+            console.log('🌐 Current URL:', window.location.href);
+            console.log('🔗 Setting API URL to:', API_BASE_URL);
+        } else {
+            API_BASE_URL = 'http://localhost:3000/api';
+            console.log('🔍 Detected local environment');
+            console.log('🔗 Setting API URL to:', API_BASE_URL);
+        }
+
+        // School Configuration
+        const SCHOOLS = {
+            wlhs: {
+                name: 'West Linn High School',
+                emoji: '🦁',
+                shortName: 'WLHS'
+            },
+            wvhs: {
+                name: 'West Valley High School', 
+                emoji: '🏔️',
+                shortName: 'WVHS'
             }
+        };
 
-            initializeEventListeners() {
-                // Admin login
-                document.getElementById('adminBtn').addEventListener('click', () => this.showLoginModal());
-                document.getElementById('closeLoginModal').addEventListener('click', () => this.hideLoginModal());
-                document.getElementById('cancelLogin').addEventListener('click', () => this.hideLoginModal());
-                document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing application...');
+            setupEventListeners();
+            loadConfig();
 
-                // Edit modal
-                document.getElementById('closeEditModal').addEventListener('click', () => this.hideEditModal());
-                document.getElementById('cancelEdit').addEventListener('click', () => this.hideEditModal());
-                document.getElementById('editForm').addEventListener('submit', (e) => this.handleEdit(e));
+            // Initialize calendar with current date
+            renderCalendar();
+        });
 
-                // File upload preview
-                document.getElementById('schoolImage').addEventListener('change', (e) => this.previewImage(e));
+        function setupEventListeners() {
+            // Setup form
+            document.getElementById('setupForm').addEventListener('submit', handleSetup);
 
-                // Close modals when clicking outside
-                document.getElementById('loginModal').addEventListener('click', (e) => {
-                    if (e.target.id === 'loginModal') this.hideLoginModal();
-                });
-                document.getElementById('editModal').addEventListener('click', (e) => {
-                    if (e.target.id === 'editModal') this.hideEditModal();
-                });
-            }
+            // Event form
+            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
 
-            async checkAdminSession() {
-                if (!this.adminSession) return;
-
-                try {
-                    const response = await fetch(`${this.apiBaseUrl}/admin/verify`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sessionId: this.adminSession })
-                    });
-
-                    const data = await response.json();
-                    if (data.valid) {
-                        this.enableAdminMode();
-                    } else {
-                        localStorage.removeItem('adminSession');
-                        this.adminSession = null;
-                    }
-                } catch (error) {
-                    console.error('Error verifying admin session:', error);
-                    localStorage.removeItem('adminSession');
-                    this.adminSession = null;
-                }
-            }
-
-            async loadSchoolButtons() {
-                try {
-                    const response = await fetch(`${this.apiBaseUrl}/home/buttons`);
-                    const buttons = await response.json();
-
-                    const container = document.getElementById('schoolsContainer');
-                    container.innerHTML = '';
-
-                    for (const button of buttons) {
-                        const buttonElement = this.createSchoolButton(button);
-                        container.appendChild(buttonElement);
-                    }
-                } catch (error) {
-                    console.error('Error loading school buttons:', error);
-                    this.createDefaultButtons();
-                }
-            }
-
-            createDefaultButtons() {
-                const container = document.getElementById('schoolsContainer');
-                container.innerHTML = '';
-
-                const defaultButtons = [
-                    { school: 'wlhs', title: 'West Linn High School', image_data: null },
-                    { school: 'wvhs', title: 'West Valley High School', image_data: null }
-                ];
-
-                for (const button of defaultButtons) {
-                    const buttonElement = this.createSchoolButton(button);
-                    container.appendChild(buttonElement);
-                }
-            }
-
-            createSchoolButton(button) {
-                const link = document.createElement('a');
-                link.href = `/${button.school}`;
-                link.className = `school-button ${button.school}`;
-
-                if (this.isAdminMode) {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        this.editSchoolButton(button.school);
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.admin-dropdown') && !e.target.closest('.ab-label') && !e.target.closest('.day-type-label')) {
+                    document.querySelectorAll('.admin-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
                     });
                 }
+            });
+        }
 
-                if (button.image_data) {
-                    const img = document.createElement('img');
-                    img.src = `data:${button.image_type};base64,${button.image_data}`;
-                    img.className = 'school-image';
-                    img.alt = button.title;
-                    link.appendChild(img);
-                }
-
-                const title = document.createElement('div');
-                title.className = 'school-title';
-                title.textContent = button.title;
-                link.appendChild(title);
-
-                return link;
-            }
-
-            showLoginModal() {
-                if (this.isAdminMode) {
-                    this.logout();
+        function loadConfig() {
+            // Auto-detect API URL based on environment (improved detection)
+            if (window.location.hostname.includes('.repl.co') || 
+                window.location.hostname.includes('.replit.dev') ||
+                window.location.hostname.includes('replit')) {
+                API_BASE_URL = `${window.location.origin}/api`;
+                document.getElementById('apiUrl').value = API_BASE_URL;
+                console.log('🔧 Auto-configured for Replit:', API_BASE_URL);
+            } else {
+                const savedApiUrl = localStorage.getItem('apiUrl');
+                if (savedApiUrl) {
+                    document.getElementById('apiUrl').value = savedApiUrl;
+                    API_BASE_URL = savedApiUrl;
                 } else {
-                    document.getElementById('loginModal').style.display = 'block';
-                    document.getElementById('adminPassword').focus();
+                    document.getElementById('apiUrl').value = API_BASE_URL;
                 }
             }
 
-            hideLoginModal() {
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('loginForm').reset();
+            state.apiUrl = API_BASE_URL;
+
+            const savedDbUrl = localStorage.getItem('dbUrl');
+            if (savedDbUrl) {
+                document.getElementById('dbUrl').value = savedDbUrl;
             }
 
-            async handleLogin(e) {
-                e.preventDefault();
-
-                const password = document.getElementById('adminPassword').value;
-
-                try {
-                    const response = await fetch(`${this.apiBaseUrl}/admin/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ password })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        this.adminSession = data.sessionId;
-                        localStorage.setItem('adminSession', this.adminSession);
-                        this.enableAdminMode();
-                        this.hideLoginModal();
-                        this.showMessage('Admin mode enabled', 'success');
-                    } else {
-                        this.showMessage('Invalid password', 'error');
-                    }
-                } catch (error) {
-                    console.error('Login error:', error);
-                    this.showMessage('Login failed', 'error');
-                }
-            }
-
-            async logout() {
-                try {
-                    if (this.adminSession) {
-                        await fetch(`${this.apiBaseUrl}/admin/logout`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ sessionId: this.adminSession })
-                        });
-                    }
-                } catch (error) {
-                    console.error('Logout error:', error);
-                }
-
-                localStorage.removeItem('adminSession');
-                this.adminSession = null;
-                this.disableAdminMode();
-                this.showMessage('Logged out of admin mode', 'info');
-            }
-
-            enableAdminMode() {
-                this.isAdminMode = true;
-                document.body.classList.add('admin-mode');
-                document.getElementById('adminBtn').textContent = 'Logout Admin';
-                this.loadSchoolButtons(); // Reload to add edit functionality
-            }
-
-            disableAdminMode() {
-                this.isAdminMode = false;
-                document.body.classList.remove('admin-mode');
-                document.getElementById('adminBtn').textContent = 'Admin Login';
-                this.loadSchoolButtons(); // Reload to remove edit functionality
-            }
-
-            editSchoolButton(school) {
-                this.currentEditingSchool = school;
-                document.getElementById('editModalTitle').textContent = 
-                    `Edit ${school.toUpperCase()} Button`;
-
-                // Load current data
-                this.loadCurrentButtonData(school);
-                document.getElementById('editModal').style.display = 'block';
-            }
-
-            async loadCurrentButtonData(school) {
-                try {
-                    const response = await fetch(`${this.apiBaseUrl}/home/buttons/${school}`);
-                    const button = await response.json();
-
-                    document.getElementById('schoolTitle').value = button.title || '';
-
-                    const preview = document.getElementById('imagePreview');
-                    if (button.image_data) {
-                        preview.src = `data:${button.image_type};base64,${button.image_data}`;
-                        preview.style.display = 'block';
-                    } else {
-                        preview.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('Error loading button data:', error);
-                }
-            }
-
-            previewImage(e) {
-                const file = e.target.files[0];
-                const preview = document.getElementById('imagePreview');
-
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.style.display = 'none';
-                }
-            }
-
-            hideEditModal() {
-                document.getElementById('editModal').style.display = 'none';
-                document.getElementById('editForm').reset();
-                document.getElementById('imagePreview').style.display = 'none';
-                this.currentEditingSchool = null;
-            }
-
-            async handleEdit(e) {
-                e.preventDefault();
-
-                const title = document.getElementById('schoolTitle').value;
-                const imageFile = document.getElementById('schoolImage').files[0];
-
-                try {
-                    const formData = new FormData();
-                    formData.append('title', title);
-                    if (imageFile) {
-                        formData.append('image', imageFile);
-                    }
-
-                    const response = await fetch(`${this.apiBaseUrl}/home/buttons/${this.currentEditingSchool}`, {
-                        method: 'PUT',
-                        headers: {
-                            'X-Admin-Session': this.adminSession
-                        },
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        this.hideEditModal();
-                        this.loadSchoolButtons();
-                        this.showMessage('School button updated successfully', 'success');
-                    } else {
-                        throw new Error('Failed to update button');
-                    }
-                } catch (error) {
-                    console.error('Error updating button:', error);
-                    this.showMessage('Failed to update button', 'error');
-                }
-            }
-
-            showMessage(message, type = 'info') {
-                const messageEl = document.createElement('div');
-                messageEl.className = `status-message status-${type}`;
-                messageEl.textContent = message;
-
-                document.body.appendChild(messageEl);
-
-                setTimeout(() => {
-                    messageEl.style.transform = 'translateX(0)';
-                    messageEl.style.opacity = '1';
-                }, 10);
-
-                setTimeout(() => {
-                    messageEl.style.transform = 'translateX(100%)';
-                    messageEl.style.opacity = '0';
-                    setTimeout(() => {
-                        if (messageEl.parentNode) {
-                            messageEl.parentNode.removeChild(messageEl);
-                        }
-                    }, 300);
-                }, 3000);
+            // Auto-test connection if API URL is available
+            if (API_BASE_URL) {
+                testConnection();
             }
         }
 
-        // Initialize the home page
-        document.addEventListener('DOMContentLoaded', () => {
-            new HomePage();
-        });
+        async function handleSetup(e) {
+            e.preventDefault();
+
+            const dbUrl = document.getElementById('dbUrl').value.trim();
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const loading = document.getElementById('setupLoading');
+
+            if (!dbUrl) {
+                showNotification('Please enter your Neon database URL', true);
+                return;
+            }
+
+            if (!apiUrl) {
+                showNotification('Please enter the API URL', true);
+                return;
+            }
+
+            loading.style.display = 'inline-block';
+
+            try {
+                console.log('Setting up database connection...');
+
+                // Save configuration
+                localStorage.setItem('dbUrl', dbUrl);
+                localStorage.setItem('apiUrl', apiUrl);
+                API_BASE_URL = apiUrl;
+                state.apiUrl = apiUrl;
+
+                // Test API connection first
+                await testConnection();
+
+                if (!state.connected) {
+                    throw new Error('Cannot connect to API server');
+                }
+
+                // Initialize database
+                console.log('Initializing database...');
+                await initializeDatabase();
+
+                // Load initial data
+                await loadData();
+
+                showNotification('Database connected and initialized successfully!');
+                setTimeout(() => {
+                    showScreen('calendar');
+                }, 1000);
+
+            } catch (error) {
+                console.error('Setup error:', error);
+                showNotification('Setup failed: ' + error.message, true);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        async function testConnection() {
+            try {
+                console.log('🧪 Testing connection...');
+                console.log('📍 API URL:', API_BASE_URL);
+                console.log('🌐 Current location:', window.location.href);
+
+                // First test if we can reach the API at all
+                console.log('⏳ Fetching from:', `${API_BASE_URL}/health`);
+
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response ok:', response.ok);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('📊 Response data:', data);
+
+                if (data.status === 'ok') {
+                    state.connected = true;
+                    updateConnectionStatus(true, 'Connected to API server');
+                    document.getElementById('syncStatus').textContent = 'API Connected';
+                    document.getElementById('syncIndicator').classList.remove('error');
+                    showNotification('API connection successful!');
+                } else {
+                    throw new Error('API server not ready: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                console.error('❌ Connection test failed:', error);
+                console.error('🔗 Attempted URL:', `${API_BASE_URL}/health`);
+
+                state.connected = false;
+                updateConnectionStatus(false, `Connection failed: ${error.message}`);
+                document.getElementById('syncStatus').textContent = 'Disconnected';
+                document.getElementById('syncIndicator').classList.add('error');
+
+                // Show specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    showNotification('Cannot reach API server. Is your backend running?', true);
+                } else if (error.message.includes('404')) {
+                    showNotification('API endpoint not found. Check your server routes.', true);
+                } else if (error.message.includes('CORS')) {
+                    showNotification('CORS error. Check your server CORS configuration.', true);
+                } else {
+                    showNotification(`API Error: ${error.message}`, true);
+                }
+            }
+        }
+
+        function updateConnectionStatus(connected, message) {
+            const status = document.getElementById('connectionStatus');
+            status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
+            status.innerHTML = `
+                <span>${connected ? '🟢' : '🔴'}</span>
+                <span>${message}</span>
+            `;
+        }
+
+        async function initializeDatabase() {
+            try {
+                const dbUrl = document.getElementById('dbUrl').value;
+                const response = await fetch(`${API_BASE_URL}/init`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dbUrl })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to initialize database');
+                }
+
+                const data = await response.json();
+                showNotification('Database initialized successfully');
+
+                document.getElementById('dbStatus').innerHTML = `
+                    <div style="color: #059669;">✅ Tables created successfully</div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
+                        ${data.tables.join(', ')} initialized
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Database initialization error:', error);
+                showNotification('Database initialization failed: ' + error.message, true);
+
+                document.getElementById('dbStatus').innerHTML = `
+                    <div style="color: #dc2626;">❌ Initialization failed</div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Calendar Functions
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) {
+                console.error('Calendar grid not found');
+                return;
+            }
+
+            console.log('Rendering calendar for:', state.currentDate);
+
+            const year = state.currentDate.getFullYear();
+            const month = state.currentDate.getMonth();
+
+            // Update month display
+            const monthDisplay = document.getElementById('currentMonth');
+            if (monthDisplay) {
+                monthDisplay.textContent = 
+                    new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(state.currentDate);
+            }
+
+            // Clear grid
+            grid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Get first day of month and calculate start date
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            // Generate calendar days (6 weeks = 42 days)
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+
+                const dayElement = createDayElement(currentDate, month);
+                grid.appendChild(dayElement);
+            }
+
+            console.log('Calendar rendered successfully');
+        }
+
+        function createDayElement(date, currentMonth) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+
+            const isCurrentMonth = date.getMonth() === currentMonth;
+            const isToday = date.toDateString() === new Date().toDateString();
+
+            if (!isCurrentMonth) {
+                dayElement.classList.add('other-month');
+            }
+            if (isToday) {
+                dayElement.classList.add('today');
+            }
+
+            const dateKey = formatDate(date);
+
+            // Day number and labels container
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+
+            const numberSpan = document.createElement('span');
+            numberSpan.textContent = date.getDate();
+            dayNumber.appendChild(numberSpan);
+
+            const labelsContainer = document.createElement('div');
+            labelsContainer.className = 'day-labels';
+
+            // A/B Label
+            const abLabel = createABLabel(dateKey);
+            if (abLabel) labelsContainer.appendChild(abLabel);
+
+            // Day Type Label
+            const dayTypeLabel = createDayTypeLabel(dateKey);
+            if (dayTypeLabel) labelsContainer.appendChild(dayTypeLabel);
+
+            dayNumber.appendChild(labelsContainer);
+            dayElement.appendChild(dayNumber);
+
+            // Events list
+            const eventsList = document.createElement('div');
+            eventsList.className = 'events-list';
+
+            const dayEvents = state.events[dateKey] || [];
+            dayEvents.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'event';
+                eventElement.textContent = event.title;
+                eventElement.onclick = () => editEvent(event);
+                eventsList.appendChild(eventElement);
+            });
+
+            dayElement.appendChild(eventsList);
+
+            // Quick add button
+            const quickAdd = document.createElement('button');
+            quickAdd.className = 'quick-add';
+            quickAdd.textContent = '+';
+            quickAdd.onclick = (e) => {
+                e.stopPropagation();
+                openEventModal(dateKey);
+            };
+            dayElement.appendChild(quickAdd);
+
+            return dayElement;
+        }
+
+        function createABLabel(dateKey) {
+            const schedule = state.daySchedules[dateKey];
+            if (!schedule) return null;
+
+            const label = document.createElement('span');
+            label.className = 'ab-label';
+            label.textContent = schedule;
+
+            if (state.adminMode) {
+                label.onclick = (e) => {
+                    e.stopPropagation();
+                    showABDropdown(e.target, dateKey);
+                };
+            }
+
+            return label;
+        }
+
+        function createDayTypeLabel(dateKey) {
+            const dayType = state.dayTypes[dateKey];
+            if (!dayType) return null;
+
+            const label = document.createElement('span');
+            label.className = `day-type-label day-type-${dayType.toLowerCase().replace(/\s+/g, '-')}`;
+            label.textContent = dayType;
+
+            if (state.adminMode) {
+                label.onclick = (e) => {
+                    e.stopPropagation();
+                    showDayTypeDropdown(e.target, dateKey);
+                };
+            }
+
+            return label;
+        }
+
+        function showABDropdown(target, dateKey) {
+            const dropdown = createDropdown(['A', 'B', 'Clear'], async (value) => {
+                await updateABSchedule(dateKey, value === 'Clear' ? null : value);
+            });
+
+            showDropdown(target, dropdown);
+        }
+
+        function showDayTypeDropdown(target, dateKey) {
+            const options = ['Holiday', 'Staff Development', 'Grading', 'Furlough', 'Finals', 'Clear'];
+            const dropdown = createDropdown(options, async (value) => {
+                await updateDayType(dateKey, value === 'Clear' ? null : value);
+            });
+
+            showDropdown(target, dropdown);
+        }
+
+        function createDropdown(options, onSelect) {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'admin-dropdown';
+
+            options.forEach(option => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = option;
+                item.onclick = () => {
+                    onSelect(option);
+                    dropdown.remove();
+                };
+                dropdown.appendChild(item);
+            });
+
+            return dropdown;
+        }
+
+        function showDropdown(target, dropdown) {
+            // Remove existing dropdowns
+            document.querySelectorAll('.admin-dropdown').forEach(d => d.remove());
+
+            // Position dropdown
+            target.style.position = 'relative';
+            target.appendChild(dropdown);
+            dropdown.classList.add('show');
+        }
+
+        async function updateABSchedule(dateKey, value) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/day-schedules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ date: dateKey, schedule: value })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update A/B schedule');
+                }
+
+                if (value) {
+                    state.daySchedules[dateKey] = value;
+                } else {
+                    delete state.daySchedules[dateKey];
+                }
+
+                renderCalendar();
+                showNotification(`A/B schedule updated for ${dateKey}`);
+                updateLastSync();
+
+            } catch (error) {
+                console.error('Error updating A/B schedule:', error);
+                showNotification('Failed to update A/B schedule', true);
+            }
+        }
+
+        async function updateDayType(dateKey, value) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/day-types`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ date: dateKey, type: value })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update day type');
+                }
+
+                if (value) {
+                    state.dayTypes[dateKey] = value;
+                } else {
+                    delete state.dayTypes[dateKey];
+                }
+
+                renderCalendar();
+                showNotification(`Day type updated for ${dateKey}`);
+                updateLastSync();
+
+            } catch (error) {
+                console.error('Error updating day type:', error);
+                showNotification('Failed to update day type', true);
+            }
+        }
+
+        async function loadData() {
+            if (!state.connected) {
+                console.log('Not connected, skipping data load');
+                return;
+            }
+
+            try {
+                console.log('Loading data from API...');
+                // Load day schedules and day types (synced across schools)
+                await Promise.all([
+                    loadDaySchedules(),
+                    loadDayTypes(),
+                    loadSchoolEvents()
+                ]);
+
+                console.log('Data loaded successfully');
+                renderCalendar();
+                updateLastSync();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('Error loading data: ' + error.message, true);
+            }
+        }
+
+        async function loadDaySchedules() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/day-schedules`);
+                if (response.ok) {
+                    const schedules = await response.json();
+                    state.daySchedules = {};
+                    schedules.forEach(schedule => {
+                        state.daySchedules[schedule.date] = schedule.schedule;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading day schedules:', error);
+            }
+        }
+
+        async function loadDayTypes() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/day-types`);
+                if (response.ok) {
+                    const types = await response.json();
+                    state.dayTypes = {};
+                    types.forEach(type => {
+                        state.dayTypes[type.date] = type.type;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading day types:', error);
+            }
+        }
+
+        async function loadSchoolEvents() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/events?school=${state.selectedSchool}`);
+                if (response.ok) {
+                    const events = await response.json();
+                    state.events = {};
+                    events.forEach(event => {
+                        if (!state.events[event.date]) {
+                            state.events[event.date] = [];
+                        }
+                        state.events[event.date].push(event);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        function changeMonth(delta) {
+            state.currentDate.setMonth(state.currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function changeSchool() {
+            const select = document.getElementById('schoolSelect');
+            state.selectedSchool = select.value;
+
+            const school = SCHOOLS[select.value];
+            const title = document.getElementById('calendarTitle');
+            title.textContent = `${school.emoji} ${school.name} Calendar`;
+
+            loadSchoolEvents().then(() => renderCalendar());
+        }
+
+        function toggleAdminMode() {
+            state.adminMode = !state.adminMode;
+            const button = document.getElementById('adminToggle');
+            button.textContent = `Admin Mode: ${state.adminMode ? 'ON' : 'OFF'}`;
+            button.classList.toggle('active', state.adminMode);
+
+            renderCalendar();
+            showNotification(`Admin mode ${state.adminMode ? 'enabled' : 'disabled'}`);
+        }
+
+        function openEventModal(dateKey) {
+            const modal = document.getElementById('eventModal');
+            document.getElementById('eventDate').value = dateKey;
+            document.querySelector('.modal-title').textContent = 'Add Event';
+            document.getElementById('eventForm').removeAttribute('data-event-id');
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('eventModal');
+            modal.classList.remove('show');
+
+            // Reset form and modal state
+            const form = document.getElementById('eventForm');
+            form.reset();
+            form.removeAttribute('data-event-id');
+
+            // Reset modal title
+            document.querySelector('.modal-title').textContent = 'Add Event';
+        }
+
+        async function editEvent(event) {
+            // Open modal in edit mode
+            document.getElementById('eventTitle').value = event.title;
+            document.getElementById('eventDate').value = event.date;
+            document.getElementById('eventDescription').value = event.description || '';
+
+            // Store event ID for updating
+            document.getElementById('eventForm').dataset.eventId = event.id;
+            document.querySelector('.modal-title').textContent = 'Edit Event';
+
+            const modal = document.getElementById('eventModal');
+            modal.classList.add('show');
+        }
+
+        async function handleEventSubmit(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const description = document.getElementById('eventDescription').value;
+            const eventId = document.getElementById('eventForm').dataset.eventId;
+
+            try {
+                let response;
+
+                if (eventId) {
+                    // Update existing event
+                    response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title,
+                            description
+                        })
+                    });
+                } else {
+                    // Create new event
+                    response = await fetch(`${API_BASE_URL}/events`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title,
+                            date,
+                            description,
+                            school: state.selectedSchool
+                        })
+                    });
+                }
+
+                if (!response.ok) {
+                    throw new Error('Failed to save event');
+                }
+
+                const event = await response.json();
+
+                // Update local state
+                if (eventId) {
+                    // Update existing event in state
+                    const dayEvents = state.events[date] || [];
+                    const eventIndex = dayEvents.findIndex(e => e.id == eventId);
+                    if (eventIndex !== -1) {
+                        dayEvents[eventIndex] = event;
+                    }
+                } else {
+                    // Add new event to state
+                    if (!state.events[date]) {
+                        state.events[date] = [];
+                    }
+                    state.events[date].push(event);
+                }
+
+                renderCalendar();
+                closeModal();
+                showNotification(eventId ? 'Event updated successfully!' : 'Event saved successfully!');
+                updateLastSync();
+
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showNotification('Failed to save event', true);
+            }
+        }
+
+        function showScreen(screenId) {
+            console.log('Switching to screen:', screenId);
+
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+
+            // Find and activate the corresponding tab
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (tab.textContent.includes(getTabTextForScreen(screenId))) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // If switching to calendar, ensure it's rendered
+            if (screenId === 'calendar') {
+                setTimeout(() => renderCalendar(), 100);
+            }
+        }
+
+        function getTabTextForScreen(screenId) {
+            const screenMap = {
+                'setup': 'Setup',
+                'calendar': 'Calendar', 
+                'admin': 'Admin'
+            };
+            return screenMap[screenId] || '';
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''} show`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateLastSync() {
+            document.getElementById('lastUpdate').textContent = 
+                `Last updated: ${new Date().toLocaleTimeString()}`;
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        async function clearAllData() {
+            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/clear-all`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to clear data');
+                }
+
+                // Reset local state
+                state.events = {};
+                state.daySchedules = {};
+                state.dayTypes = {};
+
+                renderCalendar();
+                showNotification('All data cleared successfully');
+
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                showNotification('Failed to clear data', true);
+            }
+        }
+
+        // Debug function to test API manually
+        async function debugAPI() {
+            console.log('🐛 DEBUGGING API CONNECTION');
+            console.log('============================');
+            console.log('Current URL:', window.location.href);
+            console.log('Hostname:', window.location.hostname);
+            console.log('Origin:', window.location.origin);
+            console.log('Protocol:', window.location.protocol);
+            console.log('Detected API URL:', API_BASE_URL);
+
+            // Test different endpoints
+            const endpoints = [
+                '/',
+                '/api',
+                '/api/status', 
+                '/api/health'
+            ];
+
+            for (const endpoint of endpoints) {
+                const url = window.location.origin + endpoint;
+                console.log(`\n🧪 Testing: ${url}`);
+
+                try {
+                    const response = await fetch(url);
+                    console.log(`✅ Status: ${response.status} ${response.statusText}`);
+
+                    if (response.ok) {
+                        const text = await response.text();
+                        console.log(`📄 Response preview: ${text.substring(0, 200)}...`);
+                    }
+                } catch (error) {
+                    console.log(`❌ Error: ${error.message}`);
+                }
+            }
+
+            console.log('\n🔧 Debug complete. Check console output above.');
+            alert('Debug complete! Check the browser console (F12) for detailed results.');
+        }
+        // Auto-refresh connection status
+        setInterval(() => {
+            if (state.connected) {
+                testConnection();
+            }
+        }, 30000); // Check every 30 seconds
     </script>
 </body>
 </html>
