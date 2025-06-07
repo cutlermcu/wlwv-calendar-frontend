@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Calendar System - WLHS & WVHS</title>
+    <title>School Calendar System - WLHS & WHS</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
             min-height: 100vh;
             color: #1a1a1a;
         }
@@ -68,7 +68,7 @@
 
         .tab.active {
             background: white;
-            color: #667eea;
+            color: #c41e3a;
         }
 
         .screen {
@@ -81,6 +81,127 @@
 
         .screen.active {
             display: block;
+        }
+
+        /* Home Page Styles */
+        .home-page {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .home-header {
+            margin-bottom: 50px;
+        }
+
+        .home-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .home-header p {
+            font-size: 1.3rem;
+            color: #6b7280;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .school-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+        }
+
+        .school-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border-color: #c41e3a;
+        }
+
+        .school-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .school-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .school-card p {
+            color: #6b7280;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .school-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .admin-access {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 30px;
         }
 
         /* Setup Screen */
@@ -117,8 +238,8 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
         }
 
         .btn {
@@ -131,12 +252,12 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: #c41e3a;
             color: white;
         }
 
         .btn-primary:hover {
-            background: #5a67d8;
+            background: #a01729;
         }
 
         .btn-secondary {
@@ -157,12 +278,35 @@
         }
 
         .calendar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
             color: white;
             padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .home-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .calendar-title {
@@ -256,7 +400,7 @@
 
         .calendar-day:hover {
             background: #f1f5f9;
-            box-shadow: inset 0 0 0 2px #667eea;
+            box-shadow: inset 0 0 0 2px #c41e3a;
         }
 
         .calendar-day.today {
@@ -285,7 +429,7 @@
         }
 
         .ab-label {
-            background: #667eea;
+            background: #c41e3a;
             color: white;
             padding: 2px 6px;
             border-radius: 4px;
@@ -296,7 +440,7 @@
         }
 
         .ab-label:hover {
-            background: #5a67d8;
+            background: #a01729;
         }
 
         .day-type-label {
@@ -326,7 +470,7 @@
         }
 
         .event {
-            background: #667eea;
+            background: #c41e3a;
             color: white;
             padding: 2px 6px;
             border-radius: 4px;
@@ -343,6 +487,13 @@
             transform: scale(1.02);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
+
+        .event.asb { background: #10b981; }
+        .event.life { background: #06b6d4; }
+        .event.counseling { background: #8b5cf6; }
+        .event.testing { background: #3b82f6; }
+        .event.athletics { background: #ef4444; }
+        .event.art-theater { background: #f59e0b; }
 
         .quick-add {
             position: absolute;
@@ -395,7 +546,7 @@
         }
 
         .dropdown-item.selected {
-            background: #667eea;
+            background: #c41e3a;
             color: white;
         }
 
@@ -440,7 +591,7 @@
             width: 16px;
             height: 16px;
             border: 2px solid #e5e7eb;
-            border-top: 2px solid #667eea;
+            border-top: 2px solid #c41e3a;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -564,6 +715,11 @@
                 min-height: 80px;
                 padding: 8px;
             }
+
+            .schools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
         }
     </style>
 </head>
@@ -571,21 +727,83 @@
     <div class="container">
         <div class="header">
             <h1>🎓 School Calendar System</h1>
-            <p>Real-time synchronized calendar for West Linn and West Valley High Schools</p>
+            <p>Real-time synchronized calendar for West Linn and Wilsonville High Schools</p>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showScreen('setup')">🔧 Setup</button>
+            <button class="tab active" onclick="showScreen('home')">🏠 Home</button>
+            <button class="tab" onclick="showScreen('setup')">🔧 Setup</button>
             <button class="tab" onclick="showScreen('calendar')">📅 Calendar</button>
             <button class="tab" onclick="showScreen('admin')">⚙️ Admin</button>
         </div>
 
+        <!-- Home Screen -->
+        <div class="screen active" id="home">
+            <div class="home-page">
+                <div class="home-header">
+                    <h1>School Calendar System</h1>
+                    <p>Select your school to view and manage calendar events</p>
+                </div>
+
+                <div class="schools-grid">
+                    <div class="school-card" onclick="goToSchool('wlhs')">
+                        <div class="school-logo">🦁</div>
+                        <h2>West Linn High School</h2>
+                        <p>Access WLHS calendar, events, and schedule information</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-events">-</div>
+                                <div class="stat-label">Events This Month</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">A/B</div>
+                                <div class="stat-label">Block Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-today">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="school-card" onclick="goToSchool('wvhs')">
+                        <div class="school-logo">🏔️</div>
+                        <h2>Wilsonville High School</h2>
+                        <p>Access WHS calendar, events, and schedule information</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-events">-</div>
+                                <div class="stat-label">Events This Month</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">A/B</div>
+                                <div class="stat-label">Block Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-today">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-access">
+                    <button class="btn btn-secondary" onclick="showScreen('setup')">
+                        🔧 Database Setup
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('admin')">
+                        ⚙️ Admin Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Setup Screen -->
-        <div class="screen active" id="setup">
+        <div class="screen" id="setup">
             <div class="setup-screen">
                 <h2>Database Setup</h2>
                 <p style="margin-bottom: 30px;">Configure your Neon database connection to get started</p>
-
+                
                 <div id="connectionStatus" class="connection-status disconnected">
                     <span>🔴</span>
                     <span>Not connected to database</span>
@@ -597,14 +815,14 @@
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="postgresql://username:password@host/database?sslmode=require" required>
                     </div>
-
+                    
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="http://localhost:3000/api" required>
                         <small style="color: #6b7280; font-size: 0.85rem;">Make sure your backend server is running on this URL</small>
                     </div>
-
+                    
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" class="btn btn-primary">
                             <span class="loading" id="setupLoading" style="display: none;"></span>
@@ -637,8 +855,13 @@
         <div class="screen" id="calendar">
             <div class="calendar-page">
                 <div class="calendar-header">
-                    <div class="calendar-title" id="calendarTitle">
-                        🦁 West Linn High School Calendar
+                    <div class="calendar-nav">
+                        <button class="nav-btn home-btn" onclick="showScreen('home')" title="Back to Home">
+                            🏠 Home
+                        </button>
+                        <div class="calendar-title" id="calendarTitle">
+                            🦁 West Linn High School Calendar
+                        </div>
                     </div>
                     <div class="calendar-controls">
                         <div class="month-nav">
@@ -648,7 +871,7 @@
                         </div>
                         <select id="schoolSelect" onchange="changeSchool()">
                             <option value="wlhs">🦁 West Linn HS</option>
-                            <option value="wvhs">🏔️ West Valley HS</option>
+                            <option value="wvhs">🏔️ Wilsonville HS</option>
                         </select>
                         <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
                             Admin Mode: OFF
@@ -677,7 +900,7 @@
             <div style="padding: 30px;">
                 <h2>Admin Panel</h2>
                 <p>Database administration and bulk operations</p>
-
+                
                 <div style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="initializeDatabase()">
                         Initialize Database Tables
@@ -712,6 +935,22 @@
                     <input type="date" class="form-input" id="eventDate" required>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <input type="time" class="form-input" id="eventTime" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    <select class="form-input" id="eventDepartment" required>
+                        <option value="">Select Department</option>
+                        <option value="ASB">ASB</option>
+                        <option value="Life">Life</option>
+                        <option value="Counseling">Counseling</option>
+                        <option value="Testing">Testing</option>
+                        <option value="Athletics">Athletics</option>
+                        <option value="Art/Theater">Art/Theater</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Description</label>
                     <textarea class="form-input" id="eventDescription" rows="3"></textarea>
                 </div>
@@ -741,7 +980,7 @@
 
         // API Configuration - Better Replit detection
         let API_BASE_URL = '';
-
+        
         // Detect if running in Replit (improved detection)
         if (window.location.hostname.includes('.repl.co') || 
             window.location.hostname.includes('.replit.dev') ||
@@ -755,7 +994,7 @@
             console.log('🔍 Detected local environment');
             console.log('🔗 Setting API URL to:', API_BASE_URL);
         }
-
+        
         // School Configuration
         const SCHOOLS = {
             wlhs: {
@@ -764,9 +1003,9 @@
                 shortName: 'WLHS'
             },
             wvhs: {
-                name: 'West Valley High School', 
+                name: 'Wilsonville High School', 
                 emoji: '🏔️',
-                shortName: 'WVHS'
+                shortName: 'WHS'
             }
         };
 
@@ -775,7 +1014,7 @@
             console.log('DOM loaded, initializing application...');
             setupEventListeners();
             loadConfig();
-
+            
             // Initialize calendar with current date
             renderCalendar();
         });
@@ -783,10 +1022,10 @@
         function setupEventListeners() {
             // Setup form
             document.getElementById('setupForm').addEventListener('submit', handleSetup);
-
+            
             // Event form
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
-
+            
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.admin-dropdown') && !e.target.closest('.ab-label') && !e.target.closest('.day-type-label')) {
@@ -814,14 +1053,14 @@
                     document.getElementById('apiUrl').value = API_BASE_URL;
                 }
             }
-
+            
             state.apiUrl = API_BASE_URL;
-
+            
             const savedDbUrl = localStorage.getItem('dbUrl');
             if (savedDbUrl) {
                 document.getElementById('dbUrl').value = savedDbUrl;
             }
-
+            
             // Auto-test connection if API URL is available
             if (API_BASE_URL) {
                 testConnection();
@@ -830,51 +1069,51 @@
 
         async function handleSetup(e) {
             e.preventDefault();
-
+            
             const dbUrl = document.getElementById('dbUrl').value.trim();
             const apiUrl = document.getElementById('apiUrl').value.trim();
             const loading = document.getElementById('setupLoading');
-
+            
             if (!dbUrl) {
                 showNotification('Please enter your Neon database URL', true);
                 return;
             }
-
+            
             if (!apiUrl) {
                 showNotification('Please enter the API URL', true);
                 return;
             }
-
+            
             loading.style.display = 'inline-block';
-
+            
             try {
                 console.log('Setting up database connection...');
-
+                
                 // Save configuration
                 localStorage.setItem('dbUrl', dbUrl);
                 localStorage.setItem('apiUrl', apiUrl);
                 API_BASE_URL = apiUrl;
                 state.apiUrl = apiUrl;
-
+                
                 // Test API connection first
                 await testConnection();
-
+                
                 if (!state.connected) {
                     throw new Error('Cannot connect to API server');
                 }
-
+                
                 // Initialize database
                 console.log('Initializing database...');
                 await initializeDatabase();
-
+                
                 // Load initial data
                 await loadData();
-
+                
                 showNotification('Database connected and initialized successfully!');
                 setTimeout(() => {
                     showScreen('calendar');
                 }, 1000);
-
+                
             } catch (error) {
                 console.error('Setup error:', error);
                 showNotification('Setup failed: ' + error.message, true);
@@ -888,10 +1127,10 @@
                 console.log('🧪 Testing connection...');
                 console.log('📍 API URL:', API_BASE_URL);
                 console.log('🌐 Current location:', window.location.href);
-
+                
                 // First test if we can reach the API at all
                 console.log('⏳ Fetching from:', `${API_BASE_URL}/health`);
-
+                
                 const response = await fetch(`${API_BASE_URL}/health`, {
                     method: 'GET',
                     headers: {
@@ -899,17 +1138,17 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
+                
                 console.log('📡 Response status:', response.status);
                 console.log('📡 Response ok:', response.ok);
-
+                
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-
+                
                 const data = await response.json();
                 console.log('📊 Response data:', data);
-
+                
                 if (data.status === 'ok') {
                     state.connected = true;
                     updateConnectionStatus(true, 'Connected to API server');
@@ -922,12 +1161,12 @@
             } catch (error) {
                 console.error('❌ Connection test failed:', error);
                 console.error('🔗 Attempted URL:', `${API_BASE_URL}/health`);
-
+                
                 state.connected = false;
                 updateConnectionStatus(false, `Connection failed: ${error.message}`);
                 document.getElementById('syncStatus').textContent = 'Disconnected';
                 document.getElementById('syncIndicator').classList.add('error');
-
+                
                 // Show specific error messages
                 if (error.message.includes('Failed to fetch')) {
                     showNotification('Cannot reach API server. Is your backend running?', true);
@@ -960,26 +1199,26 @@
                     },
                     body: JSON.stringify({ dbUrl })
                 });
-
+                
                 if (!response.ok) {
                     const error = await response.json();
                     throw new Error(error.error || 'Failed to initialize database');
                 }
-
+                
                 const data = await response.json();
                 showNotification('Database initialized successfully');
-
+                
                 document.getElementById('dbStatus').innerHTML = `
                     <div style="color: #059669;">✅ Tables created successfully</div>
                     <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
                         ${data.tables.join(', ')} initialized
                     </div>
                 `;
-
+                
             } catch (error) {
                 console.error('Database initialization error:', error);
                 showNotification('Database initialization failed: ' + error.message, true);
-
+                
                 document.getElementById('dbStatus').innerHTML = `
                     <div style="color: #dc2626;">❌ Initialization failed</div>
                     <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
@@ -996,12 +1235,12 @@
                 console.error('Calendar grid not found');
                 return;
             }
-
+            
             console.log('Rendering calendar for:', state.currentDate);
-
+            
             const year = state.currentDate.getFullYear();
             const month = state.currentDate.getMonth();
-
+            
             // Update month display
             const monthDisplay = document.getElementById('currentMonth');
             if (monthDisplay) {
@@ -1030,21 +1269,21 @@
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-
+                
                 const dayElement = createDayElement(currentDate, month);
                 grid.appendChild(dayElement);
             }
-
+            
             console.log('Calendar rendered successfully');
         }
 
         function createDayElement(date, currentMonth) {
             const dayElement = document.createElement('div');
             dayElement.className = 'calendar-day';
-
+            
             const isCurrentMonth = date.getMonth() === currentMonth;
             const isToday = date.toDateString() === new Date().toDateString();
-
+            
             if (!isCurrentMonth) {
                 dayElement.classList.add('other-month');
             }
@@ -1053,42 +1292,51 @@
             }
 
             const dateKey = formatDate(date);
-
+            
             // Day number and labels container
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
-
+            
             const numberSpan = document.createElement('span');
             numberSpan.textContent = date.getDate();
             dayNumber.appendChild(numberSpan);
-
+            
             const labelsContainer = document.createElement('div');
             labelsContainer.className = 'day-labels';
-
+            
             // A/B Label
             const abLabel = createABLabel(dateKey);
             if (abLabel) labelsContainer.appendChild(abLabel);
-
+            
             // Day Type Label
             const dayTypeLabel = createDayTypeLabel(dateKey);
             if (dayTypeLabel) labelsContainer.appendChild(dayTypeLabel);
-
+            
             dayNumber.appendChild(labelsContainer);
             dayElement.appendChild(dayNumber);
 
             // Events list
             const eventsList = document.createElement('div');
             eventsList.className = 'events-list';
-
+            
             const dayEvents = state.events[dateKey] || [];
             dayEvents.forEach(event => {
                 const eventElement = document.createElement('div');
-                eventElement.className = 'event';
-                eventElement.textContent = event.title;
+                eventElement.className = `event ${getDepartmentClass(event.department)}`;
+                
+                // Create event text with time if available
+                let eventText = event.title;
+                if (event.time) {
+                    const timeFormatted = formatTime(event.time);
+                    eventText = `${timeFormatted} - ${event.title}`;
+                }
+                
+                eventElement.textContent = eventText;
                 eventElement.onclick = () => editEvent(event);
+                eventElement.title = `${event.department} - ${event.title}${event.description ? '\n' + event.description : ''}`;
                 eventsList.appendChild(eventElement);
             });
-
+            
             dayElement.appendChild(eventsList);
 
             // Quick add button
@@ -1104,6 +1352,22 @@
             return dayElement;
         }
 
+        function getDepartmentClass(department) {
+            if (!department) return '';
+            return department.toLowerCase().replace('/', '-').replace(' ', '-');
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
         function createABLabel(dateKey) {
             const schedule = state.daySchedules[dateKey];
             if (!schedule) return null;
@@ -1111,14 +1375,14 @@
             const label = document.createElement('span');
             label.className = 'ab-label';
             label.textContent = schedule;
-
+            
             if (state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
                     showABDropdown(e.target, dateKey);
                 };
             }
-
+            
             return label;
         }
 
@@ -1129,14 +1393,14 @@
             const label = document.createElement('span');
             label.className = `day-type-label day-type-${dayType.toLowerCase().replace(/\s+/g, '-')}`;
             label.textContent = dayType;
-
+            
             if (state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
                     showDayTypeDropdown(e.target, dateKey);
                 };
             }
-
+            
             return label;
         }
 
@@ -1144,7 +1408,7 @@
             const dropdown = createDropdown(['A', 'B', 'Clear'], async (value) => {
                 await updateABSchedule(dateKey, value === 'Clear' ? null : value);
             });
-
+            
             showDropdown(target, dropdown);
         }
 
@@ -1153,14 +1417,14 @@
             const dropdown = createDropdown(options, async (value) => {
                 await updateDayType(dateKey, value === 'Clear' ? null : value);
             });
-
+            
             showDropdown(target, dropdown);
         }
 
         function createDropdown(options, onSelect) {
             const dropdown = document.createElement('div');
             dropdown.className = 'admin-dropdown';
-
+            
             options.forEach(option => {
                 const item = document.createElement('div');
                 item.className = 'dropdown-item';
@@ -1171,14 +1435,14 @@
                 };
                 dropdown.appendChild(item);
             });
-
+            
             return dropdown;
         }
 
         function showDropdown(target, dropdown) {
             // Remove existing dropdowns
             document.querySelectorAll('.admin-dropdown').forEach(d => d.remove());
-
+            
             // Position dropdown
             target.style.position = 'relative';
             target.appendChild(dropdown);
@@ -1194,21 +1458,21 @@
                     },
                     body: JSON.stringify({ date: dateKey, schedule: value })
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to update A/B schedule');
                 }
-
+                
                 if (value) {
                     state.daySchedules[dateKey] = value;
                 } else {
                     delete state.daySchedules[dateKey];
                 }
-
+                
                 renderCalendar();
                 showNotification(`A/B schedule updated for ${dateKey}`);
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Error updating A/B schedule:', error);
                 showNotification('Failed to update A/B schedule', true);
@@ -1224,21 +1488,21 @@
                     },
                     body: JSON.stringify({ date: dateKey, type: value })
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to update day type');
                 }
-
+                
                 if (value) {
                     state.dayTypes[dateKey] = value;
                 } else {
                     delete state.dayTypes[dateKey];
                 }
-
+                
                 renderCalendar();
                 showNotification(`Day type updated for ${dateKey}`);
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Error updating day type:', error);
                 showNotification('Failed to update day type', true);
@@ -1250,7 +1514,7 @@
                 console.log('Not connected, skipping data load');
                 return;
             }
-
+            
             try {
                 console.log('Loading data from API...');
                 // Load day schedules and day types (synced across schools)
@@ -1259,11 +1523,11 @@
                     loadDayTypes(),
                     loadSchoolEvents()
                 ]);
-
+                
                 console.log('Data loaded successfully');
                 renderCalendar();
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Error loading data:', error);
                 showNotification('Error loading data: ' + error.message, true);
@@ -1326,11 +1590,11 @@
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
             state.selectedSchool = select.value;
-
+            
             const school = SCHOOLS[select.value];
             const title = document.getElementById('calendarTitle');
             title.textContent = `${school.emoji} ${school.name} Calendar`;
-
+            
             loadSchoolEvents().then(() => renderCalendar());
         }
 
@@ -1339,7 +1603,7 @@
             const button = document.getElementById('adminToggle');
             button.textContent = `Admin Mode: ${state.adminMode ? 'ON' : 'OFF'}`;
             button.classList.toggle('active', state.adminMode);
-
+            
             renderCalendar();
             showNotification(`Admin mode ${state.adminMode ? 'enabled' : 'disabled'}`);
         }
@@ -1355,12 +1619,12 @@
         function closeModal() {
             const modal = document.getElementById('eventModal');
             modal.classList.remove('show');
-
+            
             // Reset form and modal state
             const form = document.getElementById('eventForm');
             form.reset();
             form.removeAttribute('data-event-id');
-
+            
             // Reset modal title
             document.querySelector('.modal-title').textContent = 'Add Event';
         }
@@ -1369,27 +1633,31 @@
             // Open modal in edit mode
             document.getElementById('eventTitle').value = event.title;
             document.getElementById('eventDate').value = event.date;
+            document.getElementById('eventTime').value = event.time || '';
+            document.getElementById('eventDepartment').value = event.department || '';
             document.getElementById('eventDescription').value = event.description || '';
-
+            
             // Store event ID for updating
             document.getElementById('eventForm').dataset.eventId = event.id;
             document.querySelector('.modal-title').textContent = 'Edit Event';
-
+            
             const modal = document.getElementById('eventModal');
             modal.classList.add('show');
         }
 
         async function handleEventSubmit(e) {
             e.preventDefault();
-
+            
             const title = document.getElementById('eventTitle').value;
             const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const department = document.getElementById('eventDepartment').value;
             const description = document.getElementById('eventDescription').value;
             const eventId = document.getElementById('eventForm').dataset.eventId;
-
+            
             try {
                 let response;
-
+                
                 if (eventId) {
                     // Update existing event
                     response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
@@ -1399,6 +1667,8 @@
                         },
                         body: JSON.stringify({
                             title,
+                            time,
+                            department,
                             description
                         })
                     });
@@ -1412,18 +1682,20 @@
                         body: JSON.stringify({
                             title,
                             date,
+                            time,
+                            department,
                             description,
                             school: state.selectedSchool
                         })
                     });
                 }
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to save event');
                 }
-
+                
                 const event = await response.json();
-
+                
                 // Update local state
                 if (eventId) {
                     // Update existing event in state
@@ -1439,37 +1711,95 @@
                     }
                     state.events[date].push(event);
                 }
-
+                
                 renderCalendar();
                 closeModal();
                 showNotification(eventId ? 'Event updated successfully!' : 'Event saved successfully!');
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Error saving event:', error);
                 showNotification('Failed to save event', true);
             }
         }
 
+        // Navigation Functions
+        function goToSchool(schoolCode) {
+            // Set the selected school
+            state.selectedSchool = schoolCode;
+            document.getElementById('schoolSelect').value = schoolCode;
+            
+            // Update calendar title
+            const school = SCHOOLS[schoolCode];
+            const title = document.getElementById('calendarTitle');
+            title.textContent = `${school.emoji} ${school.name} Calendar`;
+            
+            // Load school events and switch to calendar
+            loadSchoolEvents().then(() => {
+                renderCalendar();
+                showScreen('calendar');
+            });
+        }
+
+        function updateHomeStats() {
+            if (!state.connected) return;
+            
+            // Update today's schedule for both schools
+            const today = formatDate(new Date());
+            const todaySchedule = state.daySchedules[today] || '-';
+            
+            document.getElementById('wlhs-today').textContent = todaySchedule;
+            document.getElementById('wvhs-today').textContent = todaySchedule;
+            
+            // Count events for current month for each school
+            updateMonthlyEventCounts();
+        }
+
+        async function updateMonthlyEventCounts() {
+            const currentMonth = state.currentDate.getMonth();
+            const currentYear = state.currentDate.getFullYear();
+            
+            for (const schoolCode of ['wlhs', 'wvhs']) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/events?school=${schoolCode}`);
+                    if (response.ok) {
+                        const events = await response.json();
+                        
+                        // Count events in current month
+                        const monthlyEvents = events.filter(event => {
+                            const eventDate = new Date(event.date);
+                            return eventDate.getMonth() === currentMonth && 
+                                   eventDate.getFullYear() === currentYear;
+                        });
+                        
+                        document.getElementById(`${schoolCode}-events`).textContent = monthlyEvents.length;
+                    }
+                } catch (error) {
+                    console.error(`Error loading ${schoolCode} events:`, error);
+                    document.getElementById(`${schoolCode}-events`).textContent = '-';
+                }
+            }
+        }
+
         function showScreen(screenId) {
             console.log('Switching to screen:', screenId);
-
+            
             // Hide all screens
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
-
+            
             // Remove active from all tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-
+            
             // Show selected screen
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) {
                 targetScreen.classList.add('active');
             }
-
+            
             // Find and activate the corresponding tab
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => {
@@ -1477,15 +1807,18 @@
                     tab.classList.add('active');
                 }
             });
-
-            // If switching to calendar, ensure it's rendered
+            
+            // Screen-specific actions
             if (screenId === 'calendar') {
                 setTimeout(() => renderCalendar(), 100);
+            } else if (screenId === 'home') {
+                updateHomeStats();
             }
         }
-
+        
         function getTabTextForScreen(screenId) {
             const screenMap = {
+                'home': 'Home',
                 'setup': 'Setup',
                 'calendar': 'Calendar', 
                 'admin': 'Admin'
@@ -1497,7 +1830,7 @@
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = `notification ${isError ? 'error' : ''} show`;
-
+            
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
@@ -1516,24 +1849,24 @@
             if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
                 return;
             }
-
+            
             try {
                 const response = await fetch(`${API_BASE_URL}/clear-all`, {
                     method: 'DELETE'
                 });
-
+                
                 if (!response.ok) {
                     throw new Error('Failed to clear data');
                 }
-
+                
                 // Reset local state
                 state.events = {};
                 state.daySchedules = {};
                 state.dayTypes = {};
-
+                
                 renderCalendar();
                 showNotification('All data cleared successfully');
-
+                
             } catch (error) {
                 console.error('Error clearing data:', error);
                 showNotification('Failed to clear data', true);
@@ -1549,7 +1882,7 @@
             console.log('Origin:', window.location.origin);
             console.log('Protocol:', window.location.protocol);
             console.log('Detected API URL:', API_BASE_URL);
-
+            
             // Test different endpoints
             const endpoints = [
                 '/',
@@ -1557,15 +1890,15 @@
                 '/api/status', 
                 '/api/health'
             ];
-
+            
             for (const endpoint of endpoints) {
                 const url = window.location.origin + endpoint;
                 console.log(`\n🧪 Testing: ${url}`);
-
+                
                 try {
                     const response = await fetch(url);
                     console.log(`✅ Status: ${response.status} ${response.statusText}`);
-
+                    
                     if (response.ok) {
                         const text = await response.text();
                         console.log(`📄 Response preview: ${text.substring(0, 200)}...`);
@@ -1574,10 +1907,11 @@
                     console.log(`❌ Error: ${error.message}`);
                 }
             }
-
+            
             console.log('\n🔧 Debug complete. Check console output above.');
             alert('Debug complete! Check the browser console (F12) for detailed results.');
         }
+
         // Auto-refresh connection status
         setInterval(() => {
             if (state.connected) {
