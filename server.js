@@ -106,6 +106,8 @@ app.post('/api/init', async (req, res) => {
                 school VARCHAR(10) NOT NULL,
                 date DATE NOT NULL,
                 title VARCHAR(255) NOT NULL,
+                time TIME,
+                department VARCHAR(50),
                 description TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -114,6 +116,13 @@ app.post('/api/init', async (req, res) => {
 
         await client.query(`
             CREATE INDEX IF NOT EXISTS idx_events_school_date ON events(school, date)
+        `);
+
+        // Update existing events table to add missing columns if they don't exist
+        await client.query(`
+            ALTER TABLE events 
+            ADD COLUMN IF NOT EXISTS time TIME,
+            ADD COLUMN IF NOT EXISTS department VARCHAR(50)
         `);
 
         console.log('Tables created successfully!');
@@ -253,14 +262,14 @@ app.get('/api/events', async (req, res) => {
 
 app.post('/api/events', async (req, res) => {
     try {
-        const { school, date, title, description } = req.body;
+        const { school, date, title, time, department, description } = req.body;
         const client = await pool.connect();
 
         const result = await client.query(`
-            INSERT INTO events (school, date, title, description)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO events (school, date, title, time, department, description)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
-        `, [school, date, title, description || '']);
+        `, [school, date, title, time || null, department || null, description || '']);
 
         client.release();
         res.json(result.rows[0]);
@@ -273,15 +282,15 @@ app.post('/api/events', async (req, res) => {
 app.put('/api/events/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description } = req.body;
+        const { title, time, department, description } = req.body;
         const client = await pool.connect();
 
         const result = await client.query(`
             UPDATE events 
-            SET title = $1, description = $2, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $3
+            SET title = $1, time = $2, department = $3, description = $4, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $5
             RETURNING *
-        `, [title, description || '', id]);
+        `, [title, time || null, department || null, description || '', id]);
 
         client.release();
 

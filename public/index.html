@@ -460,10 +460,10 @@
         }
 
         .event {
-            background: #c41e3a;
+            background: #64748b; /* Default gray color */
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 500;
             overflow: hidden;
@@ -471,11 +471,50 @@
             white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .event:hover {
             transform: scale(1.02);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-content {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-actions {
+            display: none;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        .event:hover .event-actions {
+            display: flex;
+        }
+
+        .event-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
 
         .event.asb { background: #10b981; }
@@ -484,6 +523,52 @@
         .event.testing { background: #3b82f6; }
         .event.athletics { background: #ef4444; }
         .event.art-theater { background: #f59e0b; }
+
+        /* Enhanced department colors with !important to ensure they override */
+        .event.asb { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+            border-left: 4px solid #059669 !important;
+        } /* Green */
+        .event.life { 
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important; 
+            border-left: 4px solid #0891b2 !important;
+        } /* Cyan */
+        .event.counseling { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; 
+            border-left: 4px solid #7c3aed !important;
+        } /* Purple */
+        .event.testing { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; 
+            border-left: 4px solid #2563eb !important;
+        } /* Blue */
+        .event.athletics { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; 
+            border-left: 4px solid #dc2626 !important;
+        } /* Red */
+        .event.art-theater { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; 
+            border-left: 4px solid #d97706 !important;
+        } /* Orange */
+        .event.academic { 
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important; 
+            border-left: 4px solid #4f46e5 !important;
+        } /* Indigo */
+        .event.maintenance { 
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important; 
+            border-left: 4px solid #475569 !important;
+        } /* Slate */
+        .event.parent { 
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important; 
+            border-left: 4px solid #db2777 !important;
+        } /* Pink */
+        .event.community { 
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important; 
+            border-left: 4px solid #0d9488 !important;
+        } /* Teal */
+
+        /* Test styles to make sure CSS is working */
+        .event.test-red { background: red !important; }
+        .event.test-blue { background: blue !important; }
 
         .quick-add {
             position: absolute;
@@ -656,8 +741,156 @@
             transform: translateX(0);
         }
 
-        .notification.error {
+        /* Event Details Modal */
+        .event-details-modal .modal-content {
+            max-width: 600px;
+        }
+
+        .event-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .department-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-asb { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .badge-life { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .badge-counseling { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .badge-testing { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .badge-athletics { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .badge-art-theater { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .badge-academic { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+        .badge-maintenance { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
+        .badge-parent { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+        .badge-community { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+
+        /* Enhanced Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Event Management Panel */
+        .event-management {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .events-table th,
+        .events-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .events-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .events-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .table-btn.edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .table-btn.delete {
             background: #ef4444;
+            color: white;
+        }
+
+        .table-btn:hover {
+            transform: scale(1.05);
         }
 
         .connection-status {
@@ -866,7 +1099,7 @@
         <div class="screen" id="admin">
             <div style="padding: 30px;">
                 <h2>Admin Panel</h2>
-                <p>Database administration and bulk operations</p>
+                <p>Database administration and event management</p>
 
                 <div style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="initializeDatabase()">
@@ -875,11 +1108,76 @@
                     <button class="btn btn-secondary" onclick="clearAllData()" style="margin-left: 10px;">
                         Clear All Data
                     </button>
+                    <button class="btn btn-secondary" onclick="showEventManagement()" style="margin-left: 10px;">
+                        Manage Events
+                    </button>
                 </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
                     <h3>Database Status</h3>
                     <div id="dbStatus">Checking...</div>
+                </div>
+
+                <!-- Event Management Panel -->
+                <div class="event-management" id="eventManagement" style="display: none;">
+                    <h3>Event Management</h3>
+
+                    <div class="event-filters">
+                        <div class="filter-group">
+                            <label class="filter-label">School</label>
+                            <select id="filterSchool" class="form-input" onchange="filterEvents()">
+                                <option value="">All Schools</option>
+                                <option value="wlhs">West Linn HS</option>
+                                <option value="wvhs">Wilsonville HS</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Department</label>
+                            <select id="filterDepartment" class="form-input" onchange="filterEvents()">
+                                <option value="">All Departments</option>
+                                <option value="ASB">ASB</option>
+                                <option value="Life">Life</option>
+                                <option value="Counseling">Counseling</option>
+                                <option value="Testing">Testing</option>
+                                <option value="Athletics">Athletics</option>
+                                <option value="Art/Theater">Art/Theater</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Parent">Parent Events</option>
+                                <option value="Community">Community</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date Range</label>
+                            <input type="date" id="filterDateStart" class="form-input" onchange="filterEvents()">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">To</label>
+                            <input type="date" id="filterDateEnd" class="form-input" onchange="filterEvents()">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Search</label>
+                            <input type="text" id="filterSearch" class="form-input" placeholder="Search events..." onkeyup="filterEvents()">
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Time</th>
+                                    <th>School</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <!-- Events will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -893,29 +1191,37 @@
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <form id="eventForm">
-                <div class="form-group">
-                    <label class="form-label">Event Title</label>
-                    <input type="text" class="form-input" id="eventTitle" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Event Title</label>
+                        <input type="text" class="form-input" id="eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select class="form-input" id="eventDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="ASB">ASB</option>
+                            <option value="Life">Life</option>
+                            <option value="Counseling">Counseling</option>
+                            <option value="Testing">Testing</option>
+                            <option value="Athletics">Athletics</option>
+                            <option value="Art/Theater">Art/Theater</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Parent">Parent Events</option>
+                            <option value="Community">Community</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Date</label>
-                    <input type="date" class="form-input" id="eventDate" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Time</label>
-                    <input type="time" class="form-input" id="eventTime">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Department</label>
-                    <select class="form-input" id="eventDepartment" required>
-                        <option value="">Select Department</option>
-                        <option value="ASB">ASB</option>
-                        <option value="Life">Life</option>
-                        <option value="Counseling">Counseling</option>
-                        <option value="Testing">Testing</option>
-                        <option value="Athletics">Athletics</option>
-                        <option value="Art/Theater">Art/Theater</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-input" id="eventTime">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description</label>
@@ -926,6 +1232,24 @@
                     <button type="submit" class="btn btn-primary">Save Event</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal event-details-modal" id="eventDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Event Details</h3>
+                <button class="close-btn" onclick="closeEventDetailsModal()">&times;</button>
+            </div>
+            <div id="eventDetailsContent">
+                <!-- Event details will be populated here -->
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeEventDetailsModal()">Close</button>
+                <button class="btn btn-primary" id="editEventBtn" onclick="editEventFromDetails()">Edit Event</button>
+                <button class="btn btn-secondary" style="background: #ef4444;" id="deleteEventBtn" onclick="deleteEventFromDetails()">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -944,7 +1268,9 @@
                 events: {},
                 daySchedules: {},
                 dayTypes: {},
-                connected: false
+                connected: false,
+                allEvents: [], // Store all events for admin management
+                currentEventDetails: null // Store current event for details modal
             },
 
             config: {
@@ -1264,24 +1590,72 @@
             eventsList.className = 'events-list';
 
             const dayEvents = app.state.events[dateKey] || [];
-            dayEvents.forEach(event => {
-                const eventElement = document.createElement('div');
-                eventElement.className = `event ${getDepartmentClass(event.department)}`;
 
-                let eventText = event.title;
-                if (event.time) {
-                    eventText = formatTime(event.time) + ' - ' + event.title;
-                }
+            if (dayEvents && dayEvents.length > 0) {
+                dayEvents.forEach(event => {
+                    if (!event) return; // Skip null/undefined events
 
-                eventElement.textContent = eventText;
-                eventElement.onclick = () => editEvent(event);
-                eventElement.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    deleteEvent(event);
-                };
-                eventElement.title = `${event.department} - ${event.title}\nRight-click to delete`;
-                eventsList.appendChild(eventElement);
-            });
+                    const eventElement = document.createElement('div');
+                    const departmentClass = getDepartmentClass(event.department);
+                    eventElement.className = `event ${departmentClass}`;
+
+                    // Temporary debug to see what classes are applied
+                    console.log(`Event: "${event.title}", Department: "${event.department}", CSS Class: "${departmentClass}", Final classes: "${eventElement.className}"`);
+
+                    const eventContent = document.createElement('div');
+                    eventContent.className = 'event-content';
+
+                    let eventText = event.title || 'Untitled Event';
+                    if (event.time) {
+                        eventText = formatTime(event.time) + ' - ' + eventText;
+                    }
+                    eventContent.textContent = eventText;
+
+                    const eventActions = document.createElement('div');
+                    eventActions.className = 'event-actions';
+
+                    const viewBtn = document.createElement('button');
+                    viewBtn.className = 'event-btn';
+                    viewBtn.textContent = '👁';
+                    viewBtn.title = 'View Details';
+                    viewBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        showEventDetails(event);
+                    };
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'event-btn';
+                    editBtn.textContent = '✏';
+                    editBtn.title = 'Edit Event';
+                    editBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        editEvent(event);
+                    };
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'event-btn';
+                    deleteBtn.textContent = '🗑';
+                    deleteBtn.title = 'Delete Event';
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        deleteEvent(event);
+                    };
+
+                    eventActions.appendChild(viewBtn);
+                    eventActions.appendChild(editBtn);
+                    eventActions.appendChild(deleteBtn);
+
+                    eventElement.appendChild(eventContent);
+                    eventElement.appendChild(eventActions);
+
+                    // Click to view details
+                    eventElement.onclick = () => showEventDetails(event);
+
+                    eventElement.title = `${event.department || 'No Department'} - ${event.title || 'Untitled Event'}\nClick for details`;
+                    eventsList.appendChild(eventElement);
+                });
+            }
 
             dayElement.appendChild(eventsList);
 
@@ -1338,7 +1712,207 @@
 
         function getDepartmentClass(department) {
             if (!department) return '';
-            return department.toLowerCase().replace('/', '-').replace(/\s+/g, '-');
+
+            // Map department names to CSS classes
+            const departmentMap = {
+                'ASB': 'asb',
+                'Life': 'life', 
+                'Counseling': 'counseling',
+                'Testing': 'testing',
+                'Athletics': 'athletics',
+                'Art/Theater': 'art-theater',
+                'Academic': 'academic',
+                'Maintenance': 'maintenance',
+                'Parent': 'parent',
+                'Community': 'community'
+            };
+
+            return departmentMap[department] || department.toLowerCase().replace('/', '-').replace(/\s+/g, '-');
+        }
+
+        function getDepartmentBadgeClass(department) {
+            if (!department) return '';
+            return 'badge-' + department.toLowerCase().replace('/', '-').replace(/\s+/g, '-');
+        }
+
+        function showEventDetails(event) {
+            app.state.currentEventDetails = event;
+            const modal = document.getElementById('eventDetailsModal');
+            const content = document.getElementById('eventDetailsContent');
+
+            if (!content || !modal) return;
+
+            const school = app.config.schools[event.school];
+            const schoolName = school ? school.name : event.school;
+
+            content.innerHTML = `
+                <div class="event-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Title</div>
+                        <div class="meta-value">${event.title}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Department</div>
+                        <div class="meta-value">
+                            <span class="department-badge ${getDepartmentBadgeClass(event.department)}">
+                                ${event.department}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Date</div>
+                        <div class="meta-value">${formatDisplayDate(event.date)}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Time</div>
+                        <div class="meta-value">${event.time ? formatTime(event.time) : 'All Day'}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">School</div>
+                        <div class="meta-value">${schoolName}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Created</div>
+                        <div class="meta-value">${formatDisplayDate(event.created_at)}</div>
+                    </div>
+                </div>
+                ${event.description ? `
+                    <div style="margin-top: 20px;">
+                        <div class="meta-label">Description</div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 8px; line-height: 1.5;">
+                            ${event.description}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+            modal.classList.add('show');
+        }
+
+        function closeEventDetailsModal() {
+            const modal = document.getElementById('eventDetailsModal');
+            if (modal) modal.classList.remove('show');
+            app.state.currentEventDetails = null;
+        }
+
+        function editEventFromDetails() {
+            if (app.state.currentEventDetails) {
+                closeEventDetailsModal();
+                editEvent(app.state.currentEventDetails);
+            }
+        }
+
+        function deleteEventFromDetails() {
+            if (app.state.currentEventDetails) {
+                const event = app.state.currentEventDetails;
+                closeEventDetailsModal();
+                console.log('Deleting event from details modal:', event.id);
+                deleteEvent(event);
+            } else {
+                console.error('No current event details found');
+                showNotification('No event selected for deletion', true);
+            }
+        }
+
+        function formatDisplayDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function showEventManagement() {
+            const panel = document.getElementById('eventManagement');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                if (panel.style.display === 'block') {
+                    loadAllEvents().then(() => {
+                        filterEvents();
+                    });
+                }
+            }
+        }
+
+        function filterEvents() {
+            const schoolFilter = document.getElementById('filterSchool').value;
+            const deptFilter = document.getElementById('filterDepartment').value;
+            const startDate = document.getElementById('filterDateStart').value;
+            const endDate = document.getElementById('filterDateEnd').value;
+            const searchText = document.getElementById('filterSearch').value.toLowerCase();
+
+            let filteredEvents = app.state.allEvents.filter(event => {
+                if (schoolFilter && event.school !== schoolFilter) return false;
+                if (deptFilter && event.department !== deptFilter) return false;
+                if (startDate && event.date < startDate) return false;
+                if (endDate && event.date > endDate) return false;
+                if (searchText && !event.title.toLowerCase().includes(searchText) && 
+                    !event.description?.toLowerCase().includes(searchText)) return false;
+                return true;
+            });
+
+            // Sort by date
+            filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            displayEventsTable(filteredEvents);
+        }
+
+        function displayEventsTable(events) {
+            const tbody = document.getElementById('eventsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            events.forEach(event => {
+                const row = document.createElement('tr');
+                const school = app.config.schools[event.school];
+                const schoolName = school ? `${school.emoji} ${school.shortName}` : event.school;
+
+                row.innerHTML = `
+                    <td>${formatDisplayDate(event.date)}</td>
+                    <td>${event.title}</td>
+                    <td>
+                        <span class="department-badge ${getDepartmentBadgeClass(event.department)}">
+                            ${event.department}
+                        </span>
+                    </td>
+                    <td>${event.time ? formatTime(event.time) : 'All Day'}</td>
+                    <td>${schoolName}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="table-btn edit" onclick="editEventFromTable('${event.id}')">Edit</button>
+                            <button class="table-btn delete" onclick="deleteEventFromTable('${event.id}')">Delete</button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function editEventFromTable(eventId) {
+            console.log('Editing event from table:', eventId);
+            const event = app.state.allEvents.find(e => e.id == eventId); // Use == for loose comparison
+            if (event) {
+                editEvent(event);
+            } else {
+                console.error('Event not found:', eventId);
+                showNotification('Event not found', true);
+            }
+        }
+
+        function deleteEventFromTable(eventId) {
+            console.log('Deleting event from table:', eventId);
+            const event = app.state.allEvents.find(e => e.id == eventId); // Use == for loose comparison
+            if (event) {
+                deleteEvent(event);
+            } else {
+                console.error('Event not found:', eventId);
+                showNotification('Event not found', true);
+            }
         }
 
         function formatTime(timeString) {
@@ -1449,7 +2023,9 @@
         }
 
         async function loadData() {
-            if (!app.state.connected) return;
+            if (!app.state.connected) {
+                return;
+            }
 
             try {
                 await Promise.all([
@@ -1462,6 +2038,7 @@
                 updateLastSync();
 
             } catch (error) {
+                console.error('Error loading data:', error);
                 showNotification('Error loading data: ' + error.message, true);
             }
         }
@@ -1498,19 +2075,69 @@
 
         async function loadSchoolEvents() {
             try {
+                console.log('Loading events for school:', app.state.selectedSchool);
                 const response = await fetch(app.config.apiUrl + '/events?school=' + app.state.selectedSchool);
+                console.log('Events response status:', response.status);
+
                 if (response.ok) {
                     const events = await response.json();
+                    console.log('Received events:', events);
+                    console.log('First event structure:', events[0]); // Debug event structure
+
                     app.state.events = {};
                     events.forEach(event => {
-                        if (!app.state.events[event.date]) {
-                            app.state.events[event.date] = [];
+                        // Normalize the date format to YYYY-MM-DD
+                        const eventDate = new Date(event.date);
+                        const normalizedDate = eventDate.toISOString().split('T')[0];
+
+                        console.log(`Event: ${event.title}, Original date: ${event.date}, Normalized: ${normalizedDate}`);
+                        console.log('Event object:', event); // Debug full event object
+
+                        if (!app.state.events[normalizedDate]) {
+                            app.state.events[normalizedDate] = [];
                         }
-                        app.state.events[event.date].push(event);
+
+                        // Update the event object with normalized date
+                        event.date = normalizedDate;
+
+                        // Ensure department field exists, provide fallback
+                        if (!event.department) {
+                            console.log('Missing department, setting default');
+                            event.department = 'Academic'; // Default department
+                        }
+
+                        app.state.events[normalizedDate].push(event);
                     });
+
+                    console.log('Processed events state:', app.state.events);
+                } else {
+                    console.error('Failed to load events:', response.status, response.statusText);
                 }
             } catch (error) {
                 console.error('Error loading events:', error);
+            }
+        }
+
+        async function loadAllEvents() {
+            try {
+                const wlhsResponse = await fetch(app.config.apiUrl + '/events?school=wlhs');
+                const wvhsResponse = await fetch(app.config.apiUrl + '/events?school=wvhs');
+
+                let allEvents = [];
+                if (wlhsResponse.ok) {
+                    const wlhsEvents = await wlhsResponse.json();
+                    allEvents = allEvents.concat(wlhsEvents);
+                }
+                if (wvhsResponse.ok) {
+                    const wvhsEvents = await wvhsResponse.json();
+                    allEvents = allEvents.concat(wvhsEvents);
+                }
+
+                app.state.allEvents = allEvents;
+                return allEvents;
+            } catch (error) {
+                console.error('Error loading all events:', error);
+                return [];
             }
         }
 
@@ -1600,28 +2227,42 @@
             if (!confirm(`Delete "${event.title}"?`)) return;
 
             try {
+                console.log('Deleting event:', event.id, 'from URL:', app.config.apiUrl + '/events/' + event.id);
+
                 const response = await fetch(app.config.apiUrl + '/events/' + event.id, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                if (!response.ok) throw new Error('Failed to delete event');
+                console.log('Delete response status:', response.status);
 
-                // Remove from local state
-                const dayEvents = app.state.events[event.date] || [];
-                const eventIndex = dayEvents.findIndex(e => e.id == event.id);
-                if (eventIndex !== -1) {
-                    dayEvents.splice(eventIndex, 1);
-                    if (dayEvents.length === 0) {
-                        delete app.state.events[event.date];
-                    }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                    throw new Error(`Failed to delete event: ${errorData.error || response.statusText}`);
                 }
 
-                renderCalendar();
                 showNotification('Event deleted successfully!');
+
+                // Reload events from server to ensure sync
+                await loadSchoolEvents();
+
+                // Also reload all events if admin panel is open
+                if (document.getElementById('eventManagement') && 
+                    document.getElementById('eventManagement').style.display === 'block') {
+                    await loadAllEvents();
+                    filterEvents();
+                }
+
+                // Force re-render the calendar
+                renderCalendar();
                 updateLastSync();
 
             } catch (error) {
-                showNotification('Failed to delete event', true);
+                console.error('Delete error:', error);
+                showNotification('Failed to delete event: ' + error.message, true);
             }
         }
 
@@ -1679,10 +2320,19 @@
                     app.state.events[date].push(event);
                 }
 
+                // Reload events from server and refresh calendar
+                await loadSchoolEvents();
                 renderCalendar();
                 closeModal();
                 showNotification(eventId ? 'Event updated successfully!' : 'Event saved successfully!');
                 updateLastSync();
+
+                // Refresh admin table if open
+                if (document.getElementById('eventManagement') && 
+                    document.getElementById('eventManagement').style.display === 'block') {
+                    await loadAllEvents();
+                    filterEvents();
+                }
 
             } catch (error) {
                 showNotification('Failed to save event', true);
