@@ -387,11 +387,13 @@
 
         .calendar-day {
             background: white;
-            padding: 12px;
+            padding: 8px;
             min-height: 120px;
             position: relative;
             transition: all 0.2s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
 
         .calendar-day:hover {
@@ -415,13 +417,25 @@
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+        }
+
+        .day-number-text {
+            flex: 1;
         }
 
         .day-labels {
             display: flex;
             gap: 4px;
-            align-items: center;
+            align-items: flex-start;
+        }
+
+        .day-type-container {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
         }
 
         .ab-label {
@@ -432,10 +446,12 @@
             font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
+            margin-right: 2px;
         }
 
         .ab-label:hover {
             background: #a01729;
+            transform: scale(1.05);
         }
 
         .day-type-label {
@@ -444,6 +460,13 @@
             font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
+            background: #6b7280;
+            color: white;
+            margin-right: 2px;
+        }
+
+        .day-type-label:hover {
+            transform: scale(1.05);
         }
 
         .day-type-holiday { background: #ef4444; color: white; }
@@ -451,6 +474,7 @@
         .day-type-grading { background: #f59e0b; color: white; }
         .day-type-furlough { background: #6b7280; color: white; }
         .day-type-finals { background: #8b5cf6; color: white; }
+        .day-type-access { background: #06b6d4; color: white; }
 
         .events-list {
             display: flex;
@@ -523,7 +547,7 @@
         .event.testing { background: #3b82f6; }
         .event.athletics { background: #ef4444; }
         .event.art-theater { background: #f59e0b; }
-
+        
         /* Enhanced department colors with !important to ensure they override */
         .event.asb { 
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
@@ -592,16 +616,16 @@
 
         /* Dropdown */
         .admin-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
+            position: fixed;
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
+            z-index: 9999;
             min-width: 120px;
             display: none;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .admin-dropdown.show {
@@ -614,6 +638,11 @@
             font-size: 0.8rem;
             transition: background 0.2s ease;
             color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
         }
 
         .dropdown-item:hover {
@@ -797,6 +826,12 @@
         .badge-maintenance { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
         .badge-parent { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
         .badge-community { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+        .badge-holiday { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .badge-staff-development { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .badge-grading { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .badge-furlough { background: linear-gradient(135deg, #6b7280 0%, #475569 100%); }
+        .badge-finals { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .badge-access { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
 
         /* Enhanced Form Styles */
         .form-row {
@@ -1016,7 +1051,7 @@
             <div class="setup-screen">
                 <h2>Database Setup</h2>
                 <p style="margin-bottom: 30px;">Configure your Neon database connection to get started</p>
-
+                
                 <div id="connectionStatus" class="connection-status disconnected">
                     <span>🔴</span>
                     <span>Not connected to database</span>
@@ -1028,13 +1063,13 @@
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="postgresql://username:password@host/database?sslmode=require" required>
                     </div>
-
+                    
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="http://localhost:3000/api" required>
                     </div>
-
+                    
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" class="btn btn-primary">
                             <span class="loading" id="setupLoading" style="display: none;"></span>
@@ -1100,7 +1135,7 @@
             <div style="padding: 30px;">
                 <h2>Admin Panel</h2>
                 <p>Database administration and event management</p>
-
+                
                 <div style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="initializeDatabase()">
                         Initialize Database Tables
@@ -1121,7 +1156,7 @@
                 <!-- Event Management Panel -->
                 <div class="event-management" id="eventManagement" style="display: none;">
                     <h3>Event Management</h3>
-
+                    
                     <div class="event-filters">
                         <div class="filter-group">
                             <label class="filter-label">School</label>
@@ -1272,7 +1307,7 @@
                 allEvents: [], // Store all events for admin management
                 currentEventDetails: null // Store current event for details modal
             },
-
+            
             config: {
                 apiUrl: '',
                 schools: {
@@ -1296,11 +1331,11 @@
         function setupEventListeners() {
             const setupForm = document.getElementById('setupForm');
             const eventForm = document.getElementById('eventForm');
-
+            
             if (setupForm) {
                 setupForm.addEventListener('submit', handleSetup);
             }
-
+            
             if (eventForm) {
                 eventForm.addEventListener('submit', handleEventSubmit);
             }
@@ -1325,7 +1360,7 @@
         function loadConfig() {
             // Auto-detect environment
             let detectedApiUrl;
-
+            
             if (window.location.hostname.includes('.repl.co') || 
                 window.location.hostname.includes('.replit.dev') ||
                 window.location.hostname.includes('replit')) {
@@ -1335,11 +1370,11 @@
                 detectedApiUrl = 'http://localhost:3000/api';
                 console.log('Detected local environment, API URL:', detectedApiUrl);
             }
-
+            
             // Use saved URL if available, otherwise use detected
             const savedApiUrl = localStorage.getItem('apiUrl');
             app.config.apiUrl = savedApiUrl || detectedApiUrl;
-
+            
             console.log('Final API URL:', app.config.apiUrl);
 
             const apiUrlInput = document.getElementById('apiUrl');
@@ -1359,35 +1394,35 @@
 
         async function handleSetup(e) {
             e.preventDefault();
-
+            
             const dbUrl = document.getElementById('dbUrl').value.trim();
             const apiUrl = document.getElementById('apiUrl').value.trim();
             const loading = document.getElementById('setupLoading');
-
+            
             if (!dbUrl || !apiUrl) {
                 showNotification('Please fill in all required fields', true);
                 return;
             }
-
+            
             if (loading) loading.style.display = 'inline-block';
-
+            
             try {
                 localStorage.setItem('dbUrl', dbUrl);
                 localStorage.setItem('apiUrl', apiUrl);
                 app.config.apiUrl = apiUrl;
-
+                
                 await testConnection();
-
+                
                 if (!app.state.connected) {
                     throw new Error('Cannot connect to API server');
                 }
-
+                
                 await initializeDatabase();
                 await loadData();
-
+                
                 showNotification('Database connected successfully!');
                 setTimeout(() => showScreen('calendar'), 1000);
-
+                
             } catch (error) {
                 showNotification('Setup failed: ' + error.message, true);
             } finally {
@@ -1398,24 +1433,24 @@
         async function testConnection() {
             try {
                 console.log('Testing connection to:', app.config.apiUrl);
-
+                
                 const response = await fetch(app.config.apiUrl + '/health', {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json'
                     }
                 });
-
+                
                 console.log('Response status:', response.status);
                 console.log('Response ok:', response.ok);
-
+                
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-
+                
                 const data = await response.json();
                 console.log('Response data:', data);
-
+                
                 if (data.status === 'ok') {
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected to API server');
@@ -1429,7 +1464,7 @@
                 app.state.connected = false;
                 updateConnectionStatus(false, 'Connection failed: ' + error.message);
                 updateSyncStatus('Disconnected', true);
-
+                
                 // Show specific error guidance
                 if (error.message.includes('Failed to fetch')) {
                     showNotification('Cannot reach API server. Make sure your backend is running!', true);
@@ -1455,7 +1490,7 @@
         function updateSyncStatus(message, isError) {
             const syncStatus = document.getElementById('syncStatus');
             const syncIndicator = document.getElementById('syncIndicator');
-
+            
             if (syncStatus) syncStatus.textContent = message;
             if (syncIndicator) {
                 if (isError) {
@@ -1474,15 +1509,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ dbUrl })
                 });
-
+                
                 if (!response.ok) {
                     const error = await response.json();
                     throw new Error(error.error || 'Failed to initialize database');
                 }
-
+                
                 const data = await response.json();
                 showNotification('Database initialized successfully');
-
+                
                 const dbStatus = document.getElementById('dbStatus');
                 if (dbStatus) {
                     dbStatus.innerHTML = `
@@ -1492,10 +1527,10 @@
                         </div>
                     `;
                 }
-
+                
             } catch (error) {
                 showNotification('Database initialization failed: ' + error.message, true);
-
+                
                 const dbStatus = document.getElementById('dbStatus');
                 if (dbStatus) {
                     dbStatus.innerHTML = `
@@ -1511,10 +1546,10 @@
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
-
+            
             const year = app.state.currentDate.getFullYear();
             const month = app.state.currentDate.getMonth();
-
+            
             // Update month display
             const monthDisplay = document.getElementById('currentMonth');
             if (monthDisplay) {
@@ -1545,7 +1580,7 @@
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-
+                
                 const dayElement = createDayElement(currentDate, month);
                 grid.appendChild(dayElement);
             }
@@ -1554,66 +1589,65 @@
         function createDayElement(date, currentMonth) {
             const dayElement = document.createElement('div');
             dayElement.className = 'calendar-day';
-
+            
             const isCurrentMonth = date.getMonth() === currentMonth;
             const isToday = date.toDateString() === new Date().toDateString();
-
+            
             if (!isCurrentMonth) dayElement.classList.add('other-month');
             if (isToday) dayElement.classList.add('today');
 
             const dateKey = formatDate(date);
-
-            // Day number and labels
+            
+            // Day number and A/B labels (top)
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
-
+            
             const numberSpan = document.createElement('span');
+            numberSpan.className = 'day-number-text';
             numberSpan.textContent = date.getDate();
             dayNumber.appendChild(numberSpan);
-
+            
             const labelsContainer = document.createElement('div');
             labelsContainer.className = 'day-labels';
-
-            // A/B Label
+            
+            // A/B Label - top right
             const abLabel = createABLabel(dateKey);
             if (abLabel) labelsContainer.appendChild(abLabel);
-
-            // Day Type Label
-            const dayTypeLabel = createDayTypeLabel(dateKey);
-            if (dayTypeLabel) labelsContainer.appendChild(dayTypeLabel);
-
+            
             dayNumber.appendChild(labelsContainer);
             dayElement.appendChild(dayNumber);
 
-            // Events list
+            // Events list (middle)
             const eventsList = document.createElement('div');
             eventsList.className = 'events-list';
-
+            eventsList.style.flex = '1';
+            eventsList.style.overflowY = 'auto';
+            
             const dayEvents = app.state.events[dateKey] || [];
-
+            
             if (dayEvents && dayEvents.length > 0) {
                 dayEvents.forEach(event => {
                     if (!event) return; // Skip null/undefined events
-
+                    
                     const eventElement = document.createElement('div');
                     const departmentClass = getDepartmentClass(event.department);
                     eventElement.className = `event ${departmentClass}`;
-
+                    
                     // Temporary debug to see what classes are applied
                     console.log(`Event: "${event.title}", Department: "${event.department}", CSS Class: "${departmentClass}", Final classes: "${eventElement.className}"`);
-
+                    
                     const eventContent = document.createElement('div');
                     eventContent.className = 'event-content';
-
+                    
                     let eventText = event.title || 'Untitled Event';
                     if (event.time) {
                         eventText = formatTime(event.time) + ' - ' + eventText;
                     }
                     eventContent.textContent = eventText;
-
+                    
                     const eventActions = document.createElement('div');
                     eventActions.className = 'event-actions';
-
+                    
                     const viewBtn = document.createElement('button');
                     viewBtn.className = 'event-btn';
                     viewBtn.textContent = '👁';
@@ -1622,7 +1656,7 @@
                         e.stopPropagation();
                         showEventDetails(event);
                     };
-
+                    
                     const editBtn = document.createElement('button');
                     editBtn.className = 'event-btn';
                     editBtn.textContent = '✏';
@@ -1631,7 +1665,7 @@
                         e.stopPropagation();
                         editEvent(event);
                     };
-
+                    
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'event-btn';
                     deleteBtn.textContent = '🗑';
@@ -1641,23 +1675,32 @@
                         e.preventDefault();
                         deleteEvent(event);
                     };
-
+                    
                     eventActions.appendChild(viewBtn);
                     eventActions.appendChild(editBtn);
                     eventActions.appendChild(deleteBtn);
-
+                    
                     eventElement.appendChild(eventContent);
                     eventElement.appendChild(eventActions);
-
+                    
                     // Click to view details
                     eventElement.onclick = () => showEventDetails(event);
-
+                    
                     eventElement.title = `${event.department || 'No Department'} - ${event.title || 'Untitled Event'}\nClick for details`;
                     eventsList.appendChild(eventElement);
                 });
             }
-
+            
             dayElement.appendChild(eventsList);
+
+            // Day Type Label - bottom center
+            const dayTypeContainer = document.createElement('div');
+            dayTypeContainer.className = 'day-type-container';
+            
+            const dayTypeLabel = createDayTypeLabel(dateKey);
+            if (dayTypeLabel) dayTypeContainer.appendChild(dayTypeLabel);
+            
+            dayElement.appendChild(dayTypeContainer);
 
             // Quick add button
             if (app.state.adminMode || isCurrentMonth) {
@@ -1676,43 +1719,57 @@
 
         function createABLabel(dateKey) {
             const schedule = app.state.daySchedules[dateKey];
-            if (!schedule) return null;
-
+            
+            // Always show if there's a schedule, or if admin mode is on
+            if (!schedule && !app.state.adminMode) return null;
+            
             const label = document.createElement('span');
             label.className = 'ab-label';
-            label.textContent = schedule;
-
+            label.textContent = schedule || '+AB';
+            label.title = app.state.adminMode ? 'Click to set A/B schedule' : `${schedule} Day`;
+            
             if (app.state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
+                    console.log('A/B label clicked for date:', dateKey);
                     showABDropdown(e.target, dateKey);
                 };
+                label.style.cursor = 'pointer';
+            } else {
+                label.style.cursor = 'default';
             }
-
+            
             return label;
         }
 
         function createDayTypeLabel(dateKey) {
             const dayType = app.state.dayTypes[dateKey];
-            if (!dayType) return null;
-
+            
+            // Always show if there's a day type, or if admin mode is on
+            if (!dayType && !app.state.adminMode) return null;
+            
             const label = document.createElement('span');
-            label.className = `day-type-label day-type-${dayType.toLowerCase().replace(/\s+/g, '-')}`;
-            label.textContent = dayType;
-
+            label.className = dayType ? `day-type-label day-type-${dayType.toLowerCase().replace(/\s+/g, '-')}` : 'day-type-label';
+            label.textContent = dayType || '+Type';
+            label.title = app.state.adminMode ? 'Click to set day type' : dayType || '';
+            
             if (app.state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
+                    console.log('Day type label clicked for date:', dateKey);
                     showDayTypeDropdown(e.target, dateKey);
                 };
+                label.style.cursor = 'pointer';
+            } else {
+                label.style.cursor = 'default';
             }
-
+            
             return label;
         }
 
         function getDepartmentClass(department) {
             if (!department) return '';
-
+            
             // Map department names to CSS classes
             const departmentMap = {
                 'ASB': 'asb',
@@ -1726,7 +1783,7 @@
                 'Parent': 'parent',
                 'Community': 'community'
             };
-
+            
             return departmentMap[department] || department.toLowerCase().replace('/', '-').replace(/\s+/g, '-');
         }
 
@@ -1739,12 +1796,12 @@
             app.state.currentEventDetails = event;
             const modal = document.getElementById('eventDetailsModal');
             const content = document.getElementById('eventDetailsContent');
-
+            
             if (!content || !modal) return;
-
+            
             const school = app.config.schools[event.school];
             const schoolName = school ? school.name : event.school;
-
+            
             content.innerHTML = `
                 <div class="event-meta">
                     <div class="meta-item">
@@ -1785,7 +1842,7 @@
                     </div>
                 ` : ''}
             `;
-
+            
             modal.classList.add('show');
         }
 
@@ -1843,7 +1900,7 @@
             const startDate = document.getElementById('filterDateStart').value;
             const endDate = document.getElementById('filterDateEnd').value;
             const searchText = document.getElementById('filterSearch').value.toLowerCase();
-
+            
             let filteredEvents = app.state.allEvents.filter(event => {
                 if (schoolFilter && event.school !== schoolFilter) return false;
                 if (deptFilter && event.department !== deptFilter) return false;
@@ -1853,24 +1910,24 @@
                     !event.description?.toLowerCase().includes(searchText)) return false;
                 return true;
             });
-
+            
             // Sort by date
             filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-
+            
             displayEventsTable(filteredEvents);
         }
 
         function displayEventsTable(events) {
             const tbody = document.getElementById('eventsTableBody');
             if (!tbody) return;
-
+            
             tbody.innerHTML = '';
-
+            
             events.forEach(event => {
                 const row = document.createElement('tr');
                 const school = app.config.schools[event.school];
                 const schoolName = school ? `${school.emoji} ${school.shortName}` : event.school;
-
+                
                 row.innerHTML = `
                     <td>${formatDisplayDate(event.date)}</td>
                     <td>${event.title}</td>
@@ -1888,7 +1945,7 @@
                         </div>
                     </td>
                 `;
-
+                
                 tbody.appendChild(row);
             });
         }
@@ -1917,12 +1974,12 @@
 
         function formatTime(timeString) {
             if (!timeString) return '';
-
+            
             const [hours, minutes] = timeString.split(':');
             const hour = parseInt(hours);
             const ampm = hour >= 12 ? 'PM' : 'AM';
             const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-
+            
             return `${displayHour}:${minutes} ${ampm}`;
         }
 
@@ -1938,7 +1995,7 @@
         }
 
         function showDayTypeDropdown(target, dateKey) {
-            const options = ['Holiday', 'Staff Development', 'Grading', 'Furlough', 'Finals', 'Clear'];
+            const options = ['Holiday', 'Staff Development', 'Grading', 'Furlough', 'Finals', 'ACCESS', 'Clear'];
             const dropdown = createDropdown(options, (value) => {
                 updateDayType(dateKey, value === 'Clear' ? null : value);
             });
@@ -1948,7 +2005,7 @@
         function createDropdown(options, onSelect) {
             const dropdown = document.createElement('div');
             dropdown.className = 'admin-dropdown';
-
+            
             options.forEach(option => {
                 const item = document.createElement('div');
                 item.className = 'dropdown-item';
@@ -1959,17 +2016,46 @@
                 };
                 dropdown.appendChild(item);
             });
-
+            
             return dropdown;
         }
 
         function showDropdown(target, dropdown) {
             // Remove existing dropdowns
             document.querySelectorAll('.admin-dropdown').forEach(d => d.remove());
-
-            target.style.position = 'relative';
-            target.appendChild(dropdown);
+            
+            // Get target position relative to viewport
+            const rect = target.getBoundingClientRect();
+            
+            // Append to body for proper positioning
+            document.body.appendChild(dropdown);
+            
+            // Position the dropdown
+            dropdown.style.position = 'fixed';
+            dropdown.style.left = rect.left + 'px';
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            
+            // Ensure dropdown stays within viewport
+            const dropdownRect = dropdown.getBoundingClientRect();
+            if (dropdownRect.right > window.innerWidth) {
+                dropdown.style.left = (window.innerWidth - dropdownRect.width - 10) + 'px';
+            }
+            if (dropdownRect.bottom > window.innerHeight) {
+                dropdown.style.top = (rect.top - dropdownRect.height - 5) + 'px';
+            }
+            
             dropdown.classList.add('show');
+            
+            // Close dropdown when clicking outside
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!dropdown.contains(e.target)) {
+                        dropdown.remove();
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 10);
         }
 
         async function updateABSchedule(dateKey, value) {
@@ -1979,19 +2065,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ date: dateKey, schedule: value })
                 });
-
+                
                 if (!response.ok) throw new Error('Failed to update A/B schedule');
-
+                
                 if (value) {
                     app.state.daySchedules[dateKey] = value;
                 } else {
                     delete app.state.daySchedules[dateKey];
                 }
-
+                
                 renderCalendar();
                 showNotification(`A/B schedule updated for ${dateKey}`);
                 updateLastSync();
-
+                
             } catch (error) {
                 showNotification('Failed to update A/B schedule', true);
             }
@@ -2004,19 +2090,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ date: dateKey, type: value })
                 });
-
+                
                 if (!response.ok) throw new Error('Failed to update day type');
-
+                
                 if (value) {
                     app.state.dayTypes[dateKey] = value;
                 } else {
                     delete app.state.dayTypes[dateKey];
                 }
-
+                
                 renderCalendar();
                 showNotification(`Day type updated for ${dateKey}`);
                 updateLastSync();
-
+                
             } catch (error) {
                 showNotification('Failed to update day type', true);
             }
@@ -2026,17 +2112,20 @@
             if (!app.state.connected) {
                 return;
             }
-
+            
             try {
+                // Load A/B schedules and day types first (shared across schools)
                 await Promise.all([
                     loadDaySchedules(),
-                    loadDayTypes(),
-                    loadSchoolEvents()
+                    loadDayTypes()
                 ]);
-
+                
+                // Then load school-specific events
+                await loadSchoolEvents();
+                
                 renderCalendar();
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Error loading data:', error);
                 showNotification('Error loading data: ' + error.message, true);
@@ -2078,37 +2167,37 @@
                 console.log('Loading events for school:', app.state.selectedSchool);
                 const response = await fetch(app.config.apiUrl + '/events?school=' + app.state.selectedSchool);
                 console.log('Events response status:', response.status);
-
+                
                 if (response.ok) {
                     const events = await response.json();
                     console.log('Received events:', events);
                     console.log('First event structure:', events[0]); // Debug event structure
-
+                    
                     app.state.events = {};
                     events.forEach(event => {
                         // Normalize the date format to YYYY-MM-DD
                         const eventDate = new Date(event.date);
                         const normalizedDate = eventDate.toISOString().split('T')[0];
-
+                        
                         console.log(`Event: ${event.title}, Original date: ${event.date}, Normalized: ${normalizedDate}`);
                         console.log('Event object:', event); // Debug full event object
-
+                        
                         if (!app.state.events[normalizedDate]) {
                             app.state.events[normalizedDate] = [];
                         }
-
+                        
                         // Update the event object with normalized date
                         event.date = normalizedDate;
-
+                        
                         // Ensure department field exists, provide fallback
                         if (!event.department) {
                             console.log('Missing department, setting default');
                             event.department = 'Academic'; // Default department
                         }
-
+                        
                         app.state.events[normalizedDate].push(event);
                     });
-
+                    
                     console.log('Processed events state:', app.state.events);
                 } else {
                     console.error('Failed to load events:', response.status, response.statusText);
@@ -2122,7 +2211,7 @@
             try {
                 const wlhsResponse = await fetch(app.config.apiUrl + '/events?school=wlhs');
                 const wvhsResponse = await fetch(app.config.apiUrl + '/events?school=wvhs');
-
+                
                 let allEvents = [];
                 if (wlhsResponse.ok) {
                     const wlhsEvents = await wlhsResponse.json();
@@ -2132,7 +2221,7 @@
                     const wvhsEvents = await wvhsResponse.json();
                     allEvents = allEvents.concat(wvhsEvents);
                 }
-
+                
                 app.state.allEvents = allEvents;
                 return allEvents;
             } catch (error) {
@@ -2149,15 +2238,16 @@
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
             if (!select) return;
-
+            
             app.state.selectedSchool = select.value;
-
+            
             const school = app.config.schools[select.value];
             const title = document.getElementById('calendarTitle');
             if (title && school) {
                 title.textContent = `${school.emoji} ${school.name} Calendar`;
             }
-
+            
+            // Load events for the new school, but keep A/B schedules and day types (shared across schools)
             loadSchoolEvents().then(() => renderCalendar());
         }
 
@@ -2172,7 +2262,7 @@
                     button.classList.remove('active');
                 }
             }
-
+            
             renderCalendar();
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
         }
@@ -2182,7 +2272,7 @@
             const eventDate = document.getElementById('eventDate');
             const modalTitle = document.querySelector('.modal-title');
             const eventForm = document.getElementById('eventForm');
-
+            
             if (eventDate) eventDate.value = dateKey;
             if (modalTitle) modalTitle.textContent = 'Add Event';
             if (eventForm) eventForm.removeAttribute('data-event-id');
@@ -2193,7 +2283,7 @@
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
             const modalTitle = document.querySelector('.modal-title');
-
+            
             if (modal) modal.classList.remove('show');
             if (form) {
                 form.reset();
@@ -2211,13 +2301,13 @@
             const eventForm = document.getElementById('eventForm');
             const modalTitle = document.querySelector('.modal-title');
             const modal = document.getElementById('eventModal');
-
+            
             if (eventTitle) eventTitle.value = event.title || '';
             if (eventDate) eventDate.value = event.date || '';
             if (eventTime) eventTime.value = event.time || '';
             if (eventDepartment) eventDepartment.value = event.department || '';
             if (eventDescription) eventDescription.value = event.description || '';
-
+            
             if (eventForm) eventForm.dataset.eventId = event.id;
             if (modalTitle) modalTitle.textContent = 'Edit Event';
             if (modal) modal.classList.add('show');
@@ -2225,10 +2315,10 @@
 
         async function deleteEvent(event) {
             if (!confirm(`Delete "${event.title}"?`)) return;
-
+            
             try {
                 console.log('Deleting event:', event.id, 'from URL:', app.config.apiUrl + '/events/' + event.id);
-
+                
                 const response = await fetch(app.config.apiUrl + '/events/' + event.id, {
                     method: 'DELETE',
                     headers: {
@@ -2236,30 +2326,30 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
+                
                 console.log('Delete response status:', response.status);
-
+                
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
                     throw new Error(`Failed to delete event: ${errorData.error || response.statusText}`);
                 }
-
+                
                 showNotification('Event deleted successfully!');
-
+                
                 // Reload events from server to ensure sync
                 await loadSchoolEvents();
-
+                
                 // Also reload all events if admin panel is open
                 if (document.getElementById('eventManagement') && 
                     document.getElementById('eventManagement').style.display === 'block') {
                     await loadAllEvents();
                     filterEvents();
                 }
-
+                
                 // Force re-render the calendar
                 renderCalendar();
                 updateLastSync();
-
+                
             } catch (error) {
                 console.error('Delete error:', error);
                 showNotification('Failed to delete event: ' + error.message, true);
@@ -2268,17 +2358,17 @@
 
         async function handleEventSubmit(e) {
             e.preventDefault();
-
+            
             const title = document.getElementById('eventTitle').value;
             const date = document.getElementById('eventDate').value;
             const time = document.getElementById('eventTime').value;
             const department = document.getElementById('eventDepartment').value;
             const description = document.getElementById('eventDescription').value;
             const eventId = document.getElementById('eventForm').dataset.eventId;
-
+            
             try {
                 let response;
-
+                
                 if (eventId) {
                     // Update existing event
                     response = await fetch(app.config.apiUrl + '/events/' + eventId, {
@@ -2301,11 +2391,11 @@
                         })
                     });
                 }
-
+                
                 if (!response.ok) throw new Error('Failed to save event');
-
+                
                 const event = await response.json();
-
+                
                 // Update local state
                 if (eventId) {
                     const dayEvents = app.state.events[date] || [];
@@ -2319,21 +2409,21 @@
                     }
                     app.state.events[date].push(event);
                 }
-
+                
                 // Reload events from server and refresh calendar
                 await loadSchoolEvents();
                 renderCalendar();
                 closeModal();
                 showNotification(eventId ? 'Event updated successfully!' : 'Event saved successfully!');
                 updateLastSync();
-
+                
                 // Refresh admin table if open
                 if (document.getElementById('eventManagement') && 
                     document.getElementById('eventManagement').style.display === 'block') {
                     await loadAllEvents();
                     filterEvents();
                 }
-
+                
             } catch (error) {
                 showNotification('Failed to save event', true);
             }
@@ -2343,13 +2433,13 @@
             app.state.selectedSchool = schoolCode;
             const select = document.getElementById('schoolSelect');
             if (select) select.value = schoolCode;
-
+            
             const school = app.config.schools[schoolCode];
             const title = document.getElementById('calendarTitle');
             if (title && school) {
                 title.textContent = `${school.emoji} ${school.name} Calendar`;
             }
-
+            
             loadSchoolEvents().then(() => {
                 renderCalendar();
                 showScreen('calendar');
@@ -2360,17 +2450,17 @@
             // Hide all screens
             const screens = document.querySelectorAll('.screen');
             screens.forEach(screen => screen.classList.remove('active'));
-
+            
             // Remove active from all tabs
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => tab.classList.remove('active'));
-
+            
             // Show selected screen
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) {
                 targetScreen.classList.add('active');
             }
-
+            
             // Activate corresponding tab
             tabs.forEach(tab => {
                 const tabText = tab.textContent.toLowerCase();
@@ -2378,7 +2468,7 @@
                     tab.classList.add('active');
                 }
             });
-
+            
             // Screen-specific actions
             if (screenId === 'calendar') {
                 setTimeout(() => renderCalendar(), 100);
@@ -2390,7 +2480,7 @@
             if (notification) {
                 notification.textContent = message;
                 notification.className = `notification ${isError ? 'error' : ''} show`;
-
+                
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
@@ -2411,18 +2501,18 @@
             console.log('Origin:', window.location.origin);
             console.log('Configured API URL:', app.config.apiUrl);
             console.log('Connected:', app.state.connected);
-
+            
             // Test different endpoints
             const endpoints = ['/', '/api', '/api/status', '/api/health'];
-
+            
             endpoints.forEach(async (endpoint) => {
                 const testUrl = window.location.origin + endpoint;
                 console.log(`Testing: ${testUrl}`);
-
+                
                 try {
                     const response = await fetch(testUrl);
                     console.log(`  ✅ ${endpoint}: ${response.status} ${response.statusText}`);
-
+                    
                     if (response.ok) {
                         const text = await response.text();
                         console.log(`  📄 Response: ${text.substring(0, 100)}...`);
@@ -2431,7 +2521,7 @@
                     console.log(`  ❌ ${endpoint}: ${error.message}`);
                 }
             });
-
+            
             alert('Debug info logged to console. Press F12 to view.');
         }
 
@@ -2439,21 +2529,21 @@
             if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
                 return;
             }
-
+            
             try {
                 const response = await fetch(app.config.apiUrl + '/clear-all', {
                     method: 'DELETE'
                 });
-
+                
                 if (!response.ok) throw new Error('Failed to clear data');
-
+                
                 app.state.events = {};
                 app.state.daySchedules = {};
                 app.state.dayTypes = {};
-
+                
                 renderCalendar();
                 showNotification('All data cleared successfully');
-
+                
             } catch (error) {
                 showNotification('Failed to clear data', true);
             }
