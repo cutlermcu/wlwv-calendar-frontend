@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Calendar System - WLHS & WHS</title>
+    <title>School Calendar System</title>
     <style>
         * {
             margin: 0;
@@ -83,14 +83,10 @@
             display: block;
         }
 
-        /* Home Page Styles */
+        /* Home Page */
         .home-page {
             padding: 40px;
             text-align: center;
-        }
-
-        .home-header {
-            margin-bottom: 50px;
         }
 
         .home-header h1 {
@@ -105,6 +101,7 @@
         .home-header p {
             font-size: 1.3rem;
             color: #6b7280;
+            margin-bottom: 50px;
         }
 
         .schools-grid {
@@ -301,7 +298,6 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            text-decoration: none;
         }
 
         .home-btn:hover {
@@ -436,7 +432,6 @@
             font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
-            position: relative;
         }
 
         .ab-label:hover {
@@ -449,11 +444,6 @@
             font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
-            position: relative;
-        }
-
-        .day-type-label:hover {
-            opacity: 0.8;
         }
 
         .day-type-holiday { background: #ef4444; color: white; }
@@ -515,7 +505,7 @@
             opacity: 1;
         }
 
-        /* Dropdown Styles */
+        /* Dropdown */
         .admin-dropdown {
             position: absolute;
             top: 100%;
@@ -543,11 +533,6 @@
 
         .dropdown-item:hover {
             background: #f3f4f6;
-        }
-
-        .dropdown-item.selected {
-            background: #c41e3a;
-            color: white;
         }
 
         /* Status Bar */
@@ -601,7 +586,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Modal Styles */
+        /* Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -715,11 +700,6 @@
                 min-height: 80px;
                 padding: 8px;
             }
-
-            .schools-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
         }
     </style>
 </head>
@@ -767,7 +747,7 @@
                     </div>
 
                     <div class="school-card" onclick="goToSchool('wvhs')">
-                        <div class="school-logo">🏔️</div>
+                        <div class="school-logo">🐱</div>
                         <h2>Wilsonville High School</h2>
                         <p>Access WHS calendar, events, and schedule information</p>
                         <div class="school-stats">
@@ -803,7 +783,7 @@
             <div class="setup-screen">
                 <h2>Database Setup</h2>
                 <p style="margin-bottom: 30px;">Configure your Neon database connection to get started</p>
-                
+
                 <div id="connectionStatus" class="connection-status disconnected">
                     <span>🔴</span>
                     <span>Not connected to database</span>
@@ -815,14 +795,13 @@
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="postgresql://username:password@host/database?sslmode=require" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="http://localhost:3000/api" required>
-                        <small style="color: #6b7280; font-size: 0.85rem;">Make sure your backend server is running on this URL</small>
                     </div>
-                    
+
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" class="btn btn-primary">
                             <span class="loading" id="setupLoading" style="display: none;"></span>
@@ -831,23 +810,11 @@
                         <button type="button" class="btn btn-secondary" onclick="testConnection()">
                             Test Connection
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="debugAPI()">
-                            Debug API
+                        <button type="button" class="btn btn-secondary" onclick="debugConnection()">
+                            Debug
                         </button>
                     </div>
                 </form>
-
-                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: left;">
-                    <h3>Backend Setup Instructions:</h3>
-                    <ol style="margin-left: 20px; line-height: 1.6;">
-                        <li>Create a new Node.js project: <code>npm init -y</code></li>
-                        <li>Install dependencies: <code>npm install express cors pg dotenv</code></li>
-                        <li>Create the backend server (see backend code below)</li>
-                        <li>Set up your Neon database with the required tables</li>
-                        <li>Start the server: <code>node server.js</code></li>
-                        <li>Enter your database URL and test the connection</li>
-                    </ol>
-                </div>
             </div>
         </div>
 
@@ -856,7 +823,7 @@
             <div class="calendar-page">
                 <div class="calendar-header">
                     <div class="calendar-nav">
-                        <button class="nav-btn home-btn" onclick="showScreen('home')" title="Back to Home">
+                        <button class="nav-btn home-btn" onclick="showScreen('home')">
                             🏠 Home
                         </button>
                         <div class="calendar-title" id="calendarTitle">
@@ -871,7 +838,7 @@
                         </div>
                         <select id="schoolSelect" onchange="changeSchool()">
                             <option value="wlhs">🦁 West Linn HS</option>
-                            <option value="wvhs">🏔️ Wilsonville HS</option>
+                            <option value="wvhs">🐱 Wilsonville HS</option>
                         </select>
                         <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
                             Admin Mode: OFF
@@ -900,7 +867,7 @@
             <div style="padding: 30px;">
                 <h2>Admin Panel</h2>
                 <p>Database administration and bulk operations</p>
-                
+
                 <div style="margin-top: 30px;">
                     <button class="btn btn-primary" onclick="initializeDatabase()">
                         Initialize Database Tables
@@ -936,7 +903,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Time</label>
-                    <input type="time" class="form-input" id="eventTime" placeholder="Optional">
+                    <input type="time" class="form-input" id="eventTime">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Department</label>
@@ -966,286 +933,269 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // Global State
-        const state = {
-            currentDate: new Date(),
-            selectedSchool: 'wlhs',
-            adminMode: false,
-            events: {},
-            daySchedules: {},
-            dayTypes: {},
-            apiUrl: '',
-            connected: false
-        };
+        'use strict';
 
-        // API Configuration - Better Replit detection
-        let API_BASE_URL = '';
-        
-        // Detect if running in Replit (improved detection)
-        if (window.location.hostname.includes('.repl.co') || 
-            window.location.hostname.includes('.replit.dev') ||
-            window.location.hostname.includes('replit')) {
-            API_BASE_URL = `${window.location.origin}/api`;
-            console.log('🔍 Detected Replit environment');
-            console.log('🌐 Current URL:', window.location.href);
-            console.log('🔗 Setting API URL to:', API_BASE_URL);
-        } else {
-            API_BASE_URL = 'http://localhost:3000/api';
-            console.log('🔍 Detected local environment');
-            console.log('🔗 Setting API URL to:', API_BASE_URL);
-        }
-        
-        // School Configuration
-        const SCHOOLS = {
-            wlhs: {
-                name: 'West Linn High School',
-                emoji: '🦁',
-                shortName: 'WLHS'
+        // Global state
+        const app = {
+            state: {
+                currentDate: new Date(),
+                selectedSchool: 'wlhs',
+                adminMode: false,
+                events: {},
+                daySchedules: {},
+                dayTypes: {},
+                connected: false
             },
-            wvhs: {
-                name: 'Wilsonville High School', 
-                emoji: '🏔️',
-                shortName: 'WHS'
+
+            config: {
+                apiUrl: '',
+                schools: {
+                    wlhs: { name: 'West Linn High School', emoji: '🦁', shortName: 'WLHS' },
+                    wvhs: { name: 'Wilsonville High School', emoji: '🐱', shortName: 'WHS' }
+                }
             }
         };
 
-        // Initialize Application
+        // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing application...');
-            setupEventListeners();
-            loadConfig();
-            
-            // Initialize calendar with current date
-            renderCalendar();
+            init();
         });
 
+        function init() {
+            setupEventListeners();
+            loadConfig();
+            renderCalendar();
+        }
+
         function setupEventListeners() {
-            // Setup form
-            document.getElementById('setupForm').addEventListener('submit', handleSetup);
-            
-            // Event form
-            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
-            
+            const setupForm = document.getElementById('setupForm');
+            const eventForm = document.getElementById('eventForm');
+
+            if (setupForm) {
+                setupForm.addEventListener('submit', handleSetup);
+            }
+
+            if (eventForm) {
+                eventForm.addEventListener('submit', handleEventSubmit);
+            }
+
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('.admin-dropdown') && !e.target.closest('.ab-label') && !e.target.closest('.day-type-label')) {
-                    document.querySelectorAll('.admin-dropdown').forEach(dropdown => {
-                        dropdown.classList.remove('show');
-                    });
+                if (!e.target.closest('.admin-dropdown')) {
+                    const dropdowns = document.querySelectorAll('.admin-dropdown');
+                    dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+                }
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('eventModal');
+                if (e.target === modal) {
+                    closeModal();
                 }
             });
         }
 
         function loadConfig() {
-            // Auto-detect API URL based on environment (improved detection)
+            // Auto-detect environment
+            let detectedApiUrl;
+
             if (window.location.hostname.includes('.repl.co') || 
                 window.location.hostname.includes('.replit.dev') ||
                 window.location.hostname.includes('replit')) {
-                API_BASE_URL = `${window.location.origin}/api`;
-                document.getElementById('apiUrl').value = API_BASE_URL;
-                console.log('🔧 Auto-configured for Replit:', API_BASE_URL);
+                detectedApiUrl = window.location.origin + '/api';
+                console.log('Detected Replit environment, API URL:', detectedApiUrl);
             } else {
-                const savedApiUrl = localStorage.getItem('apiUrl');
-                if (savedApiUrl) {
-                    document.getElementById('apiUrl').value = savedApiUrl;
-                    API_BASE_URL = savedApiUrl;
-                } else {
-                    document.getElementById('apiUrl').value = API_BASE_URL;
-                }
+                detectedApiUrl = 'http://localhost:3000/api';
+                console.log('Detected local environment, API URL:', detectedApiUrl);
             }
-            
-            state.apiUrl = API_BASE_URL;
-            
+
+            // Use saved URL if available, otherwise use detected
+            const savedApiUrl = localStorage.getItem('apiUrl');
+            app.config.apiUrl = savedApiUrl || detectedApiUrl;
+
+            console.log('Final API URL:', app.config.apiUrl);
+
+            const apiUrlInput = document.getElementById('apiUrl');
+            if (apiUrlInput) {
+                apiUrlInput.value = app.config.apiUrl;
+            }
+
             const savedDbUrl = localStorage.getItem('dbUrl');
-            if (savedDbUrl) {
-                document.getElementById('dbUrl').value = savedDbUrl;
+            const dbUrlInput = document.getElementById('dbUrl');
+            if (savedDbUrl && dbUrlInput) {
+                dbUrlInput.value = savedDbUrl;
             }
-            
-            // Auto-test connection if API URL is available
-            if (API_BASE_URL) {
-                testConnection();
-            }
+
+            // Test connection after config is loaded
+            setTimeout(() => testConnection(), 100);
         }
 
         async function handleSetup(e) {
             e.preventDefault();
-            
+
             const dbUrl = document.getElementById('dbUrl').value.trim();
             const apiUrl = document.getElementById('apiUrl').value.trim();
             const loading = document.getElementById('setupLoading');
-            
-            if (!dbUrl) {
-                showNotification('Please enter your Neon database URL', true);
+
+            if (!dbUrl || !apiUrl) {
+                showNotification('Please fill in all required fields', true);
                 return;
             }
-            
-            if (!apiUrl) {
-                showNotification('Please enter the API URL', true);
-                return;
-            }
-            
-            loading.style.display = 'inline-block';
-            
+
+            if (loading) loading.style.display = 'inline-block';
+
             try {
-                console.log('Setting up database connection...');
-                
-                // Save configuration
                 localStorage.setItem('dbUrl', dbUrl);
                 localStorage.setItem('apiUrl', apiUrl);
-                API_BASE_URL = apiUrl;
-                state.apiUrl = apiUrl;
-                
-                // Test API connection first
+                app.config.apiUrl = apiUrl;
+
                 await testConnection();
-                
-                if (!state.connected) {
+
+                if (!app.state.connected) {
                     throw new Error('Cannot connect to API server');
                 }
-                
-                // Initialize database
-                console.log('Initializing database...');
+
                 await initializeDatabase();
-                
-                // Load initial data
                 await loadData();
-                
-                showNotification('Database connected and initialized successfully!');
-                setTimeout(() => {
-                    showScreen('calendar');
-                }, 1000);
-                
+
+                showNotification('Database connected successfully!');
+                setTimeout(() => showScreen('calendar'), 1000);
+
             } catch (error) {
-                console.error('Setup error:', error);
                 showNotification('Setup failed: ' + error.message, true);
             } finally {
-                loading.style.display = 'none';
+                if (loading) loading.style.display = 'none';
             }
         }
 
         async function testConnection() {
             try {
-                console.log('🧪 Testing connection...');
-                console.log('📍 API URL:', API_BASE_URL);
-                console.log('🌐 Current location:', window.location.href);
-                
-                // First test if we can reach the API at all
-                console.log('⏳ Fetching from:', `${API_BASE_URL}/health`);
-                
-                const response = await fetch(`${API_BASE_URL}/health`, {
+                console.log('Testing connection to:', app.config.apiUrl);
+
+                const response = await fetch(app.config.apiUrl + '/health', {
                     method: 'GET',
                     headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Accept': 'application/json'
                     }
                 });
-                
-                console.log('📡 Response status:', response.status);
-                console.log('📡 Response ok:', response.ok);
-                
+
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
-                console.log('📊 Response data:', data);
-                
+                console.log('Response data:', data);
+
                 if (data.status === 'ok') {
-                    state.connected = true;
+                    app.state.connected = true;
                     updateConnectionStatus(true, 'Connected to API server');
-                    document.getElementById('syncStatus').textContent = 'API Connected';
-                    document.getElementById('syncIndicator').classList.remove('error');
+                    updateSyncStatus('API Connected', false);
                     showNotification('API connection successful!');
                 } else {
-                    throw new Error('API server not ready: ' + JSON.stringify(data));
+                    throw new Error('API server returned non-ok status: ' + JSON.stringify(data));
                 }
             } catch (error) {
-                console.error('❌ Connection test failed:', error);
-                console.error('🔗 Attempted URL:', `${API_BASE_URL}/health`);
-                
-                state.connected = false;
-                updateConnectionStatus(false, `Connection failed: ${error.message}`);
-                document.getElementById('syncStatus').textContent = 'Disconnected';
-                document.getElementById('syncIndicator').classList.add('error');
-                
-                // Show specific error messages
+                console.error('Connection test failed:', error);
+                app.state.connected = false;
+                updateConnectionStatus(false, 'Connection failed: ' + error.message);
+                updateSyncStatus('Disconnected', true);
+
+                // Show specific error guidance
                 if (error.message.includes('Failed to fetch')) {
-                    showNotification('Cannot reach API server. Is your backend running?', true);
+                    showNotification('Cannot reach API server. Make sure your backend is running!', true);
                 } else if (error.message.includes('404')) {
                     showNotification('API endpoint not found. Check your server routes.', true);
-                } else if (error.message.includes('CORS')) {
-                    showNotification('CORS error. Check your server CORS configuration.', true);
                 } else {
-                    showNotification(`API Error: ${error.message}`, true);
+                    showNotification('API connection failed: ' + error.message, true);
                 }
             }
         }
 
         function updateConnectionStatus(connected, message) {
             const status = document.getElementById('connectionStatus');
-            status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
-            status.innerHTML = `
-                <span>${connected ? '🟢' : '🔴'}</span>
-                <span>${message}</span>
-            `;
+            if (status) {
+                status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
+                status.innerHTML = `
+                    <span>${connected ? '🟢' : '🔴'}</span>
+                    <span>${message}</span>
+                `;
+            }
+        }
+
+        function updateSyncStatus(message, isError) {
+            const syncStatus = document.getElementById('syncStatus');
+            const syncIndicator = document.getElementById('syncIndicator');
+
+            if (syncStatus) syncStatus.textContent = message;
+            if (syncIndicator) {
+                if (isError) {
+                    syncIndicator.classList.add('error');
+                } else {
+                    syncIndicator.classList.remove('error');
+                }
+            }
         }
 
         async function initializeDatabase() {
             try {
                 const dbUrl = document.getElementById('dbUrl').value;
-                const response = await fetch(`${API_BASE_URL}/init`, {
+                const response = await fetch(app.config.apiUrl + '/init', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ dbUrl })
                 });
-                
+
                 if (!response.ok) {
                     const error = await response.json();
                     throw new Error(error.error || 'Failed to initialize database');
                 }
-                
+
                 const data = await response.json();
                 showNotification('Database initialized successfully');
-                
-                document.getElementById('dbStatus').innerHTML = `
-                    <div style="color: #059669;">✅ Tables created successfully</div>
-                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
-                        ${data.tables.join(', ')} initialized
-                    </div>
-                `;
-                
+
+                const dbStatus = document.getElementById('dbStatus');
+                if (dbStatus) {
+                    dbStatus.innerHTML = `
+                        <div style="color: #059669;">✅ Tables created successfully</div>
+                        <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
+                            ${data.tables.join(', ')} initialized
+                        </div>
+                    `;
+                }
+
             } catch (error) {
-                console.error('Database initialization error:', error);
                 showNotification('Database initialization failed: ' + error.message, true);
-                
-                document.getElementById('dbStatus').innerHTML = `
-                    <div style="color: #dc2626;">❌ Initialization failed</div>
-                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
-                        ${error.message}
-                    </div>
-                `;
+
+                const dbStatus = document.getElementById('dbStatus');
+                if (dbStatus) {
+                    dbStatus.innerHTML = `
+                        <div style="color: #dc2626;">❌ Initialization failed</div>
+                        <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">
+                            ${error.message}
+                        </div>
+                    `;
+                }
             }
         }
 
-        // Calendar Functions
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
-            if (!grid) {
-                console.error('Calendar grid not found');
-                return;
-            }
-            
-            console.log('Rendering calendar for:', state.currentDate);
-            
-            const year = state.currentDate.getFullYear();
-            const month = state.currentDate.getMonth();
-            
+            if (!grid) return;
+
+            const year = app.state.currentDate.getFullYear();
+            const month = app.state.currentDate.getMonth();
+
             // Update month display
             const monthDisplay = document.getElementById('currentMonth');
             if (monthDisplay) {
-                monthDisplay.textContent = 
-                    new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(state.currentDate);
+                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                }).format(app.state.currentDate);
             }
 
             // Clear grid
@@ -1260,171 +1210,171 @@
                 grid.appendChild(header);
             });
 
-            // Get first day of month and calculate start date
+            // Calculate start date
             const firstDay = new Date(year, month, 1);
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-            // Generate calendar days (6 weeks = 42 days)
+            // Generate calendar days
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-                
+
                 const dayElement = createDayElement(currentDate, month);
                 grid.appendChild(dayElement);
             }
-            
-            console.log('Calendar rendered successfully');
         }
 
         function createDayElement(date, currentMonth) {
             const dayElement = document.createElement('div');
             dayElement.className = 'calendar-day';
-            
+
             const isCurrentMonth = date.getMonth() === currentMonth;
             const isToday = date.toDateString() === new Date().toDateString();
-            
-            if (!isCurrentMonth) {
-                dayElement.classList.add('other-month');
-            }
-            if (isToday) {
-                dayElement.classList.add('today');
-            }
+
+            if (!isCurrentMonth) dayElement.classList.add('other-month');
+            if (isToday) dayElement.classList.add('today');
 
             const dateKey = formatDate(date);
-            
-            // Day number and labels container
+
+            // Day number and labels
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
-            
+
             const numberSpan = document.createElement('span');
             numberSpan.textContent = date.getDate();
             dayNumber.appendChild(numberSpan);
-            
+
             const labelsContainer = document.createElement('div');
             labelsContainer.className = 'day-labels';
-            
+
             // A/B Label
             const abLabel = createABLabel(dateKey);
             if (abLabel) labelsContainer.appendChild(abLabel);
-            
+
             // Day Type Label
             const dayTypeLabel = createDayTypeLabel(dateKey);
             if (dayTypeLabel) labelsContainer.appendChild(dayTypeLabel);
-            
+
             dayNumber.appendChild(labelsContainer);
             dayElement.appendChild(dayNumber);
 
             // Events list
             const eventsList = document.createElement('div');
             eventsList.className = 'events-list';
-            
-            const dayEvents = state.events[dateKey] || [];
+
+            const dayEvents = app.state.events[dateKey] || [];
             dayEvents.forEach(event => {
                 const eventElement = document.createElement('div');
                 eventElement.className = `event ${getDepartmentClass(event.department)}`;
-                
-                // Create event text with time if available
+
                 let eventText = event.title;
                 if (event.time) {
-                    const timeFormatted = formatTime(event.time);
-                    eventText = `${timeFormatted} - ${event.title}`;
+                    eventText = formatTime(event.time) + ' - ' + event.title;
                 }
-                
+
                 eventElement.textContent = eventText;
                 eventElement.onclick = () => editEvent(event);
-                eventElement.title = `${event.department} - ${event.title}${event.description ? '\n' + event.description : ''}`;
+                eventElement.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    deleteEvent(event);
+                };
+                eventElement.title = `${event.department} - ${event.title}\nRight-click to delete`;
                 eventsList.appendChild(eventElement);
             });
-            
+
             dayElement.appendChild(eventsList);
 
             // Quick add button
-            const quickAdd = document.createElement('button');
-            quickAdd.className = 'quick-add';
-            quickAdd.textContent = '+';
-            quickAdd.onclick = (e) => {
-                e.stopPropagation();
-                openEventModal(dateKey);
-            };
-            dayElement.appendChild(quickAdd);
+            if (app.state.adminMode || isCurrentMonth) {
+                const quickAdd = document.createElement('button');
+                quickAdd.className = 'quick-add';
+                quickAdd.textContent = '+';
+                quickAdd.onclick = (e) => {
+                    e.stopPropagation();
+                    openEventModal(dateKey);
+                };
+                dayElement.appendChild(quickAdd);
+            }
 
             return dayElement;
         }
 
-        function getDepartmentClass(department) {
-            if (!department) return '';
-            return department.toLowerCase().replace('/', '-').replace(' ', '-');
-        }
-
-        function formatTime(timeString) {
-            if (!timeString) return '';
-            
-            const [hours, minutes] = timeString.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-            
-            return `${displayHour}:${minutes} ${ampm}`;
-        }
-
         function createABLabel(dateKey) {
-            const schedule = state.daySchedules[dateKey];
+            const schedule = app.state.daySchedules[dateKey];
             if (!schedule) return null;
 
             const label = document.createElement('span');
             label.className = 'ab-label';
             label.textContent = schedule;
-            
-            if (state.adminMode) {
+
+            if (app.state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
                     showABDropdown(e.target, dateKey);
                 };
             }
-            
+
             return label;
         }
 
         function createDayTypeLabel(dateKey) {
-            const dayType = state.dayTypes[dateKey];
+            const dayType = app.state.dayTypes[dateKey];
             if (!dayType) return null;
 
             const label = document.createElement('span');
             label.className = `day-type-label day-type-${dayType.toLowerCase().replace(/\s+/g, '-')}`;
             label.textContent = dayType;
-            
-            if (state.adminMode) {
+
+            if (app.state.adminMode) {
                 label.onclick = (e) => {
                     e.stopPropagation();
                     showDayTypeDropdown(e.target, dateKey);
                 };
             }
-            
+
             return label;
         }
 
+        function getDepartmentClass(department) {
+            if (!department) return '';
+            return department.toLowerCase().replace('/', '-').replace(/\s+/g, '-');
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return '';
+
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
         function showABDropdown(target, dateKey) {
-            const dropdown = createDropdown(['A', 'B', 'Clear'], async (value) => {
-                await updateABSchedule(dateKey, value === 'Clear' ? null : value);
+            const dropdown = createDropdown(['A', 'B', 'Clear'], (value) => {
+                updateABSchedule(dateKey, value === 'Clear' ? null : value);
             });
-            
             showDropdown(target, dropdown);
         }
 
         function showDayTypeDropdown(target, dateKey) {
             const options = ['Holiday', 'Staff Development', 'Grading', 'Furlough', 'Finals', 'Clear'];
-            const dropdown = createDropdown(options, async (value) => {
-                await updateDayType(dateKey, value === 'Clear' ? null : value);
+            const dropdown = createDropdown(options, (value) => {
+                updateDayType(dateKey, value === 'Clear' ? null : value);
             });
-            
             showDropdown(target, dropdown);
         }
 
         function createDropdown(options, onSelect) {
             const dropdown = document.createElement('div');
             dropdown.className = 'admin-dropdown';
-            
+
             options.forEach(option => {
                 const item = document.createElement('div');
                 item.className = 'dropdown-item';
@@ -1435,15 +1385,14 @@
                 };
                 dropdown.appendChild(item);
             });
-            
+
             return dropdown;
         }
 
         function showDropdown(target, dropdown) {
             // Remove existing dropdowns
             document.querySelectorAll('.admin-dropdown').forEach(d => d.remove());
-            
-            // Position dropdown
+
             target.style.position = 'relative';
             target.appendChild(dropdown);
             dropdown.classList.add('show');
@@ -1451,97 +1400,80 @@
 
         async function updateABSchedule(dateKey, value) {
             try {
-                const response = await fetch(`${API_BASE_URL}/day-schedules`, {
+                const response = await fetch(app.config.apiUrl + '/day-schedules', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ date: dateKey, schedule: value })
                 });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to update A/B schedule');
-                }
-                
+
+                if (!response.ok) throw new Error('Failed to update A/B schedule');
+
                 if (value) {
-                    state.daySchedules[dateKey] = value;
+                    app.state.daySchedules[dateKey] = value;
                 } else {
-                    delete state.daySchedules[dateKey];
+                    delete app.state.daySchedules[dateKey];
                 }
-                
+
                 renderCalendar();
                 showNotification(`A/B schedule updated for ${dateKey}`);
                 updateLastSync();
-                
+
             } catch (error) {
-                console.error('Error updating A/B schedule:', error);
                 showNotification('Failed to update A/B schedule', true);
             }
         }
 
         async function updateDayType(dateKey, value) {
             try {
-                const response = await fetch(`${API_BASE_URL}/day-types`, {
+                const response = await fetch(app.config.apiUrl + '/day-types', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ date: dateKey, type: value })
                 });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to update day type');
-                }
-                
+
+                if (!response.ok) throw new Error('Failed to update day type');
+
                 if (value) {
-                    state.dayTypes[dateKey] = value;
+                    app.state.dayTypes[dateKey] = value;
                 } else {
-                    delete state.dayTypes[dateKey];
+                    delete app.state.dayTypes[dateKey];
                 }
-                
+
                 renderCalendar();
                 showNotification(`Day type updated for ${dateKey}`);
                 updateLastSync();
-                
+
             } catch (error) {
-                console.error('Error updating day type:', error);
                 showNotification('Failed to update day type', true);
             }
         }
 
         async function loadData() {
-            if (!state.connected) {
-                console.log('Not connected, skipping data load');
-                return;
-            }
-            
+            if (!app.state.connected) return;
+
             try {
-                console.log('Loading data from API...');
-                // Load day schedules and day types (synced across schools)
                 await Promise.all([
                     loadDaySchedules(),
                     loadDayTypes(),
                     loadSchoolEvents()
                 ]);
-                
-                console.log('Data loaded successfully');
+
                 renderCalendar();
                 updateLastSync();
-                
+
             } catch (error) {
-                console.error('Error loading data:', error);
                 showNotification('Error loading data: ' + error.message, true);
             }
         }
 
         async function loadDaySchedules() {
             try {
-                const response = await fetch(`${API_BASE_URL}/day-schedules`);
+                const response = await fetch(app.config.apiUrl + '/day-schedules');
                 if (response.ok) {
                     const schedules = await response.json();
-                    state.daySchedules = {};
+                    app.state.daySchedules = {};
                     schedules.forEach(schedule => {
-                        state.daySchedules[schedule.date] = schedule.schedule;
+                        app.state.daySchedules[schedule.date] = schedule.schedule;
                     });
                 }
             } catch (error) {
@@ -1551,12 +1483,12 @@
 
         async function loadDayTypes() {
             try {
-                const response = await fetch(`${API_BASE_URL}/day-types`);
+                const response = await fetch(app.config.apiUrl + '/day-types');
                 if (response.ok) {
                     const types = await response.json();
-                    state.dayTypes = {};
+                    app.state.dayTypes = {};
                     types.forEach(type => {
-                        state.dayTypes[type.date] = type.type;
+                        app.state.dayTypes[type.date] = type.type;
                     });
                 }
             } catch (error) {
@@ -1566,15 +1498,15 @@
 
         async function loadSchoolEvents() {
             try {
-                const response = await fetch(`${API_BASE_URL}/events?school=${state.selectedSchool}`);
+                const response = await fetch(app.config.apiUrl + '/events?school=' + app.state.selectedSchool);
                 if (response.ok) {
                     const events = await response.json();
-                    state.events = {};
+                    app.state.events = {};
                     events.forEach(event => {
-                        if (!state.events[event.date]) {
-                            state.events[event.date] = [];
+                        if (!app.state.events[event.date]) {
+                            app.state.events[event.date] = [];
                         }
-                        state.events[event.date].push(event);
+                        app.state.events[event.date].push(event);
                     });
                 }
             } catch (error) {
@@ -1583,341 +1515,299 @@
         }
 
         function changeMonth(delta) {
-            state.currentDate.setMonth(state.currentDate.getMonth() + delta);
+            app.state.currentDate.setMonth(app.state.currentDate.getMonth() + delta);
             renderCalendar();
         }
 
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
-            state.selectedSchool = select.value;
-            
-            const school = SCHOOLS[select.value];
+            if (!select) return;
+
+            app.state.selectedSchool = select.value;
+
+            const school = app.config.schools[select.value];
             const title = document.getElementById('calendarTitle');
-            title.textContent = `${school.emoji} ${school.name} Calendar`;
-            
+            if (title && school) {
+                title.textContent = `${school.emoji} ${school.name} Calendar`;
+            }
+
             loadSchoolEvents().then(() => renderCalendar());
         }
 
         function toggleAdminMode() {
-            state.adminMode = !state.adminMode;
+            app.state.adminMode = !app.state.adminMode;
             const button = document.getElementById('adminToggle');
-            button.textContent = `Admin Mode: ${state.adminMode ? 'ON' : 'OFF'}`;
-            button.classList.toggle('active', state.adminMode);
-            
+            if (button) {
+                button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
+                if (app.state.adminMode) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            }
+
             renderCalendar();
-            showNotification(`Admin mode ${state.adminMode ? 'enabled' : 'disabled'}`);
+            showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
         }
 
         function openEventModal(dateKey) {
             const modal = document.getElementById('eventModal');
-            document.getElementById('eventDate').value = dateKey;
-            document.querySelector('.modal-title').textContent = 'Add Event';
-            document.getElementById('eventForm').removeAttribute('data-event-id');
-            modal.classList.add('show');
+            const eventDate = document.getElementById('eventDate');
+            const modalTitle = document.querySelector('.modal-title');
+            const eventForm = document.getElementById('eventForm');
+
+            if (eventDate) eventDate.value = dateKey;
+            if (modalTitle) modalTitle.textContent = 'Add Event';
+            if (eventForm) eventForm.removeAttribute('data-event-id');
+            if (modal) modal.classList.add('show');
         }
 
         function closeModal() {
             const modal = document.getElementById('eventModal');
-            modal.classList.remove('show');
-            
-            // Reset form and modal state
             const form = document.getElementById('eventForm');
-            form.reset();
-            form.removeAttribute('data-event-id');
-            
-            // Reset modal title
-            document.querySelector('.modal-title').textContent = 'Add Event';
+            const modalTitle = document.querySelector('.modal-title');
+
+            if (modal) modal.classList.remove('show');
+            if (form) {
+                form.reset();
+                form.removeAttribute('data-event-id');
+            }
+            if (modalTitle) modalTitle.textContent = 'Add Event';
         }
 
-        async function editEvent(event) {
-            // Open modal in edit mode
-            document.getElementById('eventTitle').value = event.title;
-            document.getElementById('eventDate').value = event.date;
-            document.getElementById('eventTime').value = event.time || '';
-            document.getElementById('eventDepartment').value = event.department || '';
-            document.getElementById('eventDescription').value = event.description || '';
-            
-            // Store event ID for updating
-            document.getElementById('eventForm').dataset.eventId = event.id;
-            document.querySelector('.modal-title').textContent = 'Edit Event';
-            
+        function editEvent(event) {
+            const eventTitle = document.getElementById('eventTitle');
+            const eventDate = document.getElementById('eventDate');
+            const eventTime = document.getElementById('eventTime');
+            const eventDepartment = document.getElementById('eventDepartment');
+            const eventDescription = document.getElementById('eventDescription');
+            const eventForm = document.getElementById('eventForm');
+            const modalTitle = document.querySelector('.modal-title');
             const modal = document.getElementById('eventModal');
-            modal.classList.add('show');
+
+            if (eventTitle) eventTitle.value = event.title || '';
+            if (eventDate) eventDate.value = event.date || '';
+            if (eventTime) eventTime.value = event.time || '';
+            if (eventDepartment) eventDepartment.value = event.department || '';
+            if (eventDescription) eventDescription.value = event.description || '';
+
+            if (eventForm) eventForm.dataset.eventId = event.id;
+            if (modalTitle) modalTitle.textContent = 'Edit Event';
+            if (modal) modal.classList.add('show');
+        }
+
+        async function deleteEvent(event) {
+            if (!confirm(`Delete "${event.title}"?`)) return;
+
+            try {
+                const response = await fetch(app.config.apiUrl + '/events/' + event.id, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete event');
+
+                // Remove from local state
+                const dayEvents = app.state.events[event.date] || [];
+                const eventIndex = dayEvents.findIndex(e => e.id == event.id);
+                if (eventIndex !== -1) {
+                    dayEvents.splice(eventIndex, 1);
+                    if (dayEvents.length === 0) {
+                        delete app.state.events[event.date];
+                    }
+                }
+
+                renderCalendar();
+                showNotification('Event deleted successfully!');
+                updateLastSync();
+
+            } catch (error) {
+                showNotification('Failed to delete event', true);
+            }
         }
 
         async function handleEventSubmit(e) {
             e.preventDefault();
-            
+
             const title = document.getElementById('eventTitle').value;
             const date = document.getElementById('eventDate').value;
             const time = document.getElementById('eventTime').value;
             const department = document.getElementById('eventDepartment').value;
             const description = document.getElementById('eventDescription').value;
             const eventId = document.getElementById('eventForm').dataset.eventId;
-            
+
             try {
                 let response;
-                
+
                 if (eventId) {
                     // Update existing event
-                    response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+                    response = await fetch(app.config.apiUrl + '/events/' + eventId, {
                         method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            title,
-                            time,
-                            department,
-                            description
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, time, department, description })
                     });
                 } else {
                     // Create new event
-                    response = await fetch(`${API_BASE_URL}/events`, {
+                    response = await fetch(app.config.apiUrl + '/events', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            title,
-                            date,
-                            time,
-                            department,
-                            description,
-                            school: state.selectedSchool
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            title, 
+                            date, 
+                            time, 
+                            department, 
+                            description, 
+                            school: app.state.selectedSchool 
                         })
                     });
                 }
-                
-                if (!response.ok) {
-                    throw new Error('Failed to save event');
-                }
-                
+
+                if (!response.ok) throw new Error('Failed to save event');
+
                 const event = await response.json();
-                
+
                 // Update local state
                 if (eventId) {
-                    // Update existing event in state
-                    const dayEvents = state.events[date] || [];
+                    const dayEvents = app.state.events[date] || [];
                     const eventIndex = dayEvents.findIndex(e => e.id == eventId);
                     if (eventIndex !== -1) {
                         dayEvents[eventIndex] = event;
                     }
                 } else {
-                    // Add new event to state
-                    if (!state.events[date]) {
-                        state.events[date] = [];
+                    if (!app.state.events[date]) {
+                        app.state.events[date] = [];
                     }
-                    state.events[date].push(event);
+                    app.state.events[date].push(event);
                 }
-                
+
                 renderCalendar();
                 closeModal();
                 showNotification(eventId ? 'Event updated successfully!' : 'Event saved successfully!');
                 updateLastSync();
-                
+
             } catch (error) {
-                console.error('Error saving event:', error);
                 showNotification('Failed to save event', true);
             }
         }
 
-        // Navigation Functions
         function goToSchool(schoolCode) {
-            // Set the selected school
-            state.selectedSchool = schoolCode;
-            document.getElementById('schoolSelect').value = schoolCode;
-            
-            // Update calendar title
-            const school = SCHOOLS[schoolCode];
+            app.state.selectedSchool = schoolCode;
+            const select = document.getElementById('schoolSelect');
+            if (select) select.value = schoolCode;
+
+            const school = app.config.schools[schoolCode];
             const title = document.getElementById('calendarTitle');
-            title.textContent = `${school.emoji} ${school.name} Calendar`;
-            
-            // Load school events and switch to calendar
+            if (title && school) {
+                title.textContent = `${school.emoji} ${school.name} Calendar`;
+            }
+
             loadSchoolEvents().then(() => {
                 renderCalendar();
                 showScreen('calendar');
             });
         }
 
-        function updateHomeStats() {
-            if (!state.connected) return;
-            
-            // Update today's schedule for both schools
-            const today = formatDate(new Date());
-            const todaySchedule = state.daySchedules[today] || '-';
-            
-            document.getElementById('wlhs-today').textContent = todaySchedule;
-            document.getElementById('wvhs-today').textContent = todaySchedule;
-            
-            // Count events for current month for each school
-            updateMonthlyEventCounts();
-        }
-
-        async function updateMonthlyEventCounts() {
-            const currentMonth = state.currentDate.getMonth();
-            const currentYear = state.currentDate.getFullYear();
-            
-            for (const schoolCode of ['wlhs', 'wvhs']) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/events?school=${schoolCode}`);
-                    if (response.ok) {
-                        const events = await response.json();
-                        
-                        // Count events in current month
-                        const monthlyEvents = events.filter(event => {
-                            const eventDate = new Date(event.date);
-                            return eventDate.getMonth() === currentMonth && 
-                                   eventDate.getFullYear() === currentYear;
-                        });
-                        
-                        document.getElementById(`${schoolCode}-events`).textContent = monthlyEvents.length;
-                    }
-                } catch (error) {
-                    console.error(`Error loading ${schoolCode} events:`, error);
-                    document.getElementById(`${schoolCode}-events`).textContent = '-';
-                }
-            }
-        }
-
         function showScreen(screenId) {
-            console.log('Switching to screen:', screenId);
-            
             // Hide all screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+
             // Remove active from all tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
             // Show selected screen
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) {
                 targetScreen.classList.add('active');
             }
-            
-            // Find and activate the corresponding tab
-            const tabs = document.querySelectorAll('.tab');
+
+            // Activate corresponding tab
             tabs.forEach(tab => {
-                if (tab.textContent.includes(getTabTextForScreen(screenId))) {
+                const tabText = tab.textContent.toLowerCase();
+                if (tabText.includes(screenId.toLowerCase())) {
                     tab.classList.add('active');
                 }
             });
-            
+
             // Screen-specific actions
             if (screenId === 'calendar') {
                 setTimeout(() => renderCalendar(), 100);
-            } else if (screenId === 'home') {
-                updateHomeStats();
             }
-        }
-        
-        function getTabTextForScreen(screenId) {
-            const screenMap = {
-                'home': 'Home',
-                'setup': 'Setup',
-                'calendar': 'Calendar', 
-                'admin': 'Admin'
-            };
-            return screenMap[screenId] || '';
         }
 
         function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${isError ? 'error' : ''} show`;
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            if (notification) {
+                notification.textContent = message;
+                notification.className = `notification ${isError ? 'error' : ''} show`;
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
         }
 
         function updateLastSync() {
-            document.getElementById('lastUpdate').textContent = 
-                `Last updated: ${new Date().toLocaleTimeString()}`;
+            const lastUpdate = document.getElementById('lastUpdate');
+            if (lastUpdate) {
+                lastUpdate.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
         }
 
-        function formatDate(date) {
-            return date.toISOString().split('T')[0];
+        function debugConnection() {
+            console.log('=== CONNECTION DEBUG ===');
+            console.log('Current URL:', window.location.href);
+            console.log('Hostname:', window.location.hostname);
+            console.log('Origin:', window.location.origin);
+            console.log('Configured API URL:', app.config.apiUrl);
+            console.log('Connected:', app.state.connected);
+
+            // Test different endpoints
+            const endpoints = ['/', '/api', '/api/status', '/api/health'];
+
+            endpoints.forEach(async (endpoint) => {
+                const testUrl = window.location.origin + endpoint;
+                console.log(`Testing: ${testUrl}`);
+
+                try {
+                    const response = await fetch(testUrl);
+                    console.log(`  ✅ ${endpoint}: ${response.status} ${response.statusText}`);
+
+                    if (response.ok) {
+                        const text = await response.text();
+                        console.log(`  📄 Response: ${text.substring(0, 100)}...`);
+                    }
+                } catch (error) {
+                    console.log(`  ❌ ${endpoint}: ${error.message}`);
+                }
+            });
+
+            alert('Debug info logged to console. Press F12 to view.');
         }
 
         async function clearAllData() {
             if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
                 return;
             }
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/clear-all`, {
+                const response = await fetch(app.config.apiUrl + '/clear-all', {
                     method: 'DELETE'
                 });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to clear data');
-                }
-                
-                // Reset local state
-                state.events = {};
-                state.daySchedules = {};
-                state.dayTypes = {};
-                
+
+                if (!response.ok) throw new Error('Failed to clear data');
+
+                app.state.events = {};
+                app.state.daySchedules = {};
+                app.state.dayTypes = {};
+
                 renderCalendar();
                 showNotification('All data cleared successfully');
-                
+
             } catch (error) {
-                console.error('Error clearing data:', error);
                 showNotification('Failed to clear data', true);
             }
         }
-
-        // Debug function to test API manually
-        async function debugAPI() {
-            console.log('🐛 DEBUGGING API CONNECTION');
-            console.log('============================');
-            console.log('Current URL:', window.location.href);
-            console.log('Hostname:', window.location.hostname);
-            console.log('Origin:', window.location.origin);
-            console.log('Protocol:', window.location.protocol);
-            console.log('Detected API URL:', API_BASE_URL);
-            
-            // Test different endpoints
-            const endpoints = [
-                '/',
-                '/api',
-                '/api/status', 
-                '/api/health'
-            ];
-            
-            for (const endpoint of endpoints) {
-                const url = window.location.origin + endpoint;
-                console.log(`\n🧪 Testing: ${url}`);
-                
-                try {
-                    const response = await fetch(url);
-                    console.log(`✅ Status: ${response.status} ${response.statusText}`);
-                    
-                    if (response.ok) {
-                        const text = await response.text();
-                        console.log(`📄 Response preview: ${text.substring(0, 200)}...`);
-                    }
-                } catch (error) {
-                    console.log(`❌ Error: ${error.message}`);
-                }
-            }
-            
-            console.log('\n🔧 Debug complete. Check console output above.');
-            alert('Debug complete! Check the browser console (F12) for detailed results.');
-        }
-
-        // Auto-refresh connection status
-        setInterval(() => {
-            if (state.connected) {
-                testConnection();
-            }
-        }, 30000); // Check every 30 seconds
     </script>
 </body>
 </html>

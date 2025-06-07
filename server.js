@@ -1,46 +1,38 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Replit-specific middleware
 app.use(cors({
-    origin: true,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: true, // Allow all origins in Replit
+    credentials: true
 }));
-
 app.use(express.json());
+
+// For Replit - serve static files
 app.use(express.static('public'));
 
 // Database connection
 let pool = null;
 
-// Serve frontend
+// Root route - simple info page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// API Routes
-app.get('/api/status', (req, res) => {
     res.json({
         name: 'School Calendar API',
         version: '1.0.0',
         status: 'running',
-        environment: process.env.REPL_SLUG ? 'replit' : 'local',
-        database: pool ? 'configured' : 'not configured',
         endpoints: {
             health: '/api/health',
             init: 'POST /api/init',
             daySchedules: '/api/day-schedules',
             dayTypes: '/api/day-types',
             events: '/api/events'
-        }
+        },
+        message: 'API is running! Use the frontend HTML file to interact with the calendar system.'
     });
 });
 
@@ -48,30 +40,17 @@ app.get('/api/status', (req, res) => {
 app.get('/api/health', async (req, res) => {
     try {
         if (!pool) {
-            return res.status(200).json({ 
-                status: 'ok',
-                database: 'not configured',
-                message: 'API server running, database not initialized yet'
-            });
+            return res.status(500).json({ error: 'Database not configured' });
         }
 
         const client = await pool.connect();
         await client.query('SELECT 1');
         client.release();
 
-        res.json({ 
-            status: 'ok', 
-            database: 'connected',
-            message: 'Database connected and ready'
-        });
+        res.json({ status: 'ok', message: 'Database connected' });
     } catch (error) {
         console.error('Health check failed:', error);
-        res.status(500).json({ 
-            status: 'error',
-            database: 'error',
-            error: 'Database connection failed',
-            message: error.message
-        });
+        res.status(500).json({ error: 'Database connection failed' });
     }
 });
 
@@ -84,7 +63,8 @@ app.post('/api/init', async (req, res) => {
             return res.status(400).json({ error: 'Database URL is required' });
         }
 
-        console.log('Initializing database connection...');
+        console.log('Attempting to connect to database...');
+        console.log('Database URL provided:', dbUrl.replace(/:[^:@]+@/, ':****@')); // Hide password in logs
 
         // Create new pool with provided URL
         pool = new Pool({
@@ -141,20 +121,25 @@ app.post('/api/init', async (req, res) => {
 
         res.json({ 
             message: 'Database initialized successfully',
-            tables: ['day_schedules', 'day_types', 'events'],
-            status: 'success'
+            tables: ['day_schedules', 'day_types', 'events']
         });
 
     } catch (error) {
         console.error('Database initialization error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            detail: error.detail
+        });
 
+        // Provide more specific error messages
         let errorMessage = error.message;
         if (error.code === 'ENOTFOUND') {
-            errorMessage = 'Database host not found. Check your Neon connection string.';
+            errorMessage = 'Database host not found. Check your connection string.';
         } else if (error.code === 'ECONNREFUSED') {
-            errorMessage = 'Connection refused. Check if database is accessible.';
+            errorMessage = 'Connection refused. Check if database is running.';
         } else if (error.code === '28P01') {
-            errorMessage = 'Invalid username/password. Check your Neon credentials.';
+            errorMessage = 'Invalid username/password. Check your credentials.';
         } else if (error.code === '3D000') {
             errorMessage = 'Database does not exist. Check your database name.';
         }
@@ -162,8 +147,7 @@ app.post('/api/init', async (req, res) => {
         res.status(500).json({ 
             error: errorMessage,
             code: error.code,
-            details: error.detail,
-            status: 'failed'
+            details: error.detail
         });
     }
 });
@@ -171,10 +155,6 @@ app.post('/api/init', async (req, res) => {
 // Day Schedules Routes
 app.get('/api/day-schedules', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const client = await pool.connect();
         const result = await client.query('SELECT * FROM day_schedules ORDER BY date');
         client.release();
@@ -188,16 +168,14 @@ app.get('/api/day-schedules', async (req, res) => {
 
 app.post('/api/day-schedules', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { date, schedule } = req.body;
         const client = await pool.connect();
 
         if (schedule === null || schedule === undefined) {
+            // Delete the schedule
             await client.query('DELETE FROM day_schedules WHERE date = $1', [date]);
         } else {
+            // Insert or update
             await client.query(`
                 INSERT INTO day_schedules (date, schedule, updated_at) 
                 VALUES ($1, $2, CURRENT_TIMESTAMP)
@@ -217,10 +195,6 @@ app.post('/api/day-schedules', async (req, res) => {
 // Day Types Routes
 app.get('/api/day-types', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const client = await pool.connect();
         const result = await client.query('SELECT * FROM day_types ORDER BY date');
         client.release();
@@ -234,16 +208,14 @@ app.get('/api/day-types', async (req, res) => {
 
 app.post('/api/day-types', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { date, type } = req.body;
         const client = await pool.connect();
 
         if (type === null || type === undefined) {
+            // Delete the type
             await client.query('DELETE FROM day_types WHERE date = $1', [date]);
         } else {
+            // Insert or update
             await client.query(`
                 INSERT INTO day_types (date, type, updated_at) 
                 VALUES ($1, $2, CURRENT_TIMESTAMP)
@@ -263,10 +235,6 @@ app.post('/api/day-types', async (req, res) => {
 // Events Routes
 app.get('/api/events', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { school } = req.query;
         const client = await pool.connect();
 
@@ -285,10 +253,6 @@ app.get('/api/events', async (req, res) => {
 
 app.post('/api/events', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { school, date, title, description } = req.body;
         const client = await pool.connect();
 
@@ -308,10 +272,6 @@ app.post('/api/events', async (req, res) => {
 
 app.put('/api/events/:id', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { id } = req.params;
         const { title, description } = req.body;
         const client = await pool.connect();
@@ -338,10 +298,6 @@ app.put('/api/events/:id', async (req, res) => {
 
 app.delete('/api/events/:id', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const { id } = req.params;
         const client = await pool.connect();
 
@@ -362,10 +318,6 @@ app.delete('/api/events/:id', async (req, res) => {
 // Clear all data
 app.delete('/api/clear-all', async (req, res) => {
     try {
-        if (!pool) {
-            return res.status(400).json({ error: 'Database not initialized' });
-        }
-
         const client = await pool.connect();
 
         await client.query('DELETE FROM events');
@@ -380,40 +332,9 @@ app.delete('/api/clear-all', async (req, res) => {
     }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ error: 'Endpoint not found' });
-});
-
 // Start server
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Calendar API server running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.REPL_SLUG ? 'Replit' : 'Local'}`);
-
-    if (process.env.REPL_SLUG) {
-        console.log(`🌐 Frontend URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
-        console.log(`🔧 API Status: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/status`);
-    } else {
-        console.log(`🌐 Frontend URL: http://localhost:${PORT}`);
-        console.log(`🔧 API Status: http://localhost:${PORT}/api/status`);
-    }
-
-    console.log(`✅ Server ready to accept connections`);
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-    console.log('Shutting down server...');
-    server.close(() => {
-        if (pool) {
-            pool.end();
-        }
-        process.exit(0);
-    });
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Calendar API server running on port ${PORT}`);
+    console.log(`Health check: ${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/health` : `http://localhost:${PORT}/api/health`}`);
+    console.log(`Frontend URL: ${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : `http://localhost:${PORT}`}`);
 });
