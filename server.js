@@ -41,7 +41,7 @@ function formatDate(dateInput) {
 app.get('/', (req, res) => {
     res.json({
         name: 'School Calendar API',
-        version: '2.1.0',
+        version: '2.2.0',
         status: 'running',
         endpoints: {
             health: '/api/health',
@@ -51,7 +51,8 @@ app.get('/', (req, res) => {
             events: '/api/events',
             materials: '/api/materials'
         },
-        message: 'API is running! Use the frontend HTML file to interact with the calendar system.'
+        message: 'API is running! Use the frontend HTML file to interact with the calendar system.',
+        updates: 'Added password support for teacher-only materials'
     });
 });
 
@@ -149,7 +150,7 @@ app.post('/api/init', async (req, res) => {
             )
         `);
 
-        // Materials table
+        // Materials table with password support
         await client.query(`
             CREATE TABLE IF NOT EXISTS materials (
                 id SERIAL PRIMARY KEY,
@@ -159,6 +160,7 @@ app.post('/api/init', async (req, res) => {
                 title VARCHAR(255) NOT NULL,
                 link TEXT NOT NULL,
                 description TEXT DEFAULT '',
+                password TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -187,7 +189,8 @@ app.post('/api/init', async (req, res) => {
         res.json({ 
             message: 'Database initialized successfully',
             tables: ['day_schedules', 'day_types', 'events', 'materials'],
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            features: ['password-protected materials']
         });
 
     } catch (error) {
@@ -214,6 +217,53 @@ app.post('/api/init', async (req, res) => {
             error: errorMessage,
             code: error.code,
             details: error.detail
+        });
+    }
+});
+
+// Add password column to existing materials table
+app.post('/api/add-password-column', async (req, res) => {
+    try {
+        if (!pool) {
+            return res.status(500).json({ error: 'Database not connected' });
+        }
+
+        const client = await pool.connect();
+
+        // Check if password column already exists
+        const columnCheck = await client.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'materials' AND column_name = 'password'
+        `);
+
+        if (columnCheck.rows.length > 0) {
+            client.release();
+            return res.json({ 
+                message: 'Password column already exists',
+                already_exists: true
+            });
+        }
+
+        // Add password column
+        await client.query(`
+            ALTER TABLE materials 
+            ADD COLUMN password TEXT DEFAULT ''
+        `);
+
+        console.log('Password column added to materials table');
+        client.release();
+
+        res.json({ 
+            message: 'Password column added successfully',
+            added: true
+        });
+
+    } catch (error) {
+        console.error('Error adding password column:', error);
+        res.status(500).json({ 
+            error: 'Failed to add password column',
+            details: error.message
         });
     }
 });
@@ -500,7 +550,7 @@ app.delete('/api/events/:id', async (req, res) => {
     }
 });
 
-// Materials Routes
+// Materials Routes with Password Support and Graceful Fallback
 app.get('/api/materials', async (req, res) => {
     try {
         if (!pool) {
@@ -520,10 +570,30 @@ app.get('/api/materials', async (req, res) => {
         console.log('Fetching materials for school:', school);
         const client = await pool.connect();
 
-        const result = await client.query(
-            'SELECT id, school, date, grade_level, title, link, description, created_at, updated_at FROM materials WHERE school = $1 ORDER BY date, grade_level, id',
-            [school]
-        );
+        // First, check if password column exists
+        const columnCheck = await client.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'materials' AND column_name = 'password'
+        `);
+
+        const hasPasswordColumn = columnCheck.rows.length > 0;
+        console.log('Password column exists:', hasPasswordColumn);
+
+        let result;
+        if (hasPasswordColumn) {
+            // Use query with password column
+            result = await client.query(
+                'SELECT id, school, date, grade_level, title, link, description, password, created_at, updated_at FROM materials WHERE school = $1 ORDER BY date, grade_level, id',
+                [school]
+            );
+        } else {
+            // Use query without password column and add empty password field
+            result = await client.query(
+                'SELECT id, school, date, grade_level, title, link, description, created_at, updated_at FROM materials WHERE school = $1 ORDER BY date, grade_level, id',
+                [school]
+            );
+        }
 
         client.release();
         console.log(`Found ${result.rows.length} materials for ${school}`);
@@ -531,7 +601,8 @@ app.get('/api/materials', async (req, res) => {
         // Format dates consistently and ensure we return an array
         const materials = result.rows.map(row => ({
             ...row,
-            date: formatDate(row.date)
+            date: formatDate(row.date),
+            password: hasPasswordColumn ? (row.password || '') : '' // Add password field if missing
         }));
 
         console.log(`Returning ${materials.length} materials for ${school}`);
@@ -549,7 +620,7 @@ app.post('/api/materials', async (req, res) => {
             return res.status(500).json({ error: 'Database not connected' });
         }
 
-        const { school, date, grade_level, title, link, description } = req.body;
+        const { school, date, grade_level, title, link, description, password } = req.body;
 
         // Validate required fields
         if (!school || !date || !grade_level || !title || !link) {
@@ -568,10 +639,10 @@ app.post('/api/materials', async (req, res) => {
         const client = await pool.connect();
 
         const result = await client.query(`
-            INSERT INTO materials (school, date, grade_level, title, link, description)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id, school, date, grade_level, title, link, description, created_at, updated_at
-        `, [school, formattedDate, parseInt(grade_level), title, link, description || '']);
+            INSERT INTO materials (school, date, grade_level, title, link, description, password)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, school, date, grade_level, title, link, description, password, created_at, updated_at
+        `, [school, formattedDate, parseInt(grade_level), title, link, description || '', password || '']);
 
         client.release();
 
@@ -580,7 +651,7 @@ app.post('/api/materials', async (req, res) => {
             date: formatDate(result.rows[0].date)
         };
 
-        console.log('Created material:', material.id, 'for', school, 'grade', grade_level, 'on', formattedDate);
+        console.log('Created material:', material.id, 'for', school, 'grade', grade_level, 'on', formattedDate, 'with password:', !!password);
         res.json(material);
     } catch (error) {
         console.error('Error creating material:', error);
@@ -595,7 +666,7 @@ app.put('/api/materials/:id', async (req, res) => {
         }
 
         const { id } = req.params;
-        const { title, link, description } = req.body;
+        const { title, link, description, password } = req.body;
 
         if (!title || !link) {
             return res.status(400).json({ error: 'Title and link are required' });
@@ -605,10 +676,10 @@ app.put('/api/materials/:id', async (req, res) => {
 
         const result = await client.query(`
             UPDATE materials 
-            SET title = $1, link = $2, description = $3, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $4
-            RETURNING id, school, date, grade_level, title, link, description, created_at, updated_at
-        `, [title, link, description || '', id]);
+            SET title = $1, link = $2, description = $3, password = $4, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $5
+            RETURNING id, school, date, grade_level, title, link, description, password, created_at, updated_at
+        `, [title, link, description || '', password || '', id]);
 
         client.release();
 
@@ -621,7 +692,7 @@ app.put('/api/materials/:id', async (req, res) => {
             date: formatDate(result.rows[0].date)
         };
 
-        console.log('Updated material:', id);
+        console.log('Updated material:', id, 'with password:', !!password);
         res.json(material);
     } catch (error) {
         console.error('Error updating material:', error);
@@ -690,7 +761,7 @@ app.post('/api/fix-materials-table', async (req, res) => {
         await client.query('DROP TABLE IF EXISTS materials');
         console.log('Dropped existing materials table');
 
-        // Recreate it with correct structure
+        // Recreate it with correct structure including password
         await client.query(`
             CREATE TABLE materials (
                 id SERIAL PRIMARY KEY,
@@ -700,11 +771,12 @@ app.post('/api/fix-materials-table', async (req, res) => {
                 title VARCHAR(255) NOT NULL,
                 link TEXT NOT NULL,
                 description TEXT DEFAULT '',
+                password TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log('Recreated materials table with correct structure');
+        console.log('Recreated materials table with password support');
 
         // Create index
         await client.query(`
@@ -713,8 +785,12 @@ app.post('/api/fix-materials-table', async (req, res) => {
 
         client.release();
 
-        console.log('Materials table fixed successfully');
-        res.json({ success: true, message: 'Materials table structure fixed' });
+        console.log('Materials table fixed successfully with password support');
+        res.json({ 
+            success: true, 
+            message: 'Materials table structure fixed with password support',
+            features: ['password field added']
+        });
     } catch (error) {
         console.error('Error fixing materials table:', error);
         res.status(500).json({ error: error.message });
@@ -726,4 +802,5 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`Calendar API server running on port ${PORT}`);
     console.log(`Health check: ${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/api/health` : `http://localhost:${PORT}/api/health`}`);
     console.log(`Frontend URL: ${process.env.REPL_SLUG ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : `http://localhost:${PORT}`}`);
+    console.log('Features: Password-protected materials support enabled');
 });

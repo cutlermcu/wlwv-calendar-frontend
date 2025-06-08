@@ -760,6 +760,19 @@
             text-decoration: underline;
         }
 
+        .teacher-version-link {
+            color: #fbbf24 !important;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .teacher-version-link:hover {
+            text-decoration: underline;
+        }
+
         .material-description {
             font-size: 0.9rem;
             opacity: 0.9;
@@ -1053,6 +1066,9 @@
                     <button class="btn btn-secondary" onclick="fixMaterialsTable()" style="margin-left: 10px;">
                         Fix Materials Table
                     </button>
+                    <button class="btn btn-secondary" onclick="addPasswordColumn()" style="margin-left: 10px;">
+                        Add Password Column
+                    </button>
                     <button class="btn btn-secondary" onclick="clearAllData()" style="margin-left: 10px;">
                         Clear All Data
                     </button>
@@ -1064,6 +1080,9 @@
                     </button>
                     <button class="btn btn-secondary" onclick="testDirectMaterialCreation()" style="margin-left: 10px;">
                         Test Material Creation
+                    </button>
+                    <button class="btn btn-secondary" onclick="debugMaterialPassword()" style="margin-left: 10px;">
+                        Debug Passwords
                     </button>
                     <button class="btn btn-secondary" onclick="testSchoolThemes()" style="margin-left: 10px;">
                         Test School Themes
@@ -1183,9 +1202,42 @@
                     <label class="form-label">Description</label>
                     <textarea class="form-input" id="materialDescription" rows="3" placeholder="Brief description of the material..."></textarea>
                 </div>
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="materialTeacherVersion" onchange="togglePasswordField()">
+                        Teacher Version (Password Protected)
+                    </label>
+                </div>
+                <div class="form-group" id="passwordGroup" style="display: none;">
+                    <label class="form-label">Password</label>
+                    <input type="text" class="form-input" id="materialPassword" value="WLWV2025" placeholder="Enter password">
+                </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" class="btn btn-secondary" onclick="closeMaterialModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Prompt Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Teacher Access Required</h3>
+                <button class="close-btn" onclick="closePasswordModal()">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p>This material requires a password to access.</p>
+            </div>
+            <form id="passwordForm" onsubmit="handlePasswordSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Enter Password:</label>
+                    <input type="password" class="form-input" id="passwordInput" required placeholder="Password" autofocus>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Access Material</button>
                 </div>
             </form>
         </div>
@@ -1718,6 +1770,37 @@
                 console.error('Failed to create test material:', error);
                 showNotification('Failed to create test material: ' + error.message, true);
             });
+        }
+
+        function addPasswordColumn() {
+            if (!app.state.connected) {
+                showNotification('Not connected to backend!', true);
+                return;
+            }
+
+            showNotification('Adding password column to materials table...');
+
+            // This would need to be implemented in your server.js
+            // For now, let's test with existing materials
+            fetch(app.config.apiUrl + '/materials?school=' + app.state.selectedSchool)
+                .then(response => response.json())
+                .then(materials => {
+                    console.log('Current materials structure:', materials);
+                    if (materials.length > 0) {
+                        console.log('Sample material:', materials[0]);
+                        const hasPasswordField = materials[0].hasOwnProperty('password');
+                        showNotification(hasPasswordField ? 
+                            'Password field already exists in materials!' : 
+                            'Password field missing - need to update server schema', 
+                            !hasPasswordField);
+                    } else {
+                        showNotification('No materials found to check structure');
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to check materials structure:', error);
+                    showNotification('Failed to check materials structure', true);
+                });
         }
 
         function testSchoolThemes() {
@@ -2324,9 +2407,14 @@
                 const materialEl = document.createElement('div');
                 materialEl.className = 'material-item';
 
+                // Check if it's a teacher version
+                const isTeacherVersion = material.password && material.password.trim() !== '';
+                const linkIcon = isTeacherVersion ? '🔐' : '🔗';
+                const linkClass = isTeacherVersion ? 'teacher-version-link' : 'material-link';
+
                 materialEl.innerHTML = `
-                    <a href="${material.link}" target="_blank" class="material-link">🔗 ${material.title || 'Untitled Material'}</a>
-                    <div class="material-description">${material.description || 'No description'}</div>
+                    <a href="#" class="${linkClass}" onclick="handleMaterialClick(event, ${material.id}, '${material.link}', '${material.password || ''}')">${linkIcon} ${material.title || 'Untitled Material'}</a>
+                    <div class="material-description">${material.description || 'No description'}${isTeacherVersion ? ' (Teacher Access Required)' : ''}</div>
                     ${app.state.adminMode ? `
                         <div class="material-actions">
                             <button class="material-btn" onclick="editMaterial(${material.id})">Edit</button>
@@ -2376,6 +2464,11 @@
                 form.dataset.grade = grade;
                 form.dataset.dateKey = app.state.currentDayDetails;
 
+                // Reset teacher version fields
+                document.getElementById('materialTeacherVersion').checked = false;
+                document.getElementById('passwordGroup').style.display = 'none';
+                document.getElementById('materialPassword').value = 'WLWV2025';
+
                 if (materialId) {
                     // Edit mode
                     const material = findMaterialById(materialId);
@@ -2384,6 +2477,15 @@
                         document.getElementById('materialTitle').value = material.title || '';
                         document.getElementById('materialLink').value = material.link || '';
                         document.getElementById('materialDescription').value = material.description || '';
+
+                        // Handle teacher version
+                        const hasPassword = material.password && material.password.trim() !== '';
+                        document.getElementById('materialTeacherVersion').checked = hasPassword;
+                        if (hasPassword) {
+                            document.getElementById('passwordGroup').style.display = 'block';
+                            document.getElementById('materialPassword').value = material.password;
+                        }
+
                         form.dataset.materialId = materialId;
                     }
                 } else {
@@ -2394,6 +2496,79 @@
             }
 
             if (modal) modal.classList.add('show');
+        }
+
+        function togglePasswordField() {
+            const checkbox = document.getElementById('materialTeacherVersion');
+            const passwordGroup = document.getElementById('passwordGroup');
+            const passwordInput = document.getElementById('materialPassword');
+
+            if (checkbox.checked) {
+                passwordGroup.style.display = 'block';
+                passwordInput.value = 'WLWV2025'; // Set default password
+            } else {
+                passwordGroup.style.display = 'none';
+                passwordInput.value = '';
+            }
+        }
+
+        function handleMaterialClick(event, materialId, originalLink, password) {
+            event.preventDefault();
+
+            console.log('Material clicked:', { materialId, originalLink, password });
+
+            // If no password, open directly
+            if (!password || password.trim() === '') {
+                console.log('No password required, opening directly');
+                window.open(originalLink, '_blank');
+                return;
+            }
+
+            console.log('Password required, showing modal');
+            // Store the link for later use
+            window.pendingMaterialLink = originalLink;
+            window.correctPassword = password;
+
+            // Show password modal
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.add('show');
+                // Focus on password input after modal is shown
+                setTimeout(() => {
+                    const passwordInput = document.getElementById('passwordInput');
+                    if (passwordInput) passwordInput.focus();
+                }, 100);
+            }
+        }
+
+        function closePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            const form = document.getElementById('passwordForm');
+            if (modal) modal.classList.remove('show');
+            if (form) form.reset();
+
+            // Clear stored values
+            window.pendingMaterialLink = null;
+            window.correctPassword = null;
+        }
+
+        function handlePasswordSubmit(event) {
+            event.preventDefault();
+
+            const enteredPassword = document.getElementById('passwordInput').value;
+            const correctPassword = window.correctPassword;
+
+            if (enteredPassword === correctPassword) {
+                // Correct password - open the link
+                window.open(window.pendingMaterialLink, '_blank');
+                closePasswordModal();
+                showNotification('Access granted! Opening material...');
+            } else {
+                // Wrong password
+                showNotification('Incorrect password. Please try again.', true);
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
         }
 
         function closeMaterialModal() {
@@ -2416,12 +2591,14 @@
             const title = document.getElementById('materialTitle').value;
             const link = document.getElementById('materialLink').value;
             const description = document.getElementById('materialDescription').value;
+            const isTeacherVersion = document.getElementById('materialTeacherVersion').checked;
+            const password = isTeacherVersion ? document.getElementById('materialPassword').value : '';
             const form = document.getElementById('materialForm');
             const grade = parseInt(form.dataset.grade);
             const materialId = form.dataset.materialId;
             const dateKey = form.dataset.dateKey || app.state.currentDayDetails;
 
-            console.log('Material data:', { title, link, description, grade, dateKey, materialId });
+            console.log('Material data:', { title, link, description, grade, dateKey, materialId, isTeacherVersion, password });
 
             if (!dateKey) {
                 showNotification('Error: No date selected. Please close and reopen from a calendar day.', true);
@@ -2440,7 +2617,8 @@
                 grade_level: grade,
                 title: title,
                 link: link,
-                description: description || ''
+                description: description || '',
+                password: password || ''
             };
 
             if (materialId) {
@@ -2454,6 +2632,8 @@
 
         function createMaterial(materialData, grade) {
             console.log('Creating material:', materialData);
+            console.log('Material data keys:', Object.keys(materialData));
+            console.log('Password field:', materialData.password);
 
             fetch(app.config.apiUrl + '/materials', {
                 method: 'POST',
@@ -2463,7 +2643,10 @@
             .then(response => {
                 console.log('Material creation response status:', response.status);
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    return response.text().then(text => {
+                        console.error('Server error response:', text);
+                        throw new Error(`HTTP ${response.status}: ${text}`);
+                    });
                 }
                 return response.json();
             })
@@ -2502,7 +2685,8 @@
                 body: JSON.stringify({
                     title: materialData.title,
                     link: materialData.link,
-                    description: materialData.description
+                    description: materialData.description,
+                    password: materialData.password
                 })
             })
             .then(response => {
