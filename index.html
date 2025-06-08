@@ -739,7 +739,7 @@
     
     // Point to your backend Vercel URL
     if (app.state.environment === 'production') {
-        app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+        app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
     } else {
         app.config.apiUrl = window.location.origin + '/api';
     }
