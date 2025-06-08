@@ -55,12 +55,27 @@
             opacity: 0.9;
         }
 
+        /* ADMIN VISIBILITY CONTROLS */
         .tabs {
-            display: flex;
+            display: none; /* Hidden by default */
             gap: 10px;
             margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        /* Show tabs only when admin mode is active */
+        body.admin-active .tabs {
+            display: flex;
+        }
+
+        #schoolSelect {
+            display: none; /* Hidden by default */
+        }
+
+        /* Show school select only when admin mode is active */
+        body.admin-active #schoolSelect {
+            display: inline-block;
         }
 
         .tab {
@@ -1765,8 +1780,10 @@
                 button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
                 if (app.state.adminMode) {
                     button.classList.add('active');
+                    document.body.classList.add('admin-active');
                 } else {
                     button.classList.remove('active');
+                    document.body.classList.remove('admin-active');
                 }
             }
 
