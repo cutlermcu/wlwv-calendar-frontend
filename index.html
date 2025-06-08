@@ -734,16 +734,19 @@
             }
         };
 
-        // Set API URL based on environment
         function setApiUrl() {
-            const hostname = window.location.hostname;
-            
-            // Point to your Replit backend for now
-            if (hostname === 'www.wlwvlife.org' || hostname === 'wlwvlife.org') {
-                app.config.apiUrl = 'https://d808350c-8d10-4d47-b361-db90a7ea25ab-00-20lge2tkwn88.riker.replit.dev/api';
-            } else {
-                app.config.apiUrl = window.location.origin + '/api';
-            }
+    app.state.environment = detectEnvironment();
+    
+    // Point to your backend Vercel URL
+    if (app.state.environment === 'production') {
+        app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+    } else {
+        app.config.apiUrl = window.location.origin + '/api';
+    }
+    
+    console.log('Environment detected:', app.state.environment);
+    console.log('API URL set to:', app.config.apiUrl);
+}
             
             console.log('API URL set to:', app.config.apiUrl);
             
