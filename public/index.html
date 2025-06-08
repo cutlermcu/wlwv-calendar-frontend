@@ -907,16 +907,16 @@
                         <p>Access WLHS calendar, events, and schedule information</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number">3</div>
+                                <div class="stat-number" id="wlhs-events-count">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">A Day</div>
+                                <div class="stat-number" id="wlhs-schedule">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">None</div>
-                                <div class="stat-label">Special Day</div>
+                                <div class="stat-number" id="wlhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
                             </div>
                         </div>
                     </div>
@@ -927,16 +927,16 @@
                         <p>Access WHS calendar, events, and schedule information</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number">1</div>
+                                <div class="stat-number" id="wvhs-events-count">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">A Day</div>
+                                <div class="stat-number" id="wvhs-schedule">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">None</div>
-                                <div class="stat-label">Special Day</div>
+                                <div class="stat-number" id="wvhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
                             </div>
                         </div>
                     </div>
@@ -1232,6 +1232,65 @@
             console.log('Applied district theme. Body classes:', document.body.className);
         }
 
+        function updateHomePageStats() {
+            console.log('Updating home page stats');
+            const today = formatDate(new Date());
+            console.log('Today is:', today);
+
+            // Get today's schedule (shared across schools)
+            const todaySchedule = app.state.daySchedules[today];
+            const todayType = app.state.dayTypes[today];
+
+            console.log('Today schedule:', todaySchedule);
+            console.log('Today type:', todayType);
+
+            // Update schedule for both schools (A/B schedule is shared)
+            const scheduleDisplay = todaySchedule ? `${todaySchedule} Day` : 'Regular Day';
+
+            const wlhsScheduleEl = document.getElementById('wlhs-schedule');
+            const wvhsScheduleEl = document.getElementById('wvhs-schedule');
+
+            if (wlhsScheduleEl) wlhsScheduleEl.textContent = scheduleDisplay;
+            if (wvhsScheduleEl) wvhsScheduleEl.textContent = scheduleDisplay;
+
+            // Update day type for both schools (day types are shared)
+            const dayTypeDisplay = todayType || ''; // Empty if regular day
+
+            const wlhsDayTypeEl = document.getElementById('wlhs-day-type');
+            const wvhsDayTypeEl = document.getElementById('wvhs-day-type');
+
+            if (wlhsDayTypeEl) {
+                wlhsDayTypeEl.textContent = dayTypeDisplay;
+                // Hide the stat if it's empty
+                const wlhsStatEl = wlhsDayTypeEl.closest('.stat');
+                if (wlhsStatEl) {
+                    wlhsStatEl.style.display = dayTypeDisplay ? 'block' : 'none';
+                }
+            }
+
+            if (wvhsDayTypeEl) {
+                wvhsDayTypeEl.textContent = dayTypeDisplay;
+                // Hide the stat if it's empty
+                const wvhsStatEl = wvhsDayTypeEl.closest('.stat');
+                if (wvhsStatEl) {
+                    wvhsStatEl.style.display = dayTypeDisplay ? 'block' : 'none';
+                }
+            }
+
+            // Update events count for each school
+            const wlhsEvents = app.state.events[today] ? app.state.events[today].filter(e => e.school === 'wlhs').length : 0;
+            const wvhsEvents = app.state.events[today] ? app.state.events[today].filter(e => e.school === 'wvhs').length : 0;
+
+            console.log('WLHS events today:', wlhsEvents);
+            console.log('WVHS events today:', wvhsEvents);
+
+            const wlhsEventsEl = document.getElementById('wlhs-events-count');
+            const wvhsEventsEl = document.getElementById('wvhs-events-count');
+
+            if (wlhsEventsEl) wlhsEventsEl.textContent = wlhsEvents;
+            if (wvhsEventsEl) wvhsEventsEl.textContent = wvhsEvents;
+        }
+
         function showNotification(message, isError = false) {
             console.log('Notification:', message);
             const notification = document.getElementById('notification');
@@ -1274,6 +1333,12 @@
             } else {
                 // For home, setup, admin screens - use district theme
                 applyDistrictTheme();
+
+                // Update home page stats when showing home screen
+                if (screenId === 'home') {
+                    // Wait a bit for any data loading to complete
+                    setTimeout(updateHomePageStats, 100);
+                }
             }
 
             showNotification(`Switched to ${screenId} screen`);
@@ -2027,26 +2092,48 @@
                     })
             );
 
-            // Load events
+            // Load events for both schools
             promises.push(
-                fetch(app.config.apiUrl + '/events?school=' + app.state.selectedSchool)
+                fetch(app.config.apiUrl + '/events?school=wlhs')
                     .then(response => response.json())
                     .then(events => {
-                        app.state.events = {};
+                        // Initialize events object if it doesn't exist
+                        if (!app.state.events) app.state.events = {};
+
                         events.forEach(event => {
                             if (!app.state.events[event.date]) {
                                 app.state.events[event.date] = [];
                             }
                             app.state.events[event.date].push(event);
                         });
-                        console.log('Loaded events from backend:', app.state.events);
+                        console.log('Loaded WLHS events from backend');
                     })
                     .catch(error => {
-                        console.error('Failed to load events:', error);
+                        console.error('Failed to load WLHS events:', error);
                     })
             );
 
-            // Load materials - FIXED VERSION
+            promises.push(
+                fetch(app.config.apiUrl + '/events?school=wvhs')
+                    .then(response => response.json())
+                    .then(events => {
+                        // Initialize events object if it doesn't exist
+                        if (!app.state.events) app.state.events = {};
+
+                        events.forEach(event => {
+                            if (!app.state.events[event.date]) {
+                                app.state.events[event.date] = [];
+                            }
+                            app.state.events[event.date].push(event);
+                        });
+                        console.log('Loaded WVHS events from backend');
+                    })
+                    .catch(error => {
+                        console.error('Failed to load WVHS events:', error);
+                    })
+            );
+
+            // Load materials for current school only
             promises.push(
                 fetch(app.config.apiUrl + '/materials?school=' + app.state.selectedSchool)
                     .then(response => {
@@ -2081,6 +2168,8 @@
 
             return Promise.all(promises).then(() => {
                 renderCalendar();
+                // Update home page stats after data loads
+                updateHomePageStats();
             });
         }
 
@@ -2720,7 +2809,10 @@
             // Start with district theme (home page)
             applyDistrictTheme();
 
-            loadCalendarData();
+            loadCalendarData().then(() => {
+                // Update home page stats after initial data load
+                updateHomePageStats();
+            });
             renderCalendar();
             showNotification('Calendar loaded successfully!');
         });
