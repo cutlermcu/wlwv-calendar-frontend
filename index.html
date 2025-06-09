@@ -964,10 +964,15 @@
             const environment = detectEnvironment();
             
             if (environment === 'production') {
+                // Update this to your actual backend deployment URL
                 app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
             } else {
-                app.config.apiUrl = window.location.origin + '/api';
+                // For local development
+                app.config.apiUrl = 'http://localhost:3000/api';
             }
+            
+            console.log('Environment detected:', environment);
+            console.log('API URL set to:', app.config.apiUrl);
             
             console.log('Environment detected:', environment);
             console.log('API URL set to:', app.config.apiUrl);
