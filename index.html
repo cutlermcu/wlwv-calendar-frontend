@@ -95,16 +95,37 @@
             max-width: 80px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
         }
         
-        /* Admin controls */
+        /* Admin controls - Enhanced hover functionality */
         .admin-controls {
-            position: absolute; bottom: 4px; right: 4px; display: none; gap: 2px;
+            position: absolute; bottom: 4px; right: 4px; display: none; gap: 2px; flex-direction: column;
         }
         body.admin-active .calendar-day:hover .admin-controls { display: flex; }
         .admin-btn {
             background: rgba(196, 30, 58, 0.8); color: white; border: none; padding: 2px 4px;
-            border-radius: 3px; font-size: 0.6rem; cursor: pointer;
+            border-radius: 3px; font-size: 0.6rem; cursor: pointer; min-width: 20px; text-align: center;
         }
         .admin-btn:hover { background: rgba(196, 30, 58, 1); }
+        .admin-btn.schedule-btn { background: rgba(99, 102, 241, 0.8); }
+        .admin-btn.schedule-btn:hover { background: rgba(99, 102, 241, 1); }
+        .admin-btn.type-btn { background: rgba(168, 85, 247, 0.8); }
+        .admin-btn.type-btn:hover { background: rgba(168, 85, 247, 1); }
+        
+        /* Quick edit dropdowns */
+        .quick-edit-dropdown {
+            position: absolute; bottom: 25px; right: 4px; background: white; border: 2px solid #e5e7eb;
+            border-radius: 6px; padding: 8px; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 120px;
+        }
+        .quick-edit-dropdown.show { display: block; }
+        .quick-edit-dropdown select, .quick-edit-dropdown input {
+            width: 100%; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;
+        }
+        .quick-edit-dropdown .btn-group {
+            display: flex; gap: 4px; margin-top: 8px;
+        }
+        .quick-edit-dropdown .btn-group button {
+            flex: 1; padding: 4px 8px; font-size: 11px;
+        }
         
         /* Modal styles */
         .modal {
@@ -644,17 +665,82 @@
                     const adminControls = document.createElement('div');
                     adminControls.className = 'admin-controls';
                     
+                    // A/B Schedule quick edit
+                    const scheduleBtn = document.createElement('button');
+                    scheduleBtn.className = 'admin-btn schedule-btn';
+                    scheduleBtn.textContent = app.daySchedules[dateStr] || 'A/B';
+                    scheduleBtn.title = 'Quick edit A/B schedule';
+                    scheduleBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        showQuickScheduleEdit(dateStr, e.target);
+                    };
+                    
+                    // Day Type quick edit
+                    const typeBtn = document.createElement('button');
+                    typeBtn.className = 'admin-btn type-btn';
+                    typeBtn.textContent = app.dayTypes[dateStr] ? '📝' : 'Type';
+                    typeBtn.title = 'Quick edit day type';
+                    typeBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        showQuickTypeEdit(dateStr, e.target);
+                    };
+                    
+                    // Add Event quick button
+                    const eventBtn = document.createElement('button');
+                    eventBtn.className = 'admin-btn';
+                    eventBtn.textContent = '📅';
+                    eventBtn.title = 'Add event';
+                    eventBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        app.selectedDay = dateStr;
+                        showEventModal();
+                    };
+                    
+                    // Full edit button
                     const editBtn = document.createElement('button');
                     editBtn.className = 'admin-btn';
-                    editBtn.textContent = '✏️';
+                    editBtn.textContent = '⚙️';
+                    editBtn.title = 'Full day management';
                     editBtn.onclick = (e) => {
                         e.stopPropagation();
                         showDayModal(dateStr);
                     };
                     
+                    adminControls.appendChild(scheduleBtn);
+                    adminControls.appendChild(typeBtn);
+                    adminControls.appendChild(eventBtn);
                     adminControls.appendChild(editBtn);
                     dayElement.appendChild(adminControls);
                 }
+
+                // Add quick edit dropdowns (hidden by default)
+                const scheduleDropdown = document.createElement('div');
+                scheduleDropdown.className = 'quick-edit-dropdown';
+                scheduleDropdown.id = `schedule-dropdown-${dateStr}`;
+                scheduleDropdown.innerHTML = `
+                    <select id="quick-schedule-${dateStr}">
+                        <option value="">No Schedule</option>
+                        <option value="A">A Day</option>
+                        <option value="B">B Day</option>
+                    </select>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveQuickSchedule('${dateStr}')">Save</button>
+                        <button class="btn btn-secondary" onclick="hideQuickEdit('schedule-dropdown-${dateStr}')">Cancel</button>
+                    </div>
+                `;
+                dayElement.appendChild(scheduleDropdown);
+
+                const typeDropdown = document.createElement('div');
+                typeDropdown.className = 'quick-edit-dropdown';
+                typeDropdown.id = `type-dropdown-${dateStr}`;
+                typeDropdown.innerHTML = `
+                    <input type="text" id="quick-type-${dateStr}" placeholder="e.g. Early Release" maxlength="20">
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveQuickType('${dateStr}')">Save</button>
+                        <button class="btn btn-secondary" onclick="hideQuickEdit('type-dropdown-${dateStr}')">Cancel</button>
+                    </div>
+                `;
+                dayElement.appendChild(typeDropdown);
 
                 grid.appendChild(dayElement);
             }
