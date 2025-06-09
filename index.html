@@ -540,6 +540,7 @@
 
         function toggleAdminMode() {
             app.adminMode = !app.adminMode;
+            console.log('Admin mode toggled to:', app.adminMode); // Debug log
 
             const button = document.getElementById('adminToggle');
             if (button) {
@@ -547,11 +548,18 @@
                 if (app.adminMode) {
                     button.classList.add('active');
                     document.body.classList.add('admin-active');
+                    console.log('Added admin-active class to body'); // Debug log
                 } else {
                     button.classList.remove('active');
                     document.body.classList.remove('admin-active');
+                    console.log('Removed admin-active class from body'); // Debug log
                 }
+            } else {
+                console.error('Admin toggle button not found!'); // Debug log
             }
+
+            // Re-render calendar to add/remove admin controls
+            renderCalendar();
 
             showNotification(`Admin mode ${app.adminMode ? 'enabled' : 'disabled'}`);
         }
