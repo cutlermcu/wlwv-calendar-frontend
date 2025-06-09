@@ -68,6 +68,8 @@
         body.school-wvhs .calendar-header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         
         .calendar-controls { display: flex; gap: 15px; align-items: center; }
+        #schoolSelect { display: none; }
+        body.admin-active #schoolSelect { display: inline-block; }
         .nav-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .nav-btn:hover { background: rgba(255, 255, 255, 0.3); }
         .current-month { font-size: 1.2rem; font-weight: 600; min-width: 150px; text-align: center; }
@@ -619,9 +621,8 @@
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
                 dayElement.onclick = () => {
-                    if (!app.adminMode) {
-                        showDayModal(dateStr);
-                    }
+                    // Always allow clicking to open day modal, regardless of admin mode
+                    showDayModal(dateStr);
                 };
 
                 const isToday = currentDate.toDateString() === new Date().toDateString();
