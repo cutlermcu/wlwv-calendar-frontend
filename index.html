@@ -1085,35 +1085,47 @@
         }
 
         function setApiUrl() {
-            app.state.environment = detectEnvironment();
-            
-            // Set API URL based on environment
-            if (app.state.environment === 'development') {
-                app.config.apiUrl = CONFIG.LOCAL_API_URL;
-            } else {
-                app.config.apiUrl = CONFIG.PRODUCTION_API_URL;
-            }
-            
-            console.log('🌍 Environment detected:', app.state.environment);
-            console.log('🔗 API URL set to:', app.config.apiUrl);
-            
-            // Update environment indicator
-            const envIndicator = document.getElementById('envType');
-            if (envIndicator) {
-                envIndicator.textContent = app.state.environment;
-                envIndicator.style.color = app.state.environment === 'development' ? '#10b981' : '#f59e0b';
-            }
-            
-            // Update the form display
-            const apiUrlInput = document.getElementById('apiUrl');
-            if (apiUrlInput) {
-                apiUrlInput.value = app.config.apiUrl;
-            }
+            try {
+                app.state.environment = detectEnvironment();
+                
+                // Set API URL based on environment
+                if (app.state.environment === 'development') {
+                    app.config.apiUrl = CONFIG.LOCAL_API_URL;
+                } else {
+                    app.config.apiUrl = CONFIG.PRODUCTION_API_URL;
+                }
+                
+                console.log('🌍 Environment detected:', app.state.environment);
+                console.log('🔗 API URL set to:', app.config.apiUrl);
+                
+                // Update environment indicator
+                const envIndicator = document.getElementById('envType');
+                if (envIndicator) {
+                    envIndicator.textContent = app.state.environment;
+                    envIndicator.style.color = app.state.environment === 'development' ? '#10b981' : '#f59e0b';
+                }
+                
+                // Update the form display
+                const apiUrlInput = document.getElementById('apiUrl');
+                if (apiUrlInput) {
+                    apiUrlInput.value = app.config.apiUrl;
+                }
 
-            // Validate configuration
-            if (app.state.environment === 'production' && app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
-                console.error('🚨 CONFIGURATION ERROR: Please update the PRODUCTION_API_URL in the CONFIG object!');
-                showNotification('⚠️ Backend URL not configured! Please update the configuration.', true);
+                // Validate configuration
+                if (app.state.environment === 'production' && app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
+                    console.error('🚨 CONFIGURATION ERROR: Please update the PRODUCTION_API_URL in the CONFIG object!');
+                    showNotification('⚠️ Backend URL not configured! Please update the configuration.', true);
+                }
+            } catch (error) {
+                console.error('Error in setApiUrl:', error);
+                app.state.environment = 'production';
+                app.config.apiUrl = CONFIG.PRODUCTION_API_URL;
+                
+                const envIndicator = document.getElementById('envType');
+                if (envIndicator) {
+                    envIndicator.textContent = 'production (fallback)';
+                    envIndicator.style.color = '#ef4444';
+                }
             }
         }
 
@@ -1893,5 +1905,6 @@
             }
             
             showNotification('🎓 WLWV Calendar loaded successfully!');
-            console.log('✅ Frontend initialization complete');
-        });
+    </script>
+</body>
+</html>
