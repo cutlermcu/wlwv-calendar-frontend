@@ -874,15 +874,7 @@
                         </span>
                     </div>
                     <div class="calendar-controls">
-                        <div class="grade-selector">
-                            <span style="color: white; font-size: 0.9rem;">Grade:</span>
-                            <select class="grade-select" id="gradeSelect" onchange="changeGrade()">
-                                <option value="9">9th Grade</option>
-                                <option value="10">10th Grade</option>
-                                <option value="11">11th Grade</option>
-                                <option value="12">12th Grade</option>
-                            </select>
-                        </div>
+
                         <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
                         <div class="current-month" id="currentMonth">June 2025</div>
                         <button class="nav-btn" onclick="changeMonth(1)">›</button>
@@ -1038,16 +1030,6 @@
             const schoolSelect = document.getElementById('schoolSelect');
             if (schoolSelect) {
                 schoolSelect.value = schoolCode;
-            }
-
-            // Load grade from localStorage for this school
-            const savedGrade = localStorage.getItem(`grade_${schoolCode}`);
-            if (savedGrade) {
-                app.state.selectedGrade = parseInt(savedGrade);
-                const gradeSelect = document.getElementById('gradeSelect');
-                if (gradeSelect) {
-                    gradeSelect.value = savedGrade;
-                }
             }
             
             showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
@@ -1213,9 +1195,8 @@
             return fetch(`${app.config.apiUrl}/materials?school=${app.state.selectedSchool}`)
                 .then(response => response.json())
                 .then(data => {
-                    app.state.materials = data.filter(material => 
-                        material.grade_level === app.state.selectedGrade
-                    );
+                    // Load materials for all grades, not filtered
+                    app.state.materials = data;
                 })
                 .catch(error => {
                     console.error('Failed to load materials:', error);
@@ -1354,23 +1335,8 @@
             // Get day's data
             const dayEvents = app.state.events.filter(event => event.date === dateString);
             const dayMaterials = app.state.materials.filter(material => material.date === dateString);
-            const daySchedule = app.state.daySchedules.find(s => s.date === dateString);
-            const dayType = app.state.dayTypes.find(t => t.date === dateString);
 
             let content = '';
-
-            // Day info section
-            if (daySchedule || dayType) {
-                content += '<div class="day-info">';
-                content += '<strong>Day Information:</strong><br>';
-                if (daySchedule) {
-                    content += `Schedule: ${daySchedule.schedule} Day<br>`;
-                }
-                if (dayType) {
-                    content += `Type: ${dayType.type}`;
-                }
-                content += '</div>';
-            }
 
             // Events section
             content += '<div class="section">';
@@ -1400,37 +1366,56 @@
             }
             content += '</div>';
 
-            // Materials section
+            // Materials section - organized by grade level
             content += '<div class="section">';
-            content += `<div class="section-title">📚 Materials (Grade ${app.state.selectedGrade})</div>`;
+            content += '<div class="section-title">📚 Materials</div>';
             
             if (dayMaterials.length > 0) {
+                // Group materials by grade level
+                const materialsByGrade = {};
                 dayMaterials.forEach(material => {
-                    const isProtected = material.password && material.password.trim() !== '';
-                    
-                    content += `<div class="material-item ${isProtected ? 'material-protected' : ''}">`;
-                    content += `<div class="material-title">${material.title}`;
-                    if (isProtected) {
-                        content += '<span class="protected-badge">🔒 Protected</span>';
+                    if (!materialsByGrade[material.grade_level]) {
+                        materialsByGrade[material.grade_level] = [];
                     }
-                    content += '</div>';
-                    
-                    if (material.description) {
-                        content += `<div class="material-description">${material.description}</div>`;
+                    materialsByGrade[material.grade_level].push(material);
+                });
+
+                // Display materials for each grade level
+                [9, 10, 11, 12].forEach(grade => {
+                    if (materialsByGrade[grade] && materialsByGrade[grade].length > 0) {
+                        content += `<div style="margin-bottom: 25px;">`;
+                        content += `<h4 style="color: #c41e3a; margin-bottom: 10px; font-size: 1.1rem;">Grade ${grade}</h4>`;
+                        
+                        materialsByGrade[grade].forEach(material => {
+                            const isProtected = material.password && material.password.trim() !== '';
+                            
+                            content += `<div class="material-item ${isProtected ? 'material-protected' : ''}">`;
+                            content += `<div class="material-title">${material.title}`;
+                            if (isProtected) {
+                                content += '<span class="protected-badge">🔒 Protected</span>';
+                            }
+                            content += '</div>';
+                            
+                            if (material.description) {
+                                content += `<div class="material-description">${material.description}</div>`;
+                            }
+                            
+                            if (isProtected) {
+                                content += `
+                                    <div class="password-form">
+                                        <input type="password" class="password-input" placeholder="Enter password" id="password-${material.id}">
+                                        <button class="password-btn" onclick="accessMaterial(${material.id}, '${material.link}')">Access</button>
+                                    </div>
+                                `;
+                            } else {
+                                content += `<a href="${material.link}" target="_blank" class="material-link">View Material</a>`;
+                            }
+                            
+                            content += '</div>';
+                        });
+                        
+                        content += '</div>';
                     }
-                    
-                    if (isProtected) {
-                        content += `
-                            <div class="password-form">
-                                <input type="password" class="password-input" placeholder="Enter password" id="password-${material.id}">
-                                <button class="password-btn" onclick="accessMaterial(${material.id}, '${material.link}')">Access</button>
-                            </div>
-                        `;
-                    } else {
-                        content += `<a href="${material.link}" target="_blank" class="material-link">View Material</a>`;
-                    }
-                    
-                    content += '</div>';
                 });
             } else {
                 content += '<div class="empty-state">No materials available for this day</div>';
