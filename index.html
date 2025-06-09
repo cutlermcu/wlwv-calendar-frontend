@@ -97,34 +97,83 @@
         
         /* Admin controls - Enhanced hover functionality */
         .admin-controls {
-            position: absolute; bottom: 4px; right: 4px; display: none; gap: 2px; flex-direction: column;
+            position: absolute; 
+            bottom: 4px; 
+            right: 4px; 
+            display: none; 
+            gap: 2px; 
+            flex-direction: column;
+            z-index: 50;
         }
-        body.admin-active .calendar-day:hover .admin-controls { display: flex; }
+        
+        /* This is the key rule - make sure it's specific enough */
+        body.admin-active .calendar-day:hover .admin-controls { 
+            display: flex !important; 
+        }
+        
         .admin-btn {
-            background: rgba(196, 30, 58, 0.8); color: white; border: none; padding: 2px 4px;
-            border-radius: 3px; font-size: 0.6rem; cursor: pointer; min-width: 20px; text-align: center;
+            background: rgba(196, 30, 58, 0.9); 
+            color: white; 
+            border: none; 
+            padding: 3px 6px;
+            border-radius: 3px; 
+            font-size: 0.65rem; 
+            cursor: pointer; 
+            min-width: 22px; 
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-        .admin-btn:hover { background: rgba(196, 30, 58, 1); }
-        .admin-btn.schedule-btn { background: rgba(99, 102, 241, 0.8); }
-        .admin-btn.schedule-btn:hover { background: rgba(99, 102, 241, 1); }
-        .admin-btn.type-btn { background: rgba(168, 85, 247, 0.8); }
-        .admin-btn.type-btn:hover { background: rgba(168, 85, 247, 1); }
+        .admin-btn:hover { 
+            background: rgba(196, 30, 58, 1); 
+            transform: scale(1.05);
+        }
+        .admin-btn.schedule-btn { 
+            background: rgba(99, 102, 241, 0.9); 
+        }
+        .admin-btn.schedule-btn:hover { 
+            background: rgba(99, 102, 241, 1); 
+        }
+        .admin-btn.type-btn { 
+            background: rgba(168, 85, 247, 0.9); 
+        }
+        .admin-btn.type-btn:hover { 
+            background: rgba(168, 85, 247, 1); 
+        }
         
         /* Quick edit dropdowns */
         .quick-edit-dropdown {
-            position: absolute; bottom: 25px; right: 4px; background: white; border: 2px solid #e5e7eb;
-            border-radius: 6px; padding: 8px; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 120px;
+            position: absolute; 
+            bottom: 30px; 
+            right: 4px; 
+            background: white; 
+            border: 2px solid #e5e7eb;
+            border-radius: 8px; 
+            padding: 12px; 
+            display: none; 
+            z-index: 200; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            min-width: 140px;
         }
-        .quick-edit-dropdown.show { display: block; }
+        .quick-edit-dropdown.show { 
+            display: block; 
+        }
         .quick-edit-dropdown select, .quick-edit-dropdown input {
-            width: 100%; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;
+            width: 100%; 
+            padding: 6px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 4px; 
+            font-size: 13px;
+            margin-bottom: 8px;
         }
         .quick-edit-dropdown .btn-group {
-            display: flex; gap: 4px; margin-top: 8px;
+            display: flex; 
+            gap: 6px;
         }
         .quick-edit-dropdown .btn-group button {
-            flex: 1; padding: 4px 8px; font-size: 11px;
+            flex: 1; 
+            padding: 6px 8px; 
+            font-size: 11px;
         }
         
         /* Modal styles */
@@ -274,7 +323,23 @@
 
             <div class="form-group">
                 <label class="form-label">Day Type</label>
-                <input type="text" class="form-input" id="dayType" placeholder="e.g. Professional Development, Early Release">
+                <select class="form-select" id="dayType">
+                    <option value="">No Special Day</option>
+                    <option value="Professional Development">Professional Development</option>
+                    <option value="Early Release">Early Release</option>
+                    <option value="Late Start">Late Start</option>
+                    <option value="No School">No School</option>
+                    <option value="Holiday">Holiday</option>
+                    <option value="Inservice">Inservice</option>
+                    <option value="Conference Day">Conference Day</option>
+                    <option value="Assembly">Assembly</option>
+                    <option value="Testing Day">Testing Day</option>
+                    <option value="Finals Week">Finals Week</option>
+                    <option value="Homecoming Week">Homecoming Week</option>
+                    <option value="Spirit Week">Spirit Week</option>
+                    <option value="Other">Other (type below)</option>
+                </select>
+                <input type="text" class="form-input" id="dayTypeCustom" placeholder="Custom day type (if 'Other' selected)" style="margin-top: 8px; display: none;">
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -734,7 +799,22 @@
                 typeDropdown.className = 'quick-edit-dropdown';
                 typeDropdown.id = `type-dropdown-${dateStr}`;
                 typeDropdown.innerHTML = `
-                    <input type="text" id="quick-type-${dateStr}" placeholder="e.g. Early Release" maxlength="20">
+                    <select id="quick-type-${dateStr}">
+                        <option value="">No Special Day</option>
+                        <option value="Professional Development">Professional Development</option>
+                        <option value="Early Release">Early Release</option>
+                        <option value="Late Start">Late Start</option>
+                        <option value="No School">No School</option>
+                        <option value="Holiday">Holiday</option>
+                        <option value="Inservice">Inservice</option>
+                        <option value="Conference Day">Conference Day</option>
+                        <option value="Assembly">Assembly</option>
+                        <option value="Testing Day">Testing Day</option>
+                        <option value="Finals Week">Finals Week</option>
+                        <option value="Homecoming Week">Homecoming Week</option>
+                        <option value="Spirit Week">Spirit Week</option>
+                    </select>
+                    <input type="text" id="quick-type-custom-${dateStr}" placeholder="Custom type..." style="display: none;">
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="saveQuickType('${dateStr}')">Save</button>
                         <button class="btn btn-secondary" onclick="hideQuickEdit('type-dropdown-${dateStr}')">Cancel</button>
@@ -1173,15 +1253,90 @@
             }
         }
 
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    closeModal(modal.id);
-                }
+        // Quick edit functions
+        function showQuickScheduleEdit(dateStr, button) {
+            hideAllQuickEdits();
+            const dropdown = document.getElementById(`schedule-dropdown-${dateStr}`);
+            const select = document.getElementById(`quick-schedule-${dateStr}`);
+            
+            select.value = app.daySchedules[dateStr] || '';
+            dropdown.classList.add('show');
+            select.focus();
+        }
+
+        function showQuickTypeEdit(dateStr, button) {
+            hideAllQuickEdits();
+            const dropdown = document.getElementById(`type-dropdown-${dateStr}`);
+            const input = document.getElementById(`quick-type-${dateStr}`);
+            
+            input.value = app.dayTypes[dateStr] || '';
+            dropdown.classList.add('show');
+            input.focus();
+        }
+
+        function hideQuickEdit(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        function hideAllQuickEdits() {
+            document.querySelectorAll('.quick-edit-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
             });
         }
+
+        async function saveQuickSchedule(dateStr) {
+            const select = document.getElementById(`quick-schedule-${dateStr}`);
+            const schedule = select.value;
+            
+            try {
+                await fetch(`${app.apiUrl}/api/day-schedules`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: dateStr,
+                        schedule: schedule || null
+                    })
+                });
+
+                showNotification('✅ A/B schedule updated!');
+                hideQuickEdit(`schedule-dropdown-${dateStr}`);
+                loadCalendarData();
+            } catch (error) {
+                showNotification('❌ Failed to update schedule: ' + error.message, true);
+            }
+        }
+
+        async function saveQuickType(dateStr) {
+            const input = document.getElementById(`quick-type-${dateStr}`);
+            const type = input.value.trim();
+            
+            try {
+                await fetch(`${app.apiUrl}/api/day-types`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: dateStr,
+                        type: type || null
+                    })
+                });
+
+                showNotification('✅ Day type updated!');
+                hideQuickEdit(`type-dropdown-${dateStr}`);
+                loadCalendarData();
+            } catch (error) {
+                showNotification('❌ Failed to update day type: ' + error.message, true);
+            }
+        }
+
+        // Close quick edits when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.quick-edit-dropdown') && !event.target.closest('.admin-btn')) {
+                hideAllQuickEdits();
+            }
+        });
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -1207,6 +1362,21 @@
         window.saveMaterial = saveMaterial;
         window.editMaterial = editMaterial;
         window.deleteMaterial = deleteMaterial;
+        window.showQuickScheduleEdit = showQuickScheduleEdit;
+        window.showQuickTypeEdit = showQuickTypeEdit;
+        window.hideQuickEdit = hideQuickEdit;
+        window.saveQuickSchedule = saveQuickSchedule;
+        window.saveQuickType = saveQuickType;
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        }
 
         console.log('✅ Script loaded successfully');
     </script>
