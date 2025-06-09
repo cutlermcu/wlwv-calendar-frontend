@@ -624,9 +624,16 @@
             display: none;
         }
 
-        /* Show designation menu only in admin mode - SIMPLIFIED */
-        body.admin-active .day-designation:hover .day-designation-menu {
-            display: block;
+        /* Show designation menu - SIMPLIFIED */
+        .day-designation:hover .day-designation-menu {
+            display: block !important;
+        }
+
+        /* DEBUG: Make day designations more visible */
+        .day-designation.placeholder {
+            background: #9ca3af !important;
+            color: white !important;
+            border: 2px solid #ef4444 !important;
         }
 
         .designation-menu-item {
@@ -1512,9 +1519,9 @@
             
             // Point to your backend Vercel URL
             if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
             } else {
-                app.config.apiUrl = window.location.origin + '/api';
+                app.config.apiUrl = window.location.origin;
             }
             
             console.log('Environment detected:', app.state.environment);
@@ -1600,9 +1607,11 @@
 
         function testConnection() {
             showNotification('Testing connection...');
+            console.log('Testing connection to:', app.config.apiUrl + '/health');
 
             fetch(app.config.apiUrl + '/health')
                 .then(response => {
+                    console.log('Health check response:', response.status, response.statusText);
                     if (response.ok) {
                         return response.json();
                     } else {
@@ -1610,11 +1619,13 @@
                     }
                 })
                 .then(data => {
+                    console.log('Health check data:', data);
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
                 })
                 .catch(error => {
+                    console.error('Connection test failed:', error);
                     app.state.connected = false;
                     updateConnectionStatus(false, 'Connection failed: ' + error.message);
                     showNotification('❌ Connection failed: ' + error.message, true);
@@ -1739,63 +1750,115 @@
         }
 
         function loadCalendarData() {
-            if (!app.state.connected) return;
+            console.log('loadCalendarData called, connected:', app.state.connected);
+            
+            if (!app.state.connected) {
+                console.log('Not connected, skipping data load');
+                return;
+            }
 
             // Load day schedules
             fetch(app.config.apiUrl + '/day-schedules')
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Day schedules response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Day schedules response data:', data);
                     app.state.daySchedules = {};
-                    data.forEach(item => {
-                        app.state.daySchedules[item.date] = item.schedule;
-                    });
+                    if (Array.isArray(data)) {
+                        data.forEach(item => {
+                            app.state.daySchedules[item.date] = item.schedule;
+                        });
+                    } else {
+                        console.error('Day schedules data is not an array:', data);
+                    }
                     renderCalendar();
                 })
-                .catch(error => console.error('Error loading day schedules:', error));
+                .catch(error => {
+                    console.error('Error loading day schedules:', error);
+                    // Continue anyway
+                    renderCalendar();
+                });
 
             // Load day types
             fetch(app.config.apiUrl + '/day-types')
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Day types response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Day types response data:', data);
                     app.state.dayTypes = {};
-                    data.forEach(item => {
-                        app.state.dayTypes[item.date] = item.type;
-                    });
+                    if (Array.isArray(data)) {
+                        data.forEach(item => {
+                            app.state.dayTypes[item.date] = item.type;
+                        });
+                    } else {
+                        console.error('Day types data is not an array:', data);
+                    }
                     renderCalendar();
                 })
-                .catch(error => console.error('Error loading day types:', error));
+                .catch(error => {
+                    console.error('Error loading day types:', error);
+                    // Continue anyway
+                    renderCalendar();
+                });
 
             // Load events
             fetch(app.config.apiUrl + `/events?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Events response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Events response data:', data);
                     app.state.events = {};
-                    data.forEach(event => {
-                        if (!app.state.events[event.date]) {
-                            app.state.events[event.date] = [];
-                        }
-                        app.state.events[event.date].push(event);
-                    });
+                    if (Array.isArray(data)) {
+                        data.forEach(event => {
+                            if (!app.state.events[event.date]) {
+                                app.state.events[event.date] = [];
+                            }
+                            app.state.events[event.date].push(event);
+                        });
+                    } else {
+                        console.error('Events data is not an array:', data);
+                    }
                     renderCalendar();
                 })
-                .catch(error => console.error('Error loading events:', error));
+                .catch(error => {
+                    console.error('Error loading events:', error);
+                    // Continue anyway
+                    renderCalendar();
+                });
 
             // Load materials
             fetch(app.config.apiUrl + `/materials?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.materials = {};
-                    data.forEach(material => {
-                        if (!app.state.materials[material.date]) {
-                            app.state.materials[material.date] = {};
-                        }
-                        if (!app.state.materials[material.date][material.grade_level]) {
-                            app.state.materials[material.date][material.grade_level] = [];
-                        }
-                        app.state.materials[material.date][material.grade_level].push(material);
-                    });
+                .then(response => {
+                    console.log('Materials response status:', response.status);
+                    return response.json();
                 })
-                .catch(error => console.error('Error loading materials:', error));
+                .then(data => {
+                    console.log('Materials response data:', data);
+                    app.state.materials = {};
+                    if (Array.isArray(data)) {
+                        data.forEach(material => {
+                            if (!app.state.materials[material.date]) {
+                                app.state.materials[material.date] = {};
+                            }
+                            if (!app.state.materials[material.date][material.grade_level]) {
+                                app.state.materials[material.date][material.grade_level] = [];
+                            }
+                            app.state.materials[material.date][material.grade_level].push(material);
+                        });
+                    } else {
+                        console.error('Materials data is not an array:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading materials:', error);
+                    // Continue anyway - don't block other functionality
+                });
         }
 
         function renderCalendar() {
@@ -2433,16 +2496,25 @@
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
             setApiUrl();
             
             // Apply district theme initially
             document.body.classList.add('district-theme');
             
+            // FORCE admin mode for debugging
+            console.log('FORCING admin mode for debugging');
+            app.state.adminMode = true;
+            document.body.classList.add('admin-active');
+            
             renderCalendar();
             showNotification('Calendar loaded successfully!');
             
             // Test connection on load
-            setTimeout(testConnection, 1000);
+            setTimeout(() => {
+                console.log('Testing connection after 1 second...');
+                testConnection();
+            }, 1000);
         });
     </script>
 </body>
