@@ -444,12 +444,15 @@
             transition: all 0.2s ease;
             z-index: 200;
             min-width: 80px;
+            pointer-events: none;
         }
 
-        .ab-schedule-badge:hover .ab-schedule-menu {
+        .ab-schedule-badge:hover .ab-schedule-menu,
+        .ab-schedule-menu:hover {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
         }
 
         .ab-menu-item {
@@ -602,13 +605,16 @@
             transition: all 0.2s ease;
             z-index: 100;
             min-width: 150px;
+            pointer-events: none;
         }
 
         /* Show designation menu only in admin mode */
-        body.admin-active .day-designation:hover .day-designation-menu {
+        body.admin-active .day-designation:hover .day-designation-menu,
+        body.admin-active .day-designation-menu:hover {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
         }
 
         .designation-menu-item {
@@ -1834,9 +1840,26 @@
                     const abMenu = document.createElement('div');
                     abMenu.className = 'ab-schedule-menu';
                     abMenu.innerHTML = `
-                        <div class="ab-menu-item option-a" onclick="setSchedule('${dateStr}', 'A')">A</div>
-                        <div class="ab-menu-item option-b" onclick="setSchedule('${dateStr}', 'B')">B</div>
-                        <div class="ab-menu-item option-clear" onclick="setSchedule('${dateStr}', null)">Clear</div>
+                        <div class="ab-menu-item option-a" onclick="setSchedule('${dateStr}', 'A'); event.stopPropagation();">A</div>
+                        <div class="ab-menu-item option-b" onclick="setSchedule('${dateStr}', 'B'); event.stopPropagation();">B</div>
+                        <div class="ab-menu-item option-clear" onclick="setSchedule('${dateStr}', null); event.stopPropagation();">Clear</div>
+                    `;
+                    abBadge.appendChild(abMenu);
+                    dayElement.appendChild(abBadge);
+                } else if (app.state.adminMode) {
+                    // Show empty A/B badge in admin mode for assignment
+                    const abBadge = document.createElement('div');
+                    abBadge.className = 'ab-schedule-badge';
+                    abBadge.style.background = '#9ca3af';
+                    abBadge.textContent = '?';
+                    abBadge.title = 'Click to assign A/B schedule';
+                    
+                    // A/B Schedule dropdown menu
+                    const abMenu = document.createElement('div');
+                    abMenu.className = 'ab-schedule-menu';
+                    abMenu.innerHTML = `
+                        <div class="ab-menu-item option-a" onclick="setSchedule('${dateStr}', 'A'); event.stopPropagation();">A</div>
+                        <div class="ab-menu-item option-b" onclick="setSchedule('${dateStr}', 'B'); event.stopPropagation();">B</div>
                     `;
                     abBadge.appendChild(abMenu);
                     dayElement.appendChild(abBadge);
@@ -1872,21 +1895,48 @@
                     designation.className = `day-designation ${dayType.toLowerCase().replace(/\s+/g, '-')}`;
                     designation.textContent = dayType;
                     
-                    // Day designation dropdown menu
+                    // Day designation dropdown menu (only in admin mode)
+                    if (app.state.adminMode) {
+                        const designationMenu = document.createElement('div');
+                        designationMenu.className = 'day-designation-menu';
+                        designationMenu.innerHTML = `
+                            <div class="designation-menu-item no-school" onclick="setDayType('${dateStr}', 'No School'); event.stopPropagation();">No School</div>
+                            <div class="designation-menu-item early-release" onclick="setDayType('${dateStr}', 'Early Release'); event.stopPropagation();">Early Release</div>
+                            <div class="designation-menu-item late-start" onclick="setDayType('${dateStr}', 'Late Start'); event.stopPropagation();">Late Start</div>
+                            <div class="designation-menu-item half-day" onclick="setDayType('${dateStr}', 'Half Day'); event.stopPropagation();">Half Day</div>
+                            <div class="designation-menu-item access" onclick="setDayType('${dateStr}', 'Access'); event.stopPropagation();">Access</div>
+                            <div class="designation-menu-item grading" onclick="setDayType('${dateStr}', 'Grading'); event.stopPropagation();">Grading</div>
+                            <div class="designation-menu-item staff-development" onclick="setDayType('${dateStr}', 'Staff Development'); event.stopPropagation();">Staff Development</div>
+                            <div class="designation-menu-item holiday" onclick="setDayType('${dateStr}', 'Holiday'); event.stopPropagation();">Holiday</div>
+                            <div class="designation-menu-item furlough" onclick="setDayType('${dateStr}', 'Furlough'); event.stopPropagation();">Furlough</div>
+                            <div class="designation-menu-item finals" onclick="setDayType('${dateStr}', 'Finals'); event.stopPropagation();">Finals</div>
+                            <div class="designation-menu-item clear" onclick="setDayType('${dateStr}', null); event.stopPropagation();">Clear</div>
+                        `;
+                        designation.appendChild(designationMenu);
+                    }
+                    dayElement.appendChild(designation);
+                } else if (app.state.adminMode) {
+                    // Show placeholder for day designation in admin mode
+                    const designation = document.createElement('div');
+                    designation.className = 'day-designation';
+                    designation.style.background = '#9ca3af';
+                    designation.style.color = 'white';
+                    designation.textContent = 'Set Type';
+                    designation.title = 'Click to set day type';
+                    
                     const designationMenu = document.createElement('div');
                     designationMenu.className = 'day-designation-menu';
                     designationMenu.innerHTML = `
-                        <div class="designation-menu-item no-school" onclick="setDayType('${dateStr}', 'No School')">No School</div>
-                        <div class="designation-menu-item early-release" onclick="setDayType('${dateStr}', 'Early Release')">Early Release</div>
-                        <div class="designation-menu-item late-start" onclick="setDayType('${dateStr}', 'Late Start')">Late Start</div>
-                        <div class="designation-menu-item half-day" onclick="setDayType('${dateStr}', 'Half Day')">Half Day</div>
-                        <div class="designation-menu-item access" onclick="setDayType('${dateStr}', 'Access')">Access</div>
-                        <div class="designation-menu-item grading" onclick="setDayType('${dateStr}', 'Grading')">Grading</div>
-                        <div class="designation-menu-item staff-development" onclick="setDayType('${dateStr}', 'Staff Development')">Staff Development</div>
-                        <div class="designation-menu-item holiday" onclick="setDayType('${dateStr}', 'Holiday')">Holiday</div>
-                        <div class="designation-menu-item furlough" onclick="setDayType('${dateStr}', 'Furlough')">Furlough</div>
-                        <div class="designation-menu-item finals" onclick="setDayType('${dateStr}', 'Finals')">Finals</div>
-                        <div class="designation-menu-item clear" onclick="setDayType('${dateStr}', null)">Clear</div>
+                        <div class="designation-menu-item no-school" onclick="setDayType('${dateStr}', 'No School'); event.stopPropagation();">No School</div>
+                        <div class="designation-menu-item early-release" onclick="setDayType('${dateStr}', 'Early Release'); event.stopPropagation();">Early Release</div>
+                        <div class="designation-menu-item late-start" onclick="setDayType('${dateStr}', 'Late Start'); event.stopPropagation();">Late Start</div>
+                        <div class="designation-menu-item half-day" onclick="setDayType('${dateStr}', 'Half Day'); event.stopPropagation();">Half Day</div>
+                        <div class="designation-menu-item access" onclick="setDayType('${dateStr}', 'Access'); event.stopPropagation();">Access</div>
+                        <div class="designation-menu-item grading" onclick="setDayType('${dateStr}', 'Grading'); event.stopPropagation();">Grading</div>
+                        <div class="designation-menu-item staff-development" onclick="setDayType('${dateStr}', 'Staff Development'); event.stopPropagation();">Staff Development</div>
+                        <div class="designation-menu-item holiday" onclick="setDayType('${dateStr}', 'Holiday'); event.stopPropagation();">Holiday</div>
+                        <div class="designation-menu-item furlough" onclick="setDayType('${dateStr}', 'Furlough'); event.stopPropagation();">Furlough</div>
+                        <div class="designation-menu-item finals" onclick="setDayType('${dateStr}', 'Finals'); event.stopPropagation();">Finals</div>
                     `;
                     designation.appendChild(designationMenu);
                     dayElement.appendChild(designation);
@@ -1912,6 +1962,9 @@
 
         // A/B Schedule Management
         function setSchedule(dateStr, schedule) {
+            // Prevent event bubbling
+            event.stopPropagation();
+            
             fetch(app.config.apiUrl + '/day-schedules', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1935,6 +1988,9 @@
 
         // Day Type Management
         function setDayType(dateStr, type) {
+            // Prevent event bubbling
+            event.stopPropagation();
+            
             fetch(app.config.apiUrl + '/day-types', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
