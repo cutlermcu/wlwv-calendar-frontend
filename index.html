@@ -529,6 +529,20 @@
             border: 1px solid #fecaca;
         }
 
+        /* Environment indicator for development */
+        .env-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            font-family: monospace;
+        }
+
         /* Responsive improvements */
         @media (max-width: 768px) {
             .container {
@@ -649,7 +663,7 @@
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="" required readonly style="background: #f3f4f6; color: #6b7280;">
-                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
+                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from environment</small>
                     </div>
 
                     <div style="display: flex; gap: 10px; justify-content: center;">
@@ -717,46 +731,89 @@
         </div>
     </div>
 
+    <!-- Environment Indicator -->
+    <div class="env-indicator" id="envIndicator">
+        Environment: <span id="envType">detecting...</span>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
     <script>
+        // ===================================================================
+        // 🚨 CONFIGURATION SECTION - REPLACE THIS WITH YOUR BACKEND URL 🚨
+        // ===================================================================
+        
+        const CONFIG = {
+            // 🔥 REPLACE THIS WITH YOUR ACTUAL BACKEND URL AFTER DEPLOYMENT 🔥
+            PRODUCTION_API_URL: 'https://wlwv-calendar-api.vercel.app/',
+            
+            // Local development URL (don't change this)
+            LOCAL_API_URL: 'http://localhost:3000'
+        };
+
+        // ===================================================================
         // Global application state
         const app = {
             state: {
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
-                connected: false
+                connected: false,
+                environment: 'unknown'
             },
             config: {
                 apiUrl: ''
             }
         };
 
+        // Environment detection and API URL configuration
+        function detectEnvironment() {
+            const hostname = window.location.hostname;
+            
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'development';
+            } else if (hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
+                return 'production';
+            } else {
+                return 'production'; // Assume production for custom domains
+            }
+        }
+
         function setApiUrl() {
-    app.state.environment = detectEnvironment();
-    
-    // Point to your backend Vercel URL
-    if (app.state.environment === 'production') {
-        app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
-    } else {
-        app.config.apiUrl = window.location.origin + '/api';
-    }
-    
-    console.log('Environment detected:', app.state.environment);
-    console.log('API URL set to:', app.config.apiUrl);
-}
+            app.state.environment = detectEnvironment();
             
-            console.log('API URL set to:', app.config.apiUrl);
+            // Set API URL based on environment
+            if (app.state.environment === 'development') {
+                app.config.apiUrl = CONFIG.LOCAL_API_URL;
+            } else {
+                app.config.apiUrl = CONFIG.PRODUCTION_API_URL;
+            }
             
-            // Update the form
+            console.log('🌍 Environment detected:', app.state.environment);
+            console.log('🔗 API URL set to:', app.config.apiUrl);
+            
+            // Update environment indicator
+            const envIndicator = document.getElementById('envType');
+            if (envIndicator) {
+                envIndicator.textContent = app.state.environment;
+                envIndicator.style.color = app.state.environment === 'development' ? '#10b981' : '#f59e0b';
+            }
+            
+            // Update the form display
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
+
+            // Validate configuration
+            if (app.state.environment === 'production' && app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
+                console.error('🚨 CONFIGURATION ERROR: Please update the PRODUCTION_API_URL in the CONFIG object!');
+                showNotification('⚠️ Backend URL not configured! Please update the configuration.', true);
+            }
         }
 
+        // Utility functions
         function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
             if (notification) {
@@ -798,6 +855,12 @@
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
+            // Update school select dropdown
+            const schoolSelect = document.getElementById('schoolSelect');
+            if (schoolSelect) {
+                schoolSelect.value = schoolCode;
+            }
+            
             showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
             showScreen('calendar');
         }
@@ -805,7 +868,13 @@
         function testConnection() {
             showNotification('Testing connection...');
 
-            fetch(app.config.apiUrl + '/health')
+            // Check if API URL is properly configured
+            if (app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
+                showNotification('❌ Please configure your backend URL first!', true);
+                return;
+            }
+
+            fetch(app.config.apiUrl + '/api/health')
                 .then(response => {
                     if (response.ok) {
                         return response.json();
@@ -815,13 +884,15 @@
                 })
                 .then(data => {
                     app.state.connected = true;
-                    updateConnectionStatus(true, 'Connected successfully!');
+                    updateConnectionStatus(true, `Connected successfully! (${data.environment})`);
                     showNotification('✅ Connection successful!');
+                    console.log('📊 Backend response:', data);
                 })
                 .catch(error => {
                     app.state.connected = false;
                     updateConnectionStatus(false, 'Connection failed: ' + error.message);
                     showNotification('❌ Connection failed: ' + error.message, true);
+                    console.error('🚨 Connection error:', error);
                 });
         }
 
@@ -829,10 +900,16 @@
             event.preventDefault();
             showNotification('Initializing database...');
 
+            // Check if API URL is properly configured
+            if (app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
+                showNotification('❌ Please configure your backend URL first!', true);
+                return;
+            }
+
             const dbUrl = document.getElementById('dbUrl').value;
             const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
 
-            fetch(app.config.apiUrl + '/init', {
+            fetch(app.config.apiUrl + '/api/init', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -851,13 +928,15 @@
             .then(data => {
                 showNotification('✅ Database initialized successfully!');
                 app.state.connected = true;
-                updateConnectionStatus(true, 'Database connected');
+                updateConnectionStatus(true, 'Database connected and initialized');
+                console.log('📊 Database init response:', data);
                 
                 setTimeout(() => showScreen('calendar'), 1500);
             })
             .catch(error => {
                 showNotification('❌ Setup failed: ' + error.message, true);
                 updateConnectionStatus(false, 'Failed to initialize database');
+                console.error('🚨 Setup error:', error);
             });
         }
 
@@ -966,13 +1045,24 @@
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 WLWV Calendar Frontend starting...');
+            
+            // Set up API configuration
             setApiUrl();
             
             // Apply district theme initially
             document.body.classList.add('district-theme');
             
+            // Render initial calendar
             renderCalendar();
-            showNotification('Calendar loaded successfully!');
+            
+            // Test connection on startup (but don't show error if it fails)
+            if (!app.config.apiUrl.includes('YOUR-BACKEND-APP-NAME')) {
+                testConnection();
+            }
+            
+            showNotification('🎓 WLWV Calendar loaded successfully!');
+            console.log('✅ Frontend initialization complete');
         });
     </script>
 </body>
