@@ -1267,9 +1267,16 @@
 
         function loadEvents() {
             return fetch(`${app.config.apiUrl}/events?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.events = data;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    // Handle both old format (array) and new format (object with data property)
+                    app.state.events = Array.isArray(result) ? result : (result.data || []);
+                    console.log('Events loaded:', app.state.events.length);
                 })
                 .catch(error => {
                     console.error('Failed to load events:', error);
@@ -1279,9 +1286,16 @@
 
         function loadMaterials() {
             return fetch(`${app.config.apiUrl}/materials?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.materials = data;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    // Handle both old format (array) and new format (object with data property)
+                    app.state.materials = Array.isArray(result) ? result : (result.data || []);
+                    console.log('Materials loaded:', app.state.materials.length);
                 })
                 .catch(error => {
                     console.error('Failed to load materials:', error);
@@ -1291,9 +1305,16 @@
 
         function loadDaySchedules() {
             return fetch(`${app.config.apiUrl}/day-schedules`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.daySchedules = data;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    // Handle both old format (array) and new format (object with data property)
+                    app.state.daySchedules = Array.isArray(result) ? result : (result.data || []);
+                    console.log('Day schedules loaded:', app.state.daySchedules.length);
                 })
                 .catch(error => {
                     console.error('Failed to load day schedules:', error);
@@ -1303,9 +1324,16 @@
 
         function loadDayTypes() {
             return fetch(`${app.config.apiUrl}/day-types`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.dayTypes = data;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    // Handle both old format (array) and new format (object with data property)
+                    app.state.dayTypes = Array.isArray(result) ? result : (result.data || []);
+                    console.log('Day types loaded:', app.state.dayTypes.length);
                 })
                 .catch(error => {
                     console.error('Failed to load day types:', error);
@@ -1386,8 +1414,14 @@
                 const isToday = currentDate.toDateString() === new Date().toDateString();
                 if (isToday) dayElement.classList.add('today');
 
-                const hasEvents = app.state.events.some(event => event.date === dateString);
-                const hasMaterials = app.state.materials.some(material => material.date === dateString);
+                // Ensure arrays exist before using .some()
+                const events = Array.isArray(app.state.events) ? app.state.events : [];
+                const materials = Array.isArray(app.state.materials) ? app.state.materials : [];
+                const daySchedules = Array.isArray(app.state.daySchedules) ? app.state.daySchedules : [];
+                const dayTypes = Array.isArray(app.state.dayTypes) ? app.state.dayTypes : [];
+
+                const hasEvents = events.some(event => event.date === dateString);
+                const hasMaterials = materials.some(material => material.date === dateString);
                 
                 if (hasEvents || hasMaterials) {
                     dayElement.classList.add('has-content');
@@ -1410,7 +1444,7 @@
                     dayElement.appendChild(materialIndicator);
                 }
 
-                const schedule = app.state.daySchedules.find(s => s.date === dateString);
+                const schedule = daySchedules.find(s => s.date === dateString);
                 if (schedule) {
                     const scheduleDisplay = document.createElement('div');
                     scheduleDisplay.className = 'ab-schedule-display';
@@ -1418,7 +1452,7 @@
                     dayElement.appendChild(scheduleDisplay);
                 }
 
-                const dayType = app.state.dayTypes.find(t => t.date === dateString);
+                const dayType = dayTypes.find(t => t.date === dateString);
                 if (dayType) {
                     const typeDisplay = document.createElement('div');
                     typeDisplay.className = 'day-type-display';
@@ -1445,8 +1479,12 @@
 
             modalTitle.textContent = formattedDate;
 
-            const dayEvents = app.state.events.filter(event => event.date === dateString);
-            const dayMaterials = app.state.materials.filter(material => material.date === dateString);
+            // Ensure arrays exist before filtering
+            const events = Array.isArray(app.state.events) ? app.state.events : [];
+            const materials = Array.isArray(app.state.materials) ? app.state.materials : [];
+
+            const dayEvents = events.filter(event => event.date === dateString);
+            const dayMaterials = materials.filter(material => material.date === dateString);
 
             let content = '';
 
@@ -1538,7 +1576,9 @@
             const passwordInput = document.getElementById(`password-${materialId}`);
             const enteredPassword = passwordInput.value;
             
-            const material = app.state.materials.find(m => m.id === materialId);
+            // Ensure materials array exists
+            const materials = Array.isArray(app.state.materials) ? app.state.materials : [];
+            const material = materials.find(m => m.id === materialId);
             
             if (material && enteredPassword === material.password) {
                 window.open(materialLink, '_blank');
