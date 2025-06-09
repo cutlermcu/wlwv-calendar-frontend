@@ -267,6 +267,11 @@
             margin-top: 10px;
         }
         
+        .grade-badge {
+            background: #c41e3a; color: white; padding: 2px 8px; border-radius: 12px;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .header h1 { font-size: 2rem; }
@@ -610,8 +615,45 @@
             LOCAL_API_URL: 'http://localhost:3000'
         };
 
-        // Global state
-        const app = {
+        // Global functions must be defined before DOM ready
+        function showDayManagementModal(dateStr) {
+            console.log('showDayManagementModal called with:', dateStr); // Debug log
+            app.selectedDay = dateStr;
+            
+            const title = document.getElementById('dayManagementTitle');
+            if (title) {
+                const date = new Date(dateStr);
+                title.textContent = `Manage ${date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}`;
+            }
+            
+            // Reset to events tab
+            switchModalTab('events');
+            
+            // Load data
+            loadDayManagementEvents(dateStr);
+            loadDayManagementMaterials(dateStr);
+            
+            showModal('dayManagementModal');
+        }
+
+        function switchModalTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.modal-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activate selected tab
+            document.querySelector(`[onclick="switchModalTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+
+        // Make critical functions available immediately
+        window.showDayManagementModal = showDayManagementModal;
+        window.switchModalTab = switchModalTab;
             environment: 'unknown',
             apiUrl: '',
             connected: false,
@@ -833,8 +875,8 @@
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
                 dayElement.onclick = () => {
-                    // Always allow clicking to open day modal, regardless of admin mode
-                    showDayModal(dateStr);
+                    // Use the new comprehensive modal instead of the old one
+                    showDayManagementModal(dateStr);
                 };
 
                 const isToday = currentDate.toDateString() === new Date().toDateString();
@@ -989,7 +1031,7 @@
 
         function addEventToDay(dateStr) {
             app.selectedDay = dateStr;
-            showEventModal();
+            showDayManagementModal(dateStr);
         }
 
         // Load calendar data
@@ -1100,6 +1142,365 @@
             loadDayEvents(dateStr);
             loadDayMaterials(dateStr);
             showModal('dayModal');
+        }
+
+        // Comprehensive Day Management Modal Functions
+        function showDayManagementModal(dateStr) {
+            console.log('showDayManagementModal called with:', dateStr); // Debug log
+            app.selectedDay = dateStr;
+            
+            const title = document.getElementById('dayManagementTitle');
+            if (title) {
+                const date = new Date(dateStr);
+                title.textContent = `Manage ${date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}`;
+            }
+            
+            // Reset to events tab
+            switchModalTab('events');
+            
+            // Load data
+            loadDayManagementEvents(dateStr);
+            loadDayManagementMaterials(dateStr);
+            
+            showModal('dayManagementModal');
+        }
+
+        function switchModalTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.modal-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activate selected tab
+            document.querySelector(`[onclick="switchModalTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+
+        // Event Management Functions
+        function showAddEventForm() {
+            document.getElementById('addEventForm').style.display = 'block';
+            document.getElementById('quickEventTitle').focus();
+        }
+
+        function hideAddEventForm() {
+            document.getElementById('addEventForm').style.display = 'none';
+            // Clear form
+            document.getElementById('quickEventTitle').value = '';
+            document.getElementById('quickEventTime').value = '';
+            document.getElementById('quickEventDescription').value = '';
+        }
+
+        async function saveQuickEvent(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('quickEventTitle').value;
+            const time = document.getElementById('quickEventTime').value;
+            const description = document.getElementById('quickEventDescription').value;
+            
+            const eventData = {
+                school: app.selectedSchool,
+                date: app.selectedDay,
+                title,
+                time: time || null,
+                description: description || ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/events`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Event added successfully!');
+                    hideAddEventForm();
+                    await loadEvents();
+                    loadDayManagementEvents(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to save event');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to save event: ' + error.message, true);
+            }
+        }
+
+        function loadDayManagementEvents(dateStr) {
+            const container = document.getElementById('dayManagementEvents');
+            if (!container) return;
+
+            const dayEvents = app.events.filter(e => e.date === dateStr);
+            container.innerHTML = '';
+            
+            if (dayEvents.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; font-style: italic; text-align: center; padding: 20px;">No events for this day</p>';
+                return;
+            }
+
+            dayEvents.forEach(event => {
+                const eventEl = document.createElement('div');
+                eventEl.className = 'item-row';
+                eventEl.innerHTML = `
+                    <div class="item-info">
+                        <h6>${event.title}</h6>
+                        <p>${event.time || 'No time set'}${event.description ? ' • ' + event.description : ''}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-secondary btn-small" onclick="editEventInline(${event.id})">Edit</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteEventQuick(${event.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(eventEl);
+            });
+        }
+
+        async function editEventInline(eventId) {
+            const event = app.events.find(e => e.id === eventId);
+            if (!event) return;
+
+            const eventRow = document.querySelector(`[onclick="editEventInline(${eventId})"]`).closest('.item-row');
+            eventRow.innerHTML = `
+                <form onsubmit="saveEventEdit(event, ${eventId})" style="width: 100%;">
+                    <div class="edit-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-input" id="editEventTitle${eventId}" value="${event.title}" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="time" class="form-input" id="editEventTime${eventId}" value="${event.time || ''}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-input" id="editEventDescription${eventId}" placeholder="Description..." style="min-height: 40px;">${event.description || ''}</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="loadDayManagementEvents('${app.selectedDay}')">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-small">Save</button>
+                        </div>
+                    </div>
+                </form>
+            `;
+        }
+
+        async function saveEventEdit(event, eventId) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`editEventTitle${eventId}`).value;
+            const time = document.getElementById(`editEventTime${eventId}`).value;
+            const description = document.getElementById(`editEventDescription${eventId}`).value;
+            
+            const eventData = {
+                title,
+                time: time || null,
+                description: description || ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Event updated successfully!');
+                    await loadEvents();
+                    loadDayManagementEvents(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to update event');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to update event: ' + error.message, true);
+            }
+        }
+
+        async function deleteEventQuick(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                try {
+                    const response = await fetch(`${app.apiUrl}/api/events/${eventId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('✅ Event deleted successfully!');
+                        await loadEvents();
+                        loadDayManagementEvents(app.selectedDay);
+                        renderCalendar();
+                    } else {
+                        throw new Error('Failed to delete event');
+                    }
+                } catch (error) {
+                    showNotification('❌ Failed to delete event: ' + error.message, true);
+                }
+            }
+        }
+
+        // Material Management Functions
+        function showAddMaterialForm(grade) {
+            document.getElementById(`addMaterialForm${grade}`).style.display = 'block';
+            document.getElementById(`quickMaterialTitle${grade}`).focus();
+        }
+
+        function hideAddMaterialForm(grade) {
+            document.getElementById(`addMaterialForm${grade}`).style.display = 'none';
+            // Clear form
+            document.getElementById(`quickMaterialTitle${grade}`).value = '';
+            document.getElementById(`quickMaterialLink${grade}`).value = '';
+        }
+
+        async function saveQuickMaterial(event, grade) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`quickMaterialTitle${grade}`).value;
+            const link = document.getElementById(`quickMaterialLink${grade}`).value;
+            
+            const materialData = {
+                school: app.selectedSchool,
+                date: app.selectedDay,
+                title,
+                grade_level: grade,
+                link,
+                password: '',
+                description: ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/materials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(materialData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Material added successfully!');
+                    hideAddMaterialForm(grade);
+                    await loadMaterials();
+                    loadDayManagementMaterials(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to save material');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to save material: ' + error.message, true);
+            }
+        }
+
+        function loadDayManagementMaterials(dateStr) {
+            const grades = [9, 10, 11, 12];
+            
+            grades.forEach(grade => {
+                const container = document.getElementById(`materials${grade}`);
+                if (!container) return;
+
+                const gradeMaterials = app.materials.filter(m => m.date === dateStr && m.grade_level === grade);
+                container.innerHTML = '';
+                
+                if (gradeMaterials.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; font-style: italic; text-align: center; padding: 15px;">No materials for this grade</p>';
+                    return;
+                }
+
+                gradeMaterials.forEach(material => {
+                    const materialEl = document.createElement('div');
+                    materialEl.className = 'item-row';
+                    materialEl.innerHTML = `
+                        <div class="item-info">
+                            <h6>${material.title}</h6>
+                            <p><a href="${material.link}" target="_blank" style="color: #c41e3a; text-decoration: none;">🔗 View Material</a></p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-secondary btn-small" onclick="editMaterialInline(${material.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteMaterialQuick(${material.id})">Delete</button>
+                        </div>
+                    `;
+                    container.appendChild(materialEl);
+                });
+            });
+        }
+
+        async function editMaterialInline(materialId) {
+            const material = app.materials.find(m => m.id === materialId);
+            if (!material) return;
+
+            const materialRow = document.querySelector(`[onclick="editMaterialInline(${materialId})"]`).closest('.item-row');
+            materialRow.innerHTML = `
+                <form onsubmit="saveMaterialEdit(event, ${materialId})" style="width: 100%;">
+                    <div class="edit-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-input" id="editMaterialTitle${materialId}" value="${material.title}" required placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <input type="url" class="form-input" id="editMaterialLink${materialId}" value="${material.link}" required placeholder="https://...">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="loadDayManagementMaterials('${app.selectedDay}')">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-small">Save</button>
+                        </div>
+                    </div>
+                </form>
+            `;
+        }
+
+        async function saveMaterialEdit(event, materialId) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`editMaterialTitle${materialId}`).value;
+            const link = document.getElementById(`editMaterialLink${materialId}`).value;
+            
+            const materialData = {
+                title,
+                link,
+                description: '',
+                password: ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/materials/${materialId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(materialData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Material updated successfully!');
+                    await loadMaterials();
+                    loadDayManagementMaterials(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to update material');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to update material: ' + error.message, true);
+            }
+        }
+
+        async function deleteMaterialQuick(materialId) {
+            if (confirm('Are you sure you want to delete this material?')) {
+                try {
+                    const response = await fetch(`${app.apiUrl}/api/materials/${materialId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('✅ Material deleted successfully!');
+                        await loadMaterials();
+                        loadDayManagementMaterials(app.selectedDay);
+                        renderCalendar();
+                    } else {
+                        throw new Error('Failed to delete material');
+                    }
+                } catch (error) {
+                    showNotification('❌ Failed to delete material: ' + error.message, true);
+                }
+            }
         }
 
         function loadDayEvents(dateStr) {
@@ -1391,6 +1792,20 @@
         window.setSchedule = setSchedule;
         window.setDayType = setDayType;
         window.addEventToDay = addEventToDay;
+        window.showDayManagementModal = showDayManagementModal;
+        window.switchModalTab = switchModalTab;
+        window.showAddEventForm = showAddEventForm;
+        window.hideAddEventForm = hideAddEventForm;
+        window.saveQuickEvent = saveQuickEvent;
+        window.editEventInline = editEventInline;
+        window.saveEventEdit = saveEventEdit;
+        window.deleteEventQuick = deleteEventQuick;
+        window.showAddMaterialForm = showAddMaterialForm;
+        window.hideAddMaterialForm = hideAddMaterialForm;
+        window.saveQuickMaterial = saveQuickMaterial;
+        window.editMaterialInline = editMaterialInline;
+        window.saveMaterialEdit = saveMaterialEdit;
+        window.deleteMaterialQuick = deleteMaterialQuick;
 
         // Close modals when clicking outside
         window.onclick = function(event) {
