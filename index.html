@@ -95,85 +95,112 @@
             max-width: 80px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
         }
         
-        /* Admin controls - Enhanced hover functionality */
-        .admin-controls {
+        /* Admin controls - Cleaned up hover functionality */
+        .admin-ab-control {
             position: absolute; 
-            bottom: 4px; 
-            right: 4px; 
-            display: none; 
-            gap: 2px; 
-            flex-direction: column;
+            top: 8px; 
+            right: 8px; 
+            display: none;
             z-index: 50;
         }
         
-        /* This is the key rule - make sure it's specific enough */
-        body.admin-active .calendar-day:hover .admin-controls { 
-            display: flex !important; 
+        .admin-type-control {
+            position: absolute; 
+            bottom: 8px; 
+            left: 8px; 
+            display: none;
+            z-index: 50;
+        }
+        
+        .admin-add-event {
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 50;
+        }
+        
+        /* Show admin controls on hover when admin mode is active */
+        body.admin-active .calendar-day:hover .admin-ab-control,
+        body.admin-active .calendar-day:hover .admin-type-control,
+        body.admin-active .calendar-day:hover .admin-add-event { 
+            display: block !important; 
         }
         
         .admin-btn {
-            background: rgba(196, 30, 58, 0.9); 
+            background: rgba(0, 0, 0, 0.8); 
             color: white; 
             border: none; 
-            padding: 3px 6px;
-            border-radius: 3px; 
-            font-size: 0.65rem; 
+            padding: 4px 8px;
+            border-radius: 4px; 
+            font-size: 0.7rem; 
             cursor: pointer; 
-            min-width: 22px; 
-            text-align: center;
             font-weight: 600;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            min-width: 24px;
+            text-align: center;
         }
         .admin-btn:hover { 
-            background: rgba(196, 30, 58, 1); 
+            background: rgba(0, 0, 0, 1); 
             transform: scale(1.05);
         }
-        .admin-btn.schedule-btn { 
-            background: rgba(99, 102, 241, 0.9); 
+        
+        .admin-btn.add-event-btn {
+            background: rgba(34, 197, 94, 0.9);
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .admin-btn.schedule-btn:hover { 
-            background: rgba(99, 102, 241, 1); 
-        }
-        .admin-btn.type-btn { 
-            background: rgba(168, 85, 247, 0.9); 
-        }
-        .admin-btn.type-btn:hover { 
-            background: rgba(168, 85, 247, 1); 
+        .admin-btn.add-event-btn:hover {
+            background: rgba(34, 197, 94, 1);
         }
         
-        /* Quick edit dropdowns */
-        .quick-edit-dropdown {
-            position: absolute; 
-            bottom: 30px; 
-            right: 4px; 
-            background: white; 
-            border: 2px solid #e5e7eb;
-            border-radius: 8px; 
-            padding: 12px; 
-            display: none; 
-            z-index: 200; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-            min-width: 140px;
+        /* Hover option lists */
+        .admin-options {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 6px;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            min-width: 100px;
+            display: none;
+            z-index: 100;
         }
-        .quick-edit-dropdown.show { 
-            display: block; 
+        
+        .admin-ab-control:hover .admin-options,
+        .admin-type-control:hover .admin-options {
+            display: block;
         }
-        .quick-edit-dropdown select, .quick-edit-dropdown input {
-            width: 100%; 
-            padding: 6px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 4px; 
-            font-size: 13px;
-            margin-bottom: 8px;
+        
+        .admin-options.ab-options {
+            top: 100%;
+            right: 0;
         }
-        .quick-edit-dropdown .btn-group {
-            display: flex; 
-            gap: 6px;
+        
+        .admin-options.type-options {
+            bottom: 100%;
+            left: 0;
         }
-        .quick-edit-dropdown .btn-group button {
-            flex: 1; 
-            padding: 6px 8px; 
-            font-size: 11px;
+        
+        .admin-option {
+            display: block;
+            width: 100%;
+            padding: 6px 8px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+        .admin-option:hover {
+            background: #f0f0f0;
         }
         
         /* Modal styles */
