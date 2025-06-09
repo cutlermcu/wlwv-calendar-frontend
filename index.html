@@ -336,6 +336,178 @@
 
     <div class="notification" id="notification"></div>
 
+    <!-- Comprehensive Day Management Modal -->
+    <div class="modal" id="dayManagementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="dayManagementTitle">Manage Day</h3>
+                <button class="close-btn" onclick="closeModal('dayManagementModal')">&times;</button>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchModalTab('events')">📅 Events</button>
+                <button class="modal-tab" onclick="switchModalTab('materials')">📚 Materials</button>
+            </div>
+            
+            <!-- Events Tab -->
+            <div class="modal-tab-content active" id="eventsTab">
+                <div class="section-header">
+                    <h4>Events for this day</h4>
+                    <button class="btn btn-primary btn-small" onclick="showAddEventForm()">Add New Event</button>
+                </div>
+                
+                <!-- Add Event Form -->
+                <div class="add-form" id="addEventForm" style="display: none;">
+                    <h5 style="margin-bottom: 15px;">Add New Event</h5>
+                    <form onsubmit="saveQuickEvent(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Title *</label>
+                                <input type="text" class="form-input" id="quickEventTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Time (Optional)</label>
+                                <input type="time" class="form-input" id="quickEventTime">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description (Optional)</label>
+                            <textarea class="form-textarea" id="quickEventDescription" style="min-height: 60px;" placeholder="Event details..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="hideAddEventForm()">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-small">Save Event</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Events List -->
+                <div id="dayManagementEvents" class="items-list">
+                    <!-- Events will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Materials Tab -->
+            <div class="modal-tab-content" id="materialsTab">
+                <div class="section-header">
+                    <h4>Materials for this day</h4>
+                </div>
+                
+                <!-- Grade Level Sections -->
+                <div class="grade-sections">
+                    <!-- 9th Grade -->
+                    <div class="grade-section">
+                        <div class="grade-header">
+                            <h5>9th Grade</h5>
+                            <button class="btn btn-primary btn-small" onclick="showAddMaterialForm(9)">Add Material</button>
+                        </div>
+                        <div class="add-form" id="addMaterialForm9" style="display: none;">
+                            <form onsubmit="saveQuickMaterial(event, 9)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Title *</label>
+                                        <input type="text" class="form-input" id="quickMaterialTitle9" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link *</label>
+                                        <input type="url" class="form-input" id="quickMaterialLink9" required placeholder="https://...">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="hideAddMaterialForm(9)">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-small">Save Material</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="materials9" class="items-list"></div>
+                    </div>
+                    
+                    <!-- 10th Grade -->
+                    <div class="grade-section">
+                        <div class="grade-header">
+                            <h5>10th Grade</h5>
+                            <button class="btn btn-primary btn-small" onclick="showAddMaterialForm(10)">Add Material</button>
+                        </div>
+                        <div class="add-form" id="addMaterialForm10" style="display: none;">
+                            <form onsubmit="saveQuickMaterial(event, 10)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Title *</label>
+                                        <input type="text" class="form-input" id="quickMaterialTitle10" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link *</label>
+                                        <input type="url" class="form-input" id="quickMaterialLink10" required placeholder="https://...">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="hideAddMaterialForm(10)">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-small">Save Material</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="materials10" class="items-list"></div>
+                    </div>
+                    
+                    <!-- 11th Grade -->
+                    <div class="grade-section">
+                        <div class="grade-header">
+                            <h5>11th Grade</h5>
+                            <button class="btn btn-primary btn-small" onclick="showAddMaterialForm(11)">Add Material</button>
+                        </div>
+                        <div class="add-form" id="addMaterialForm11" style="display: none;">
+                            <form onsubmit="saveQuickMaterial(event, 11)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Title *</label>
+                                        <input type="text" class="form-input" id="quickMaterialTitle11" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link *</label>
+                                        <input type="url" class="form-input" id="quickMaterialLink11" required placeholder="https://...">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="hideAddMaterialForm(11)">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-small">Save Material</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="materials11" class="items-list"></div>
+                    </div>
+                    
+                    <!-- 12th Grade -->
+                    <div class="grade-section">
+                        <div class="grade-header">
+                            <h5>12th Grade</h5>
+                            <button class="btn btn-primary btn-small" onclick="showAddMaterialForm(12)">Add Material</button>
+                        </div>
+                        <div class="add-form" id="addMaterialForm12" style="display: none;">
+                            <form onsubmit="saveQuickMaterial(event, 12)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Title *</label>
+                                        <input type="text" class="form-input" id="quickMaterialTitle12" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link *</label>
+                                        <input type="url" class="form-input" id="quickMaterialLink12" required placeholder="https://...">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="hideAddMaterialForm(12)">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-small">Save Material</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="materials12" class="items-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         console.log('🚀 WLWV Calendar starting...');
 
@@ -687,7 +859,374 @@
 
         function addEventToDay(dateStr) {
             app.selectedDay = dateStr;
-            showNotification(`Add event to ${dateStr} - comprehensive modal coming soon!`);
+            showDayManagementModal(dateStr);
+        }
+
+        // Comprehensive Modal Functions
+        function showDayManagementModal(dateStr) {
+            app.selectedDay = dateStr;
+            
+            const title = document.getElementById('dayManagementTitle');
+            if (title) {
+                const date = new Date(dateStr);
+                title.textContent = `Manage ${date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}`;
+            }
+            
+            switchModalTab('events');
+            loadDayManagementEvents(dateStr);
+            loadDayManagementMaterials(dateStr);
+            showModal('dayManagementModal');
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        function switchModalTab(tabName) {
+            document.querySelectorAll('.modal-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
+            
+            const tabButton = document.querySelector(`[onclick="switchModalTab('${tabName}')"]`);
+            if (tabButton) tabButton.classList.add('active');
+            
+            const tabContent = document.getElementById(`${tabName}Tab`);
+            if (tabContent) tabContent.classList.add('active');
+        }
+
+        // Event Management
+        function showAddEventForm() {
+            document.getElementById('addEventForm').style.display = 'block';
+            document.getElementById('quickEventTitle').focus();
+        }
+
+        function hideAddEventForm() {
+            document.getElementById('addEventForm').style.display = 'none';
+            document.getElementById('quickEventTitle').value = '';
+            document.getElementById('quickEventTime').value = '';
+            document.getElementById('quickEventDescription').value = '';
+        }
+
+        async function saveQuickEvent(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('quickEventTitle').value;
+            const time = document.getElementById('quickEventTime').value;
+            const description = document.getElementById('quickEventDescription').value;
+            
+            const eventData = {
+                school: app.selectedSchool,
+                date: app.selectedDay,
+                title,
+                time: time || null,
+                description: description || ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/events`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Event added successfully!');
+                    hideAddEventForm();
+                    await loadEvents();
+                    loadDayManagementEvents(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to save event');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to save event: ' + error.message, true);
+            }
+        }
+
+        function loadDayManagementEvents(dateStr) {
+            const container = document.getElementById('dayManagementEvents');
+            if (!container) return;
+
+            const dayEvents = app.events.filter(e => e.date === dateStr);
+            container.innerHTML = '';
+            
+            if (dayEvents.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; font-style: italic; text-align: center; padding: 20px;">No events for this day</p>';
+                return;
+            }
+
+            dayEvents.forEach(event => {
+                const eventEl = document.createElement('div');
+                eventEl.className = 'item-row';
+                eventEl.innerHTML = `
+                    <div class="item-info">
+                        <h6>${event.title}</h6>
+                        <p>${event.time || 'No time set'}${event.description ? ' • ' + event.description : ''}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-secondary btn-small" onclick="editEventInline(${event.id})">Edit</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteEventQuick(${event.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(eventEl);
+            });
+        }
+
+        async function editEventInline(eventId) {
+            const event = app.events.find(e => e.id === eventId);
+            if (!event) return;
+
+            const eventRow = document.querySelector(`[onclick="editEventInline(${eventId})"]`).closest('.item-row');
+            eventRow.innerHTML = `
+                <form onsubmit="saveEventEdit(event, ${eventId})" style="width: 100%;">
+                    <div class="edit-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-input" id="editEventTitle${eventId}" value="${event.title}" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="time" class="form-input" id="editEventTime${eventId}" value="${event.time || ''}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-input" id="editEventDescription${eventId}" placeholder="Description..." style="min-height: 40px;">${event.description || ''}</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="loadDayManagementEvents('${app.selectedDay}')">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-small">Save</button>
+                        </div>
+                    </div>
+                </form>
+            `;
+        }
+
+        async function saveEventEdit(event, eventId) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`editEventTitle${eventId}`).value;
+            const time = document.getElementById(`editEventTime${eventId}`).value;
+            const description = document.getElementById(`editEventDescription${eventId}`).value;
+            
+            const eventData = {
+                title,
+                time: time || null,
+                description: description || ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Event updated successfully!');
+                    await loadEvents();
+                    loadDayManagementEvents(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to update event');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to update event: ' + error.message, true);
+            }
+        }
+
+        async function deleteEventQuick(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                try {
+                    const response = await fetch(`${app.apiUrl}/api/events/${eventId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('✅ Event deleted successfully!');
+                        await loadEvents();
+                        loadDayManagementEvents(app.selectedDay);
+                        renderCalendar();
+                    } else {
+                        throw new Error('Failed to delete event');
+                    }
+                } catch (error) {
+                    showNotification('❌ Failed to delete event: ' + error.message, true);
+                }
+            }
+        }
+
+        // Material Management
+        function showAddMaterialForm(grade) {
+            document.getElementById(`addMaterialForm${grade}`).style.display = 'block';
+            document.getElementById(`quickMaterialTitle${grade}`).focus();
+        }
+
+        function hideAddMaterialForm(grade) {
+            document.getElementById(`addMaterialForm${grade}`).style.display = 'none';
+            document.getElementById(`quickMaterialTitle${grade}`).value = '';
+            document.getElementById(`quickMaterialLink${grade}`).value = '';
+        }
+
+        async function saveQuickMaterial(event, grade) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`quickMaterialTitle${grade}`).value;
+            const link = document.getElementById(`quickMaterialLink${grade}`).value;
+            
+            const materialData = {
+                school: app.selectedSchool,
+                date: app.selectedDay,
+                title,
+                grade_level: grade,
+                link,
+                password: '',
+                description: ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/materials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(materialData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Material added successfully!');
+                    hideAddMaterialForm(grade);
+                    await loadMaterials();
+                    loadDayManagementMaterials(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to save material');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to save material: ' + error.message, true);
+            }
+        }
+
+        function loadDayManagementMaterials(dateStr) {
+            const grades = [9, 10, 11, 12];
+            
+            grades.forEach(grade => {
+                const container = document.getElementById(`materials${grade}`);
+                if (!container) return;
+
+                const gradeMaterials = app.materials.filter(m => m.date === dateStr && m.grade_level === grade);
+                container.innerHTML = '';
+                
+                if (gradeMaterials.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; font-style: italic; text-align: center; padding: 15px;">No materials for this grade</p>';
+                    return;
+                }
+
+                gradeMaterials.forEach(material => {
+                    const materialEl = document.createElement('div');
+                    materialEl.className = 'item-row';
+                    materialEl.innerHTML = `
+                        <div class="item-info">
+                            <h6>${material.title}</h6>
+                            <p><a href="${material.link}" target="_blank" style="color: #c41e3a; text-decoration: none;">🔗 View Material</a></p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-secondary btn-small" onclick="editMaterialInline(${material.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteMaterialQuick(${material.id})">Delete</button>
+                        </div>
+                    `;
+                    container.appendChild(materialEl);
+                });
+            });
+        }
+
+        async function editMaterialInline(materialId) {
+            const material = app.materials.find(m => m.id === materialId);
+            if (!material) return;
+
+            const materialRow = document.querySelector(`[onclick="editMaterialInline(${materialId})"]`).closest('.item-row');
+            materialRow.innerHTML = `
+                <form onsubmit="saveMaterialEdit(event, ${materialId})" style="width: 100%;">
+                    <div class="edit-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-input" id="editMaterialTitle${materialId}" value="${material.title}" required placeholder="Title">
+                            </div>
+                            <div class="form-group">
+                                <input type="url" class="form-input" id="editMaterialLink${materialId}" value="${material.link}" required placeholder="https://...">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="loadDayManagementMaterials('${app.selectedDay}')">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-small">Save</button>
+                        </div>
+                    </div>
+                </form>
+            `;
+        }
+
+        async function saveMaterialEdit(event, materialId) {
+            event.preventDefault();
+            
+            const title = document.getElementById(`editMaterialTitle${materialId}`).value;
+            const link = document.getElementById(`editMaterialLink${materialId}`).value;
+            
+            const materialData = {
+                title,
+                link,
+                description: '',
+                password: ''
+            };
+
+            try {
+                const response = await fetch(`${app.apiUrl}/api/materials/${materialId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(materialData)
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Material updated successfully!');
+                    await loadMaterials();
+                    loadDayManagementMaterials(app.selectedDay);
+                    renderCalendar();
+                } else {
+                    throw new Error('Failed to update material');
+                }
+            } catch (error) {
+                showNotification('❌ Failed to update material: ' + error.message, true);
+            }
+        }
+
+        async function deleteMaterialQuick(materialId) {
+            if (confirm('Are you sure you want to delete this material?')) {
+                try {
+                    const response = await fetch(`${app.apiUrl}/api/materials/${materialId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('✅ Material deleted successfully!');
+                        await loadMaterials();
+                        loadDayManagementMaterials(app.selectedDay);
+                        renderCalendar();
+                    } else {
+                        throw new Error('Failed to delete material');
+                    }
+                } catch (error) {
+                    showNotification('❌ Failed to delete material: ' + error.message, true);
+                }
+            }
         }
 
         // Load calendar data
@@ -804,6 +1343,22 @@
         window.setSchedule = setSchedule;
         window.setDayType = setDayType;
         window.addEventToDay = addEventToDay;
+        window.showDayManagementModal = showDayManagementModal;
+        window.showModal = showModal;
+        window.closeModal = closeModal;
+        window.switchModalTab = switchModalTab;
+        window.showAddEventForm = showAddEventForm;
+        window.hideAddEventForm = hideAddEventForm;
+        window.saveQuickEvent = saveQuickEvent;
+        window.editEventInline = editEventInline;
+        window.saveEventEdit = saveEventEdit;
+        window.deleteEventQuick = deleteEventQuick;
+        window.showAddMaterialForm = showAddMaterialForm;
+        window.hideAddMaterialForm = hideAddMaterialForm;
+        window.saveQuickMaterial = saveQuickMaterial;
+        window.editMaterialInline = editMaterialInline;
+        window.saveMaterialEdit = saveMaterialEdit;
+        window.deleteMaterialQuick = deleteMaterialQuick;
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
