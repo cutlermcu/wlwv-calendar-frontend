@@ -927,7 +927,8 @@
             const modal = document.getElementById('dayModal');
             const title = document.getElementById('dayModalTitle');
             const scheduleSelect = document.getElementById('daySchedule');
-            const typeInput = document.getElementById('dayType');
+            const typeSelect = document.getElementById('dayType');
+            const typeCustom = document.getElementById('dayTypeCustom');
             
             if (title) {
                 const date = new Date(dateStr);
@@ -941,7 +942,36 @@
             
             // Load current values
             scheduleSelect.value = app.daySchedules[dateStr] || '';
-            typeInput.value = app.dayTypes[dateStr] || '';
+            
+            // Handle day type - check if it's a predefined option or custom
+            const currentType = app.dayTypes[dateStr] || '';
+            const predefinedOptions = [
+                'Professional Development', 'Early Release', 'Late Start', 'No School', 
+                'Holiday', 'Inservice', 'Conference Day', 'Assembly', 'Testing Day', 
+                'Finals Week', 'Homecoming Week', 'Spirit Week'
+            ];
+            
+            if (predefinedOptions.includes(currentType)) {
+                typeSelect.value = currentType;
+                typeCustom.style.display = 'none';
+            } else if (currentType) {
+                typeSelect.value = 'Other';
+                typeCustom.value = currentType;
+                typeCustom.style.display = 'block';
+            } else {
+                typeSelect.value = '';
+                typeCustom.style.display = 'none';
+            }
+            
+            // Show/hide custom input based on selection
+            typeSelect.onchange = function() {
+                if (this.value === 'Other') {
+                    typeCustom.style.display = 'block';
+                    typeCustom.focus();
+                } else {
+                    typeCustom.style.display = 'none';
+                }
+            };
             
             // Load events and materials for this day
             loadDayEvents(dateStr);
@@ -1021,7 +1051,15 @@
 
         async function saveDaySettings() {
             const schedule = document.getElementById('daySchedule').value;
-            const type = document.getElementById('dayType').value;
+            const typeSelect = document.getElementById('dayType');
+            const typeCustom = document.getElementById('dayTypeCustom');
+            
+            let type = '';
+            if (typeSelect.value === 'Other') {
+                type = typeCustom.value.trim();
+            } else {
+                type = typeSelect.value;
+            }
             
             try {
                 // Save schedule
@@ -1310,8 +1348,15 @@
         }
 
         async function saveQuickType(dateStr) {
-            const input = document.getElementById(`quick-type-${dateStr}`);
-            const type = input.value.trim();
+            const select = document.getElementById(`quick-type-${dateStr}`);
+            const customInput = document.getElementById(`quick-type-custom-${dateStr}`);
+            
+            let type = '';
+            if (select.value === 'Custom') {
+                type = customInput.value.trim();
+            } else {
+                type = select.value;
+            }
             
             try {
                 await fetch(`${app.apiUrl}/api/day-types`, {
