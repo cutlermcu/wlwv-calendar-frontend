@@ -87,15 +87,25 @@
         
         /* Calendar day indicators */
         .ab-schedule-display {
-            position: absolute; top: 8px; right: 8px; background: rgba(99, 102, 241, 0.9);
-            color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+            position: absolute; top: 8px; right: 8px; 
+            color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.84rem; font-weight: 600;
             min-width: 20px; text-align: center; pointer-events: none;
         }
+        .ab-schedule-display.schedule-a { background: rgba(59, 130, 246, 0.9); } /* Blue for A */
+        .ab-schedule-display.schedule-b { background: rgba(239, 68, 68, 0.9); } /* Red for B */
+        
         .day-type-display {
-            position: absolute; bottom: 8px; left: 8px; background: rgba(168, 85, 247, 0.9);
-            color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+            position: absolute; bottom: 8px; left: 8px; 
+            color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.84rem; font-weight: 600;
             max-width: 80px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
         }
+        .day-type-display.type-access { background: rgba(168, 85, 247, 0.9); } /* Purple */
+        .day-type-display.type-grading { background: rgba(234, 179, 8, 0.9); } /* Yellow */
+        .day-type-display.type-holiday { background: rgba(239, 68, 68, 0.9); } /* Red */
+        .day-type-display.type-teacher-development { background: rgba(34, 197, 94, 0.9); } /* Green */
+        .day-type-display.type-furlough { background: rgba(107, 114, 128, 0.9); } /* Gray */
+        .day-type-display.type-finals { background: rgba(245, 101, 101, 0.9); } /* Light Red */
+        .day-type-display.type-no-school { background: rgba(156, 163, 175, 0.9); } /* Light Gray */
         .event-indicator {
             position: absolute; top: 30px; left: 4px; right: 4px; background: rgba(196, 30, 58, 0.9);
             color: white; padding: 1px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 600;
@@ -627,7 +637,9 @@
                 if (app.daySchedules[dateStr]) {
                     const scheduleEl = document.createElement('div');
                     scheduleEl.className = 'ab-schedule-display';
-                    scheduleEl.textContent = app.daySchedules[dateStr];
+                    const schedule = app.daySchedules[dateStr];
+                    scheduleEl.classList.add(`schedule-${schedule.toLowerCase()}`);
+                    scheduleEl.textContent = schedule;
                     dayElement.appendChild(scheduleEl);
                 }
 
@@ -635,7 +647,36 @@
                 if (app.dayTypes[dateStr]) {
                     const typeEl = document.createElement('div');
                     typeEl.className = 'day-type-display';
-                    typeEl.textContent = app.dayTypes[dateStr];
+                    const type = app.dayTypes[dateStr];
+                    
+                    // Add specific color class based on type
+                    switch(type) {
+                        case 'ACCESS':
+                            typeEl.classList.add('type-access');
+                            break;
+                        case 'Grading':
+                            typeEl.classList.add('type-grading');
+                            break;
+                        case 'Holiday':
+                            typeEl.classList.add('type-holiday');
+                            break;
+                        case 'Teacher Development':
+                            typeEl.classList.add('type-teacher-development');
+                            break;
+                        case 'Furlough':
+                            typeEl.classList.add('type-furlough');
+                            break;
+                        case 'FINALS':
+                            typeEl.classList.add('type-finals');
+                            break;
+                        case 'No School':
+                            typeEl.classList.add('type-no-school');
+                            break;
+                        default:
+                            typeEl.classList.add('type-access'); // Default purple
+                    }
+                    
+                    typeEl.textContent = type;
                     dayElement.appendChild(typeEl);
                 }
 
