@@ -21,12 +21,10 @@
             color: #1a1a1a;
         }
 
-        /* Default district theme (red) for home page */
         body.district-theme {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
         }
 
-        /* School-specific themes only apply when viewing school calendar */
         body.school-wlhs {
             background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
@@ -58,25 +56,22 @@
             opacity: 0.9;
         }
 
-        /* ADMIN VISIBILITY CONTROLS */
         .tabs {
-            display: none; /* Hidden by default */
+            display: none;
             gap: 10px;
             margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
-        /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
         }
 
         #schoolSelect {
-            display: none; /* Hidden by default */
+            display: none;
         }
 
-        /* Show school select only when admin mode is active */
         body.admin-active #schoolSelect {
             display: inline-block;
         }
@@ -141,6 +136,15 @@
 
         .btn-secondary:hover {
             background: #d1d5db;
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
         }
 
         .home-page {
@@ -266,6 +270,26 @@
             border-color: #c41e3a;
         }
 
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
         .setup-form {
             max-width: 500px;
             margin: 0 auto;
@@ -328,26 +352,6 @@
             border-color: #10b981;
         }
 
-        .grade-selector {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .grade-select {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .grade-select option {
-            background: #1a1a1a;
-            color: white;
-        }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -389,41 +393,64 @@
             border-left: 4px solid #c41e3a;
         }
 
+        .calendar-day.admin-mode {
+            border: 2px dashed #10b981;
+        }
+
+        .calendar-day.admin-mode:hover {
+            background: #f0fdf4;
+            border-color: #059669;
+        }
+
         .day-number {
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 8px;
         }
 
-        /* School-specific color palettes */
-        .school-wlhs {
-            --primary-color: #0f4a2b;
-            --secondary-color: #d4af37;
-            --accent-color: #1f6b47;
-            --light-bg: #f0f8f3;
-            --gradient-start: #0f4a2b;
-            --gradient-end: #1f6b47;
+        .admin-day-actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: none;
+            gap: 2px;
         }
 
-        .school-wvhs {
-            --primary-color: #1e3a8a;
-            --secondary-color: #c0c0c0;
-            --accent-color: #3b82f6;
-            --light-bg: #f1f5f9;
-            --gradient-start: #1e3a8a;
-            --gradient-end: #3b82f6;
+        .calendar-day.admin-mode .admin-day-actions {
+            display: flex;
         }
 
-        /* Dynamic background based on school */
+        .admin-btn {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .admin-btn:hover {
+            background: #059669;
+        }
+
+        .admin-btn.event-btn {
+            background: rgba(196, 30, 58, 0.9);
+        }
+
+        .admin-btn.event-btn:hover {
+            background: #a01729;
+        }
+
         body.school-wlhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
 
         body.school-wvhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
 
-        /* Additional styles for calendar elements */
         .event-indicator {
             position: absolute;
             top: 30px;
@@ -574,14 +601,6 @@
             overflow-y: auto;
         }
 
-        .day-info {
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border-left: 4px solid #c41e3a;
-        }
-
         .section {
             margin-bottom: 30px;
         }
@@ -720,7 +739,6 @@
             border: 1px solid #fecaca;
         }
 
-        /* Responsive improvements */
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -874,7 +892,6 @@
                         </span>
                     </div>
                     <div class="calendar-controls">
-
                         <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
                         <div class="current-month" id="currentMonth">June 2025</div>
                         <button class="nav-btn" onclick="changeMonth(1)">›</button>
@@ -930,6 +947,100 @@
         </div>
     </div>
 
+    <!-- Add Event Modal -->
+    <div class="modal" id="addEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add Event</div>
+                <button class="modal-close" onclick="closeAddEventModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addEventForm" onsubmit="handleAddEvent(event)">
+                    <input type="hidden" id="eventDate" value="">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Event Title *</label>
+                        <input type="text" class="form-input" id="eventTitle" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Time</label>
+                            <input type="time" class="form-input" id="eventTime">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Department</label>
+                            <input type="text" class="form-input" id="eventDepartment" placeholder="e.g., Athletics, Music">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="eventDescription" rows="3" placeholder="Event details..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" onclick="closeAddEventModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Material Modal -->
+    <div class="modal" id="addMaterialModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add Material</div>
+                <button class="modal-close" onclick="closeAddMaterialModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addMaterialForm" onsubmit="handleAddMaterial(event)">
+                    <input type="hidden" id="materialDate" value="">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Material Title *</label>
+                            <input type="text" class="form-input" id="materialTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grade Level *</label>
+                            <select class="form-input" id="materialGrade" required>
+                                <option value="">Select Grade</option>
+                                <option value="9">Grade 9</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Link/URL *</label>
+                        <input type="url" class="form-input" id="materialLink" required placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="materialDescription" rows="3" placeholder="Material description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password (Optional)</label>
+                        <input type="text" class="form-input" id="materialPassword" placeholder="Leave empty for public access">
+                        <small style="color: #6b7280; font-size: 0.8rem;">If set, users will need this password to access the material</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" onclick="closeAddMaterialModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -939,7 +1050,6 @@
             state: {
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
-                selectedGrade: 12,
                 adminMode: false,
                 connected: false,
                 events: [],
@@ -953,26 +1063,13 @@
         };
 
         function setApiUrl() {
-            // Your deployed backend URL
             app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
-            
-            console.log('API URL set to:', app.config.apiUrl);
-            
-            console.log('Environment detected:', environment);
             console.log('API URL set to:', app.config.apiUrl);
             
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
-        }
-
-        function detectEnvironment() {
-            const hostname = window.location.hostname;
-            if (hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
-                return 'production';
-            }
-            return 'development';
         }
 
         function showNotification(message, isError = false) {
@@ -1009,16 +1106,18 @@
             if (screenId === 'calendar') {
                 loadCalendarData();
             }
+
+            if (app.state.adminMode) {
+                renderCalendar();
+            }
         }
 
         function goToSchool(schoolCode) {
             app.state.selectedSchool = schoolCode;
             
-            // Apply school theme
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
-            // Update school title
             const schoolTitle = document.getElementById('schoolTitle');
             if (schoolTitle) {
                 schoolTitle.textContent = schoolCode === 'wlhs' ? 
@@ -1026,7 +1125,6 @@
                     '🐱 Wilsonville High School';
             }
 
-            // Update school select
             const schoolSelect = document.getElementById('schoolSelect');
             if (schoolSelect) {
                 schoolSelect.value = schoolCode;
@@ -1034,19 +1132,6 @@
             
             showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
             showScreen('calendar');
-        }
-
-        function changeGrade() {
-            const gradeSelect = document.getElementById('gradeSelect');
-            app.state.selectedGrade = parseInt(gradeSelect.value);
-            
-            // Save grade preference for this school
-            localStorage.setItem(`grade_${app.state.selectedSchool}`, gradeSelect.value);
-            
-            showNotification(`Switched to Grade ${gradeSelect.value}`);
-            
-            // Reload materials for new grade
-            loadMaterials();
         }
 
         function testConnection() {
@@ -1146,6 +1231,7 @@
             }
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
+            renderCalendar();
         }
 
         function changeMonth(direction) {
@@ -1195,7 +1281,6 @@
             return fetch(`${app.config.apiUrl}/materials?school=${app.state.selectedSchool}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Load materials for all grades, not filtered
                     app.state.materials = data;
                 })
                 .catch(error => {
@@ -1264,12 +1349,43 @@
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
-                dayElement.onclick = () => openDayModal(dateString);
+                
+                if (app.state.adminMode) {
+                    dayElement.classList.add('admin-mode');
+                    
+                    const adminActions = document.createElement('div');
+                    adminActions.className = 'admin-day-actions';
+                    
+                    const addEventBtn = document.createElement('button');
+                    addEventBtn.className = 'admin-btn event-btn';
+                    addEventBtn.textContent = 'E';
+                    addEventBtn.title = 'Add Event';
+                    addEventBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        openAddEventModal(dateString);
+                    };
+                    
+                    const addMaterialBtn = document.createElement('button');
+                    addMaterialBtn.className = 'admin-btn';
+                    addMaterialBtn.textContent = 'M';
+                    addMaterialBtn.title = 'Add Material';
+                    addMaterialBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        openAddMaterialModal(dateString);
+                    };
+                    
+                    adminActions.appendChild(addEventBtn);
+                    adminActions.appendChild(addMaterialBtn);
+                    dayElement.appendChild(adminActions);
+                }
+                
+                dayElement.onclick = function() {
+                    openDayModal(dateString);
+                };
 
                 const isToday = currentDate.toDateString() === new Date().toDateString();
                 if (isToday) dayElement.classList.add('today');
 
-                // Check if this day has events or materials
                 const hasEvents = app.state.events.some(event => event.date === dateString);
                 const hasMaterials = app.state.materials.some(material => material.date === dateString);
                 
@@ -1282,7 +1398,6 @@
                 dayNumber.textContent = currentDate.getDate();
                 dayElement.appendChild(dayNumber);
 
-                // Add indicators
                 if (hasEvents) {
                     const eventIndicator = document.createElement('div');
                     eventIndicator.className = 'event-indicator';
@@ -1295,7 +1410,6 @@
                     dayElement.appendChild(materialIndicator);
                 }
 
-                // Add schedule display
                 const schedule = app.state.daySchedules.find(s => s.date === dateString);
                 if (schedule) {
                     const scheduleDisplay = document.createElement('div');
@@ -1304,7 +1418,6 @@
                     dayElement.appendChild(scheduleDisplay);
                 }
 
-                // Add day type display
                 const dayType = app.state.dayTypes.find(t => t.date === dateString);
                 if (dayType) {
                     const typeDisplay = document.createElement('div');
@@ -1332,13 +1445,11 @@
 
             modalTitle.textContent = formattedDate;
 
-            // Get day's data
             const dayEvents = app.state.events.filter(event => event.date === dateString);
             const dayMaterials = app.state.materials.filter(material => material.date === dateString);
 
             let content = '';
 
-            // Events section
             content += '<div class="section">';
             content += '<div class="section-title">📅 Events</div>';
             
@@ -1366,12 +1477,10 @@
             }
             content += '</div>';
 
-            // Materials section - organized by grade level
             content += '<div class="section">';
             content += '<div class="section-title">📚 Materials</div>';
             
             if (dayMaterials.length > 0) {
-                // Group materials by grade level
                 const materialsByGrade = {};
                 dayMaterials.forEach(material => {
                     if (!materialsByGrade[material.grade_level]) {
@@ -1380,7 +1489,6 @@
                     materialsByGrade[material.grade_level].push(material);
                 });
 
-                // Display materials for each grade level
                 [9, 10, 11, 12].forEach(grade => {
                     if (materialsByGrade[grade] && materialsByGrade[grade].length > 0) {
                         content += `<div style="margin-bottom: 25px;">`;
@@ -1447,33 +1555,125 @@
             modal.classList.remove('show');
         }
 
-        // Close modal when clicking outside
-        document.getElementById('dayModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDayModal();
-            }
-        });
+        function openAddEventModal(dateString) {
+            document.getElementById('eventDate').value = dateString;
+            document.getElementById('addEventModal').classList.add('show');
+            document.getElementById('addEventForm').reset();
+            document.getElementById('eventDate').value = dateString;
+        }
 
-        // Initialize when DOM is loaded
+        function closeAddEventModal() {
+            document.getElementById('addEventModal').classList.remove('show');
+        }
+
+        function openAddMaterialModal(dateString) {
+            document.getElementById('materialDate').value = dateString;
+            document.getElementById('addMaterialModal').classList.add('show');
+            document.getElementById('addMaterialForm').reset();
+            document.getElementById('materialDate').value = dateString;
+        }
+
+        function closeAddMaterialModal() {
+            document.getElementById('addMaterialModal').classList.remove('show');
+        }
+
+        function handleAddEvent(event) {
+            event.preventDefault();
+            
+            const eventData = {
+                school: app.state.selectedSchool,
+                date: document.getElementById('eventDate').value,
+                title: document.getElementById('eventTitle').value,
+                time: document.getElementById('eventTime').value || null,
+                department: document.getElementById('eventDepartment').value || null,
+                description: document.getElementById('eventDescription').value || ''
+            };
+
+            fetch(`${app.config.apiUrl}/events`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showNotification('✅ Event added successfully!');
+                closeAddEventModal();
+                loadCalendarData();
+            })
+            .catch(error => {
+                console.error('Error adding event:', error);
+                showNotification('❌ Failed to add event: ' + error.message, true);
+            });
+        }
+
+        function handleAddMaterial(event) {
+            event.preventDefault();
+            
+            const materialData = {
+                school: app.state.selectedSchool,
+                date: document.getElementById('materialDate').value,
+                grade_level: parseInt(document.getElementById('materialGrade').value),
+                title: document.getElementById('materialTitle').value,
+                link: document.getElementById('materialLink').value,
+                description: document.getElementById('materialDescription').value || '',
+                password: document.getElementById('materialPassword').value || ''
+            };
+
+            fetch(`${app.config.apiUrl}/materials`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(materialData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showNotification('✅ Material added successfully!');
+                closeAddMaterialModal();
+                loadCalendarData();
+            })
+            .catch(error => {
+                console.error('Error adding material:', error);
+                showNotification('❌ Failed to add material: ' + error.message, true);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             setApiUrl();
-            
-            // Apply district theme initially
             document.body.classList.add('district-theme');
-            
-            // Load saved grade preference
-            const savedGrade = localStorage.getItem(`grade_${app.state.selectedSchool}`);
-            if (savedGrade) {
-                app.state.selectedGrade = parseInt(savedGrade);
-                const gradeSelect = document.getElementById('gradeSelect');
-                if (gradeSelect) {
-                    gradeSelect.value = savedGrade;
-                }
-            }
-            
             renderCalendar();
             testConnection();
             showNotification('Calendar loaded successfully!');
+
+            document.getElementById('dayModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDayModal();
+                }
+            });
+
+            document.getElementById('addEventModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddEventModal();
+                }
+            });
+
+            document.getElementById('addMaterialModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddMaterialModal();
+                }
+            });
         });
     </script>
 </body>
