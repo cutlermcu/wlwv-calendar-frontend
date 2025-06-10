@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -923,6 +923,187 @@
             color: #ef4444;
             font-size: 0.75rem;
             margin-top: 4px;
+        }
+
+        /* ===== USER VIEW MODAL STYLES ===== */
+        .user-section {
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .user-section-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-event-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .user-event-card:hover {
+            background: #f8fafc;
+        }
+
+        .user-event-card:last-child {
+            border-bottom: none;
+        }
+
+        .user-event-info {
+            flex: 1;
+        }
+
+        .user-event-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .user-event-details {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .user-event-badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Department-specific badges */
+        .user-event-badge.dept-asb { background: #fde68a; color: #92400e; }
+        .user-event-badge.dept-life { background: #bbf7d0; color: #065f46; }
+        .user-event-badge.dept-athletics { background: #bfdbfe; color: #1e40af; }
+        .user-event-badge.dept-art-theater { background: #ddd6fe; color: #5b21b6; }
+        .user-event-badge.dept-counseling { background: #d1fae5; color: #0e7490; }
+        .user-event-badge.dept-testing { background: #fecaca; color: #991b1b; }
+        .user-event-badge.dept-staff { background: #e2e8f0; color: #334155; }
+
+        .user-grade-tabs {
+            display: flex;
+            gap: 6px;
+            margin: 15px 20px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .user-grade-tab {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+            flex: 1;
+            text-align: center;
+        }
+
+        .user-grade-tab.active {
+            background: #1e40af;
+            color: white;
+            box-shadow: 0 2px 6px rgba(30, 64, 175, 0.3);
+        }
+
+        .user-grade-tab:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .user-material-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .user-material-card:hover {
+            background: #f8fafc;
+        }
+
+        .user-material-card:last-child {
+            border-bottom: none;
+        }
+
+        .user-material-info {
+            flex: 1;
+        }
+
+        .user-material-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .user-material-description {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .user-material-meta {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .user-access-button {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-access-button:hover {
+            background: #2563eb;
+        }
+
+        .user-access-button.protected {
+            background: #f59e0b;
+        }
+
+        .user-access-button.protected:hover {
+            background: #d97706;
+        }
+
+        .user-empty-state {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 30px 20px;
         }
 
         .empty-state {
@@ -2209,7 +2390,7 @@
             
             // Find material across all grades
             let material = null;
-            Object.values(cachedData.materials).forEach(gradematerials => {
+            Object.values(cachedData.materials).forEach(gradeMaterials => {
                 const found = gradeMaterials.find(m => m.id === materialId);
                 if (found) material = found;
             });
@@ -2343,31 +2524,142 @@
         }
 
         function renderUserModalContent(container, data) {
-            const totalMaterials = Object.values(data.materials).flat().length;
+            const currentGrade = app.state.lastSelectedGradeTab;
+            const currentMaterials = data.materials[currentGrade] || [];
             
             container.innerHTML = `
-                <div style="color: #666; text-align: center; padding: 40px;">
-                    <h3>👁️ User View</h3>
-                    <p>Read-only view of events and materials will be implemented here</p>
-                    <p>Today's Events: ${data.events.length}</p>
-                    <p>Available Materials: ${totalMaterials}</p>
-                    
-                    <div style="margin-top: 30px; text-align: left;">
-                        <h4>Today's Events:</h4>
-                        ${data.events.length > 0 ? 
-                            data.events.map(event => `
-                                <div style="background: #f8fafc; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #c41e3a;">
-                                    <strong>${escapeHtml(event.title)}</strong>
-                                    ${event.time ? `<br><small>${formatTime12Hour(event.time)}</small>` : ''}
-                                    ${event.department ? `<br><small>Department: ${event.department}</small>` : ''}
-                                    ${event.description ? `<br><small>${escapeHtml(event.description)}</small>` : ''}
-                                </div>
-                            `).join('') 
-                            : '<p style="color: #9ca3af; font-style: italic;">No events scheduled for today</p>'
-                        }
+                <!-- Events Section -->
+                <div class="user-section">
+                    <div class="user-section-header">
+                        📅 Today's Events
+                    </div>
+                    ${renderUserEvents(data.events)}
+                </div>
+
+                <!-- Materials Section -->
+                <div class="user-section">
+                    <div class="user-section-header">
+                        📚 Materials & Resources
+                    </div>
+                    <div class="user-grade-tabs">
+                        <button class="user-grade-tab ${currentGrade === 9 ? 'active' : ''}" onclick="switchUserGradeTab(9)">Grade 9</button>
+                        <button class="user-grade-tab ${currentGrade === 10 ? 'active' : ''}" onclick="switchUserGradeTab(10)">Grade 10</button>
+                        <button class="user-grade-tab ${currentGrade === 11 ? 'active' : ''}" onclick="switchUserGradeTab(11)">Grade 11</button>
+                        <button class="user-grade-tab ${currentGrade === 12 ? 'active' : ''}" onclick="switchUserGradeTab(12)">Grade 12</button>
+                    </div>
+                    <div id="userMaterialsList">
+                        ${renderUserMaterials(currentMaterials)}
                     </div>
                 </div>
             `;
+        }
+
+        function renderUserEvents(events) {
+            if (!events || events.length === 0) {
+                return '<div class="user-empty-state">No events scheduled for today</div>';
+            }
+
+            return events.map(event => {
+                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
+                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
+                
+                return `
+                    <div class="user-event-card">
+                        <div class="user-event-info">
+                            <div class="user-event-title">${escapeHtml(event.title)}</div>
+                            <div class="user-event-details">
+                                ${timeDisplay ? `${timeDisplay}` : 'All Day'}
+                                ${event.description ? ` • ${escapeHtml(event.description)}` : ''}
+                            </div>
+                        </div>
+                        <div class="user-event-badge ${departmentClass}">
+                            ${event.department || 'General'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderUserMaterials(materials) {
+            if (!materials || materials.length === 0) {
+                return '<div class="user-empty-state">No materials available for this grade level</div>';
+            }
+
+            return materials.map(material => {
+                const isProtected = material.password && material.password.trim() !== '';
+                
+                return `
+                    <div class="user-material-card">
+                        <div class="user-material-info">
+                            <div class="user-material-title">${escapeHtml(material.title)}</div>
+                            ${material.description ? `<div class="user-material-description">${escapeHtml(material.description)}</div>` : ''}
+                            <div class="user-material-meta">Grade ${material.grade_level}</div>
+                        </div>
+                        ${isProtected ? 
+                            `<button class="user-access-button protected" onclick="accessProtectedMaterial(${material.id}, '${escapeHtml(material.link)}')">
+                                🔒 Access
+                            </button>` :
+                            `<a href="${escapeHtml(material.link)}" target="_blank" class="user-access-button">
+                                📖 Open
+                            </a>`
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== USER VIEW FUNCTIONS =====
+
+        function switchUserGradeTab(grade) {
+            app.state.lastSelectedGradeTab = grade;
+            
+            // Update tab appearance
+            document.querySelectorAll('.user-grade-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update materials list
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            if (cachedData) {
+                document.getElementById('userMaterialsList').innerHTML = renderUserMaterials(cachedData.materials[grade] || []);
+            }
+        }
+
+        function accessProtectedMaterial(materialId, materialLink) {
+            const password = prompt('This material is password protected. Please enter the password:');
+            
+            if (password === null) {
+                return; // User cancelled
+            }
+            
+            if (password === '') {
+                alert('Please enter a password to access this material.');
+                return;
+            }
+            
+            // Find the material to check password
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            
+            let material = null;
+            if (cachedData) {
+                Object.values(cachedData.materials).forEach(gradeMaterials => {
+                    const found = gradeMaterials.find(m => m.id === materialId);
+                    if (found) material = found;
+                });
+            }
+            
+            if (material && material.password === password) {
+                // Correct password - open the material
+                window.open(materialLink, '_blank');
+                showNotification('✅ Access granted! Opening material...');
+            } else {
+                // Incorrect password
+                alert('Incorrect password. Please try again.');
+                showNotification('❌ Access denied - incorrect password', true);
+            }
         }
 
         // Close modal with Escape key
