@@ -400,8 +400,13 @@
             background: rgba(239, 68, 68, 0.9);
         }
 
-        .ab-schedule-badge.placeholder {
-            background: #9ca3af;
+        .ab-schedule-badge.admin-placeholder {
+            background: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+
+        .ab-schedule-badge.admin-placeholder:hover {
+            background: #4b5563;
         }
 
         .ab-schedule-badge:hover {
@@ -511,9 +516,14 @@
             z-index: 10;
         }
 
-        .day-designation.placeholder {
-            background: #9ca3af;
+        .day-designation.admin-placeholder {
+            background: #6b7280;
             color: white;
+            border: 1px solid #d1d5db;
+        }
+
+        .day-designation.admin-placeholder:hover {
+            background: #4b5563;
         }
 
         .day-designation.no-school {
@@ -1803,42 +1813,45 @@
                 dayNumber.textContent = currentDate.getDate();
                 dayElement.appendChild(dayNumber);
 
-                // A/B Schedule badge
+                // A/B Schedule badge - only show if there's a schedule OR admin mode is active
                 const schedule = app.state.daySchedules[dateStr];
-                const abBadge = document.createElement('div');
-                abBadge.className = 'ab-schedule-badge';
-                
-                if (schedule) {
-                    abBadge.classList.add(`schedule-${schedule.toLowerCase()}`);
-                    abBadge.textContent = schedule;
-                } else {
-                    abBadge.classList.add('placeholder');
-                    abBadge.textContent = '?';
-                    abBadge.title = 'Hover to assign A/B schedule';
-                }
-                
-                const abMenu = document.createElement('div');
-                abMenu.className = 'ab-schedule-menu';
-                
-                const menuItems = [
-                    { text: 'A', value: 'A', class: 'option-a' },
-                    { text: 'B', value: 'B', class: 'option-b' },
-                    { text: 'Clear', value: null, class: 'option-clear' }
-                ];
-                
-                menuItems.forEach(item => {
-                    const menuItem = document.createElement('div');
-                    menuItem.className = `ab-menu-item ${item.class}`;
-                    menuItem.textContent = item.text;
-                    menuItem.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        setSchedule(dateStr, item.value);
+                if (schedule || app.state.adminMode) {
+                    const abBadge = document.createElement('div');
+                    abBadge.className = 'ab-schedule-badge';
+                    
+                    if (schedule) {
+                        abBadge.classList.add(`schedule-${schedule.toLowerCase()}`);
+                        abBadge.textContent = schedule;
+                    } else if (app.state.adminMode) {
+                        // In admin mode, show a clean badge for assignment
+                        abBadge.classList.add('admin-placeholder');
+                        abBadge.textContent = '?';
+                        abBadge.title = 'Hover to assign A/B schedule';
+                    }
+                    
+                    const abMenu = document.createElement('div');
+                    abMenu.className = 'ab-schedule-menu';
+                    
+                    const menuItems = [
+                        { text: 'A', value: 'A', class: 'option-a' },
+                        { text: 'B', value: 'B', class: 'option-b' },
+                        { text: 'Clear', value: null, class: 'option-clear' }
+                    ];
+                    
+                    menuItems.forEach(item => {
+                        const menuItem = document.createElement('div');
+                        menuItem.className = `ab-menu-item ${item.class}`;
+                        menuItem.textContent = item.text;
+                        menuItem.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            setSchedule(dateStr, item.value);
+                        });
+                        abMenu.appendChild(menuItem);
                     });
-                    abMenu.appendChild(menuItem);
-                });
-                
-                abBadge.appendChild(abMenu);
-                dayElement.appendChild(abBadge);
+                    
+                    abBadge.appendChild(abMenu);
+                    dayElement.appendChild(abBadge);
+                }
 
                 // Event indicators
                 const dayEvents = app.state.events[dateStr];
@@ -1863,7 +1876,7 @@
                 adminPlus.onclick = () => openAdminModal(dateStr);
                 dayElement.appendChild(adminPlus);
 
-                // Day designation - only show in admin mode or if there's already a type set
+                // Day designation - only show if there's a type OR admin mode is active
                 const dayType = app.state.dayTypes[dateStr];
                 if (dayType || app.state.adminMode) {
                     const designation = document.createElement('div');
@@ -1872,9 +1885,10 @@
                     if (dayType) {
                         designation.classList.add(dayType.toLowerCase().replace(/\s+/g, '-'));
                         designation.textContent = dayType;
-                    } else {
-                        designation.classList.add('placeholder');
-                        designation.textContent = 'Type';
+                    } else if (app.state.adminMode) {
+                        // In admin mode, show a clean placeholder for assignment
+                        designation.classList.add('admin-placeholder');
+                        designation.textContent = 'Set';
                         designation.title = 'Hover to set day type';
                     }
                     
