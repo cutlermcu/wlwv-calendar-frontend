@@ -573,6 +573,260 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ===== EVENTS CRUD STYLES ===== */
+        .crud-section {
+            margin-bottom: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .crud-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .crud-content {
+            padding: 20px;
+        }
+
+        .existing-items {
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .item-card:hover {
+            background: #f3f4f6;
+        }
+
+        /* Department color coding for events */
+        .item-card.dept-asb {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+        }
+
+        .item-card.dept-life {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #10b981;
+        }
+
+        .item-card.dept-athletics {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+        }
+
+        .item-card.dept-art-theater {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-color: #8b5cf6;
+        }
+
+        .item-card.dept-counseling {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #06b6d4;
+        }
+
+        .item-card.dept-testing {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border-color: #ef4444;
+        }
+
+        .item-card.dept-staff {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-color: #64748b;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .item-details {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-add:hover {
+            background: #059669;
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
+
+        .add-form {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .form-group.title-group {
+            flex: 2;
+        }
+
+        .form-group.time-group {
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .form-group.department-group {
+            flex: 1;
+            max-width: 140px;
+        }
+
+        .form-group.button-group {
+            flex: 0 0 auto;
+        }
+
+        .form-label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
         /* Plus button for admin mode */
         .admin-plus {
             position: absolute;
@@ -1228,41 +1482,61 @@
                 return;
             }
             
-            // Simulate data loading for now (will be replaced with actual API calls)
-            setTimeout(() => {
-                const mockData = {
-                    events: [
-                        {
-                            id: 1,
-                            title: 'Faculty Meeting',
-                            time: '15:30',
-                            department: 'Life',
-                            description: 'Monthly staff meeting'
-                        }
-                    ],
+            // Load real data from API
+            Promise.all([
+                loadEventsData(dateKey),
+                loadScheduleData(dateKey)
+            ])
+            .then(([events, scheduleData]) => {
+                const data = {
+                    events: events,
                     materials: {
-                        9: [
-                            {
-                                id: 1,
-                                title: 'Biology Lab Worksheet',
-                                link: 'https://example.com/worksheet.pdf',
-                                description: 'Cell structure analysis',
-                                password: 'bio123'
-                            }
-                        ],
-                        10: [],
-                        11: [],
-                        12: []
+                        9: [], 10: [], 11: [], 12: []
                     },
-                    schedule: 'A', // A or B day
-                    dayType: null // Special day designation
+                    schedule: scheduleData.schedule,
+                    dayType: scheduleData.dayType
                 };
                 
                 // Cache the data
-                app.cache.dateData.set(dateKey, mockData);
-                
-                renderModalContent(mockData, isAdminMode);
-            }, 500);
+                app.cache.dateData.set(dateKey, data);
+                renderModalContent(data, isAdminMode);
+            })
+            .catch(error => {
+                console.error('Error loading modal data:', error);
+                modalBody.innerHTML = `
+                    <div class="error-message">
+                        <strong>Error loading data:</strong> ${error.message}
+                        <br><button class="btn btn-sm" onclick="loadModalData(app.state.selectedModalDate, ${isAdminMode})" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function loadEventsData(dateKey) {
+            if (!app.state.connected) {
+                return []; // Return empty if not connected
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events?school=${app.state.selectedSchool}&date=${dateKey}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load events: ${response.statusText}`);
+                }
+                const events = await response.json();
+                return events.filter(event => event.date === dateKey);
+            } catch (error) {
+                console.warn('Events API not available, using empty data:', error);
+                return [];
+            }
+        }
+
+        async function loadScheduleData(dateKey) {
+            // For now, return mock schedule data
+            // This will be replaced with real API calls when A/B schedule and day types are implemented
+            return {
+                schedule: Math.random() > 0.5 ? 'A' : 'B',
+                dayType: null
+            };
         }
 
         function renderModalContent(data, isAdminMode) {
@@ -1291,14 +1565,324 @@
         }
 
         function renderAdminModalContent(container, data) {
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            
             container.innerHTML = `
-                <div style="color: #666; text-align: center; padding: 40px;">
-                    <h3>🔧 Admin Mode</h3>
-                    <p>CRUD interface for events and materials will be implemented here</p>
-                    <p>Events: ${data.events.length}</p>
-                    <p>Materials: ${Object.values(data.materials).flat().length}</p>
+                <!-- Events Section -->
+                <div class="crud-section">
+                    <div class="crud-header">
+                        📅 Events
+                    </div>
+                    <div class="crud-content">
+                        <div class="existing-items" id="eventsList">
+                            ${renderEventsList(data.events)}
+                        </div>
+                        
+                        <div class="add-form">
+                            <div id="eventError" style="display: none;"></div>
+                            <div class="form-row">
+                                <div class="form-group title-group">
+                                    <label class="form-label">Event Title</label>
+                                    <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" maxlength="255">
+                                </div>
+                                <div class="form-group time-group">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" class="form-input" id="eventTime">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group department-group">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" id="eventDepartment">
+                                        <option value="">Select department</option>
+                                        <option value="ASB">ASB</option>
+                                        <option value="Life">Life</option>
+                                        <option value="Athletics">Athletics</option>
+                                        <option value="Art/Theater">Art/Theater</option>
+                                        <option value="Counseling">Counseling</option>
+                                        <option value="Testing">Testing</option>
+                                        <option value="Staff">Staff</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description (Optional)</label>
+                                    <input type="text" class="form-input" id="eventDescription" placeholder="Event description">
+                                </div>
+                                <div class="form-group button-group">
+                                    <button class="btn btn-add" onclick="addEvent('${dateKey}')">Add Event</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials Section (Placeholder) -->
+                <div class="crud-section">
+                    <div class="crud-header">
+                        📚 Materials
+                    </div>
+                    <div class="crud-content">
+                        <div style="color: #666; text-align: center; padding: 20px; font-style: italic;">
+                            Materials CRUD interface will be implemented next
+                        </div>
+                    </div>
                 </div>
             `;
+        }
+
+        function renderEventsList(events) {
+            if (!events || events.length === 0) {
+                return '<div class="empty-state">No events scheduled for this day</div>';
+            }
+
+            return events.map(event => {
+                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
+                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
+                
+                return `
+                    <div class="item-card ${departmentClass}" id="event-${event.id}">
+                        <div class="item-info">
+                            <div class="item-title">${escapeHtml(event.title)}</div>
+                            <div class="item-details">
+                                ${timeDisplay ? `${timeDisplay} • ` : ''}${event.department || 'No Department'}
+                                ${event.description ? `<br><small>${escapeHtml(event.description)}</small>` : ''}
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editEvent(${event.id})">Edit</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteEvent(${event.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== EVENT CRUD FUNCTIONS =====
+
+        async function addEvent(dateKey) {
+            const title = document.getElementById('eventTitle').value.trim();
+            const time = document.getElementById('eventTime').value;
+            const department = document.getElementById('eventDepartment').value;
+            const description = document.getElementById('eventDescription').value.trim();
+            const errorDiv = document.getElementById('eventError');
+
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+
+            // Validation
+            if (!title) {
+                showEventError('Event title is required');
+                return;
+            }
+
+            if (!app.state.connected) {
+                showEventError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: dateKey,
+                        title: title,
+                        time: time || null,
+                        department: department || null,
+                        description: description || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const newEvent = await response.json();
+                
+                // Clear form
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventTime').value = '';
+                document.getElementById('eventDepartment').value = '';
+                document.getElementById('eventDescription').value = '';
+
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    cachedData.events.push(newEvent);
+                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                }
+
+                app.state.unsavedChanges = false;
+                showNotification('✅ Event added successfully!');
+
+            } catch (error) {
+                console.error('Error adding event:', error);
+                showEventError('Failed to add event: ' + error.message);
+            }
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+
+            if (!app.state.connected) {
+                showEventError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                // Update cache and UI
+                const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    cachedData.events = cachedData.events.filter(event => event.id !== eventId);
+                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                }
+
+                showNotification('✅ Event deleted successfully!');
+
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showEventError('Failed to delete event: ' + error.message);
+            }
+        }
+
+        function editEvent(eventId) {
+            // Simple edit implementation - populate form with event data
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            const event = cachedData.events.find(e => e.id === eventId);
+            
+            if (event) {
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventTime').value = event.time || '';
+                document.getElementById('eventDepartment').value = event.department || '';
+                document.getElementById('eventDescription').value = event.description || '';
+                
+                // Change add button to update button
+                const addButton = document.querySelector('.btn-add');
+                addButton.textContent = 'Update Event';
+                addButton.onclick = () => updateEvent(eventId, dateKey);
+                
+                // Add cancel button
+                addButton.insertAdjacentHTML('afterend', `
+                    <button class="btn btn-cancel" onclick="cancelEditEvent('${dateKey}')" style="margin-left: 10px;">Cancel</button>
+                `);
+                
+                app.state.unsavedChanges = true;
+                showNotification('Editing event - make changes and click Update');
+            }
+        }
+
+        async function updateEvent(eventId, dateKey) {
+            const title = document.getElementById('eventTitle').value.trim();
+            const time = document.getElementById('eventTime').value;
+            const department = document.getElementById('eventDepartment').value;
+            const description = document.getElementById('eventDescription').value.trim();
+
+            if (!title) {
+                showEventError('Event title is required');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        time: time || null,
+                        department: department || null,
+                        description: description || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const updatedEvent = await response.json();
+                
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    const index = cachedData.events.findIndex(e => e.id === eventId);
+                    if (index !== -1) {
+                        cachedData.events[index] = updatedEvent;
+                        document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                    }
+                }
+
+                cancelEditEvent(dateKey);
+                app.state.unsavedChanges = false;
+                showNotification('✅ Event updated successfully!');
+
+            } catch (error) {
+                console.error('Error updating event:', error);
+                showEventError('Failed to update event: ' + error.message);
+            }
+        }
+
+        function cancelEditEvent(dateKey) {
+            // Clear form
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventDepartment').value = '';
+            document.getElementById('eventDescription').value = '';
+            
+            // Reset add button
+            const addButton = document.querySelector('.btn-add');
+            addButton.textContent = 'Add Event';
+            addButton.onclick = () => addEvent(dateKey);
+            
+            // Remove cancel button
+            const cancelButton = document.querySelector('.btn-cancel');
+            if (cancelButton) {
+                cancelButton.remove();
+            }
+            
+            app.state.unsavedChanges = false;
+        }
+
+        function showEventError(message) {
+            const errorDiv = document.getElementById('eventError');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+
+        function formatTime12Hour(time24) {
+            if (!time24) return '';
+            const [hours, minutes] = time24.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function renderUserModalContent(container, data) {
