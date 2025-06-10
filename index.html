@@ -1543,9 +1543,9 @@
             const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost');
             app.state.environment = isLocalhost ? 'development' : 'production';
             
-            // Point to your backend Vercel URL
+            // Point to your backend Vercel URL with HTTPS
             if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
             } else {
                 app.config.apiUrl = window.location.origin + '/api';
             }
@@ -1822,28 +1822,31 @@
             console.log('API URL:', app.config.apiUrl);
             
             try {
-                const response = await fetch(`${app.config.apiUrl}/day-schedules`);
+                const response = await fetch(`${app.config.apiUrl}/date-configs`);
                 console.log('Schedule API response:', response.status, response.statusText);
                 
                 if (!response.ok) {
-                    console.warn('Day schedules API not available:', response.status, response.statusText);
+                    console.warn('Date configs API not available:', response.status, response.statusText);
                     showNotification('⚠️ A/B schedules not available - check database connection', true);
                     return;
                 }
                 
-                const schedules = await response.json();
-                console.log('Loaded schedules:', schedules);
+                const configs = await response.json();
+                console.log('Loaded date configs:', configs);
                 
-                // Update calendar display
-                schedules.forEach(schedule => {
-                    console.log('Updating schedule for date:', schedule.date, 'schedule:', schedule.schedule);
-                    updateCalendarDaySchedule(schedule.date, schedule.schedule);
+                // Update calendar display - assuming configs have date and schedule properties
+                configs.forEach(config => {
+                    if (config.schedule) {
+                        console.log('Updating schedule for date:', config.date, 'schedule:', config.schedule);
+                        updateCalendarDaySchedule(config.date, config.schedule);
+                    }
                 });
                 
-                showNotification(`✅ Loaded ${schedules.length} A/B schedules`);
+                const scheduleCount = configs.filter(c => c.schedule).length;
+                showNotification(`✅ Loaded ${scheduleCount} A/B schedules`);
                 
             } catch (error) {
-                console.error('Error loading day schedules:', error);
+                console.error('Error loading date configs:', error);
                 showNotification('❌ Failed to load A/B schedules: ' + error.message, true);
             }
         }
@@ -1869,13 +1872,8 @@
             event.preventDefault();
             event.stopPropagation();
             
-            if (!app.state.connected) {
-                showNotification('❌ Database not connected', true);
-                return;
-            }
-
             try {
-                const response = await fetch(`${app.config.apiUrl}/day-schedules`, {
+                const response = await fetch(`${app.config.apiUrl}/date-configs`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
