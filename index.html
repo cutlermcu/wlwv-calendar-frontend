@@ -21,12 +21,10 @@
             color: #1a1a1a;
         }
 
-        /* Default district theme (red) for home page */
         body.district-theme {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
         }
 
-        /* School-specific themes only apply when viewing school calendar */
         body.school-wlhs {
             background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
@@ -58,25 +56,22 @@
             opacity: 0.9;
         }
 
-        /* ADMIN VISIBILITY CONTROLS */
         .tabs {
-            display: none; /* Hidden by default */
+            display: none;
             gap: 10px;
             margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
-        /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
         }
 
         #schoolSelect {
-            display: none; /* Hidden by default */
+            display: none;
         }
 
-        /* Show school select only when admin mode is active */
         body.admin-active #schoolSelect {
             display: inline-block;
         }
@@ -287,6 +282,14 @@
             align-items: center;
         }
 
+        body.school-wlhs .calendar-header {
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
+        }
+
+        body.school-wvhs .calendar-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
         .calendar-controls {
             display: flex;
             gap: 15px;
@@ -372,35 +375,7 @@
             margin-bottom: 8px;
         }
 
-        /* School-specific color palettes */
-        .school-wlhs {
-            --primary-color: #0f4a2b;
-            --secondary-color: #d4af37;
-            --accent-color: #1f6b47;
-            --light-bg: #f0f8f3;
-            --gradient-start: #0f4a2b;
-            --gradient-end: #1f6b47;
-        }
-
-        .school-wvhs {
-            --primary-color: #1e3a8a;
-            --secondary-color: #c0c0c0;
-            --accent-color: #3b82f6;
-            --light-bg: #f1f5f9;
-            --gradient-start: #1e3a8a;
-            --gradient-end: #3b82f6;
-        }
-
-        /* Dynamic background based on school */
-        body.school-wlhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
-        }
-
-        body.school-wvhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
-        }
-
-        /* Enhanced Calendar Day Elements */
+        /* A/B Schedule Badge */
         .ab-schedule-badge {
             position: absolute;
             top: 8px;
@@ -433,7 +408,7 @@
             transform: scale(1.1);
         }
 
-        /* A/B Schedule Dropdown - SIMPLIFIED */
+        /* A/B Schedule Dropdown */
         .ab-schedule-menu {
             position: absolute;
             top: 100%;
@@ -445,24 +420,11 @@
             padding: 4px;
             min-width: 60px;
             z-index: 1000;
-            
-            /* Initially hidden */
             display: none;
         }
 
-        /* Show dropdown on hover - SIMPLIFIED */
         .ab-schedule-badge:hover .ab-schedule-menu {
-            display: block !important;
-        }
-
-        /* DEBUG: Make badges more visible */
-        .ab-schedule-badge {
-            border: 2px solid rgba(255, 255, 255, 0.3) !important;
-        }
-
-        .ab-schedule-badge.placeholder {
-            background: #9ca3af !important;
-            border: 2px solid #ef4444 !important;
+            display: block;
         }
 
         .ab-menu-item {
@@ -521,7 +483,6 @@
             z-index: 50;
         }
 
-        /* Show admin plus only in admin mode */
         body.admin-active .calendar-day:hover .admin-plus {
             opacity: 1;
         }
@@ -605,7 +566,7 @@
             color: white;
         }
 
-        /* Day Designation Dropdown - SIMPLIFIED */
+        /* Day Designation Dropdown */
         .day-designation-menu {
             position: absolute;
             bottom: 100%;
@@ -619,21 +580,11 @@
             min-width: 120px;
             z-index: 1000;
             margin-bottom: 4px;
-            
-            /* Initially hidden */
             display: none;
         }
 
-        /* Show designation menu - SIMPLIFIED */
-        .day-designation:hover .day-designation-menu {
-            display: block !important;
-        }
-
-        /* DEBUG: Make day designations more visible */
-        .day-designation.placeholder {
-            background: #9ca3af !important;
-            color: white !important;
-            border: 2px solid #ef4444 !important;
+        body.admin-active .day-designation:hover .day-designation-menu {
+            display: block;
         }
 
         .designation-menu-item {
@@ -686,7 +637,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Department color coding for event indicators */
         .event-indicator.dept-asb { background: rgba(245, 158, 11, 0.9); }
         .event-indicator.dept-life { background: rgba(16, 185, 129, 0.9); }
         .event-indicator.dept-athletics { background: rgba(59, 130, 246, 0.9); }
@@ -784,13 +734,12 @@
             align-items: center;
         }
 
-        /* School-specific modal headers */
         body.school-wlhs .modal-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
 
         body.school-wvhs .modal-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
 
         .modal-title {
@@ -883,7 +832,6 @@
             align-items: center;
         }
 
-        /* Department color coding for events */
         .item-card.dept-asb {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border-color: #f59e0b;
@@ -963,7 +911,6 @@
             transition: all 0.2s ease;
         }
 
-        /* Add Form Styles */
         .add-form {
             border-top: 1px solid #e5e7eb;
             padding-top: 15px;
@@ -1021,7 +968,6 @@
             background: #059669;
         }
 
-        /* Grade Tabs */
         .grade-tabs {
             display: flex;
             gap: 8px;
@@ -1514,10 +1460,18 @@
             }
         };
 
+        function detectEnvironment() {
+            const hostname = window.location.hostname;
+            if (hostname.includes('vercel.app') || hostname.includes('netlify.app') || 
+                hostname.includes('github.io') || (!hostname.includes('localhost') && !hostname.includes('127.0.0.1'))) {
+                return 'production';
+            }
+            return 'development';
+        }
+
         function setApiUrl() {
             app.state.environment = detectEnvironment();
             
-            // Point to your backend Vercel URL
             if (app.state.environment === 'production') {
                 app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
             } else {
@@ -1527,20 +1481,14 @@
             console.log('Environment detected:', app.state.environment);
             console.log('API URL set to:', app.config.apiUrl);
             
-            // Update the form
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
         }
 
-        function detectEnvironment() {
-            const hostname = window.location.hostname;
-            if (hostname.includes('vercel.app') || hostname.includes('netlify.app') || 
-                hostname.includes('github.io') || (!hostname.includes('localhost') && !hostname.includes('127.0.0.1'))) {
-                return 'production';
-            }
-            return 'development';
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
         }
 
         function showNotification(message, isError = false) {
@@ -1580,17 +1528,14 @@
         function goToSchool(schoolCode) {
             app.state.selectedSchool = schoolCode;
             
-            // Update school select
             const schoolSelect = document.getElementById('schoolSelect');
             if (schoolSelect) {
                 schoolSelect.value = schoolCode;
             }
             
-            // Apply school theme
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
-            // Update header
             const headerSpan = document.querySelector('.calendar-header span');
             if (headerSpan) {
                 if (schoolCode === 'wlhs') {
@@ -1607,11 +1552,9 @@
 
         function testConnection() {
             showNotification('Testing connection...');
-            console.log('Testing connection to:', app.config.apiUrl + '/health');
 
-            fetch(app.config.apiUrl + '/health')
+            fetch(app.config.apiUrl + '/api/health')
                 .then(response => {
-                    console.log('Health check response:', response.status, response.statusText);
                     if (response.ok) {
                         return response.json();
                     } else {
@@ -1619,13 +1562,11 @@
                     }
                 })
                 .then(data => {
-                    console.log('Health check data:', data);
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
                 })
                 .catch(error => {
-                    console.error('Connection test failed:', error);
                     app.state.connected = false;
                     updateConnectionStatus(false, 'Connection failed: ' + error.message);
                     showNotification('❌ Connection failed: ' + error.message, true);
@@ -1639,7 +1580,7 @@
             const dbUrl = document.getElementById('dbUrl').value;
             const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
 
-            fetch(app.config.apiUrl + '/init', {
+            fetch(app.config.apiUrl + '/api/init', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -1692,8 +1633,6 @@
 
         function toggleAdminMode() {
             app.state.adminMode = !app.state.adminMode;
-            
-            console.log('Admin mode toggled to:', app.state.adminMode);
 
             const button = document.getElementById('adminToggle');
             if (button) {
@@ -1701,18 +1640,13 @@
                 if (app.state.adminMode) {
                     button.classList.add('active');
                     document.body.classList.add('admin-active');
-                    console.log('Added admin-active class to body');
                 } else {
                     button.classList.remove('active');
                     document.body.classList.remove('admin-active');
-                    console.log('Removed admin-active class from body');
                 }
             }
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
-            
-            // FORCE CALENDAR RE-RENDER
-            console.log('Re-rendering calendar after admin mode toggle');
             renderCalendar();
         }
 
@@ -1731,7 +1665,6 @@
             document.body.classList.remove('school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
 
-            // Update header
             const headerSpan = document.querySelector('.calendar-header span');
             if (headerSpan) {
                 if (schoolCode === 'wlhs') {
@@ -1745,74 +1678,44 @@
             loadCalendarData();
         }
 
-        function formatDate(date) {
-            return date.toISOString().split('T')[0];
-        }
-
         function loadCalendarData() {
-            console.log('loadCalendarData called, connected:', app.state.connected);
-            
-            if (!app.state.connected) {
-                console.log('Not connected, skipping data load');
-                return;
-            }
+            if (!app.state.connected) return;
 
-            // Load day schedules
-            fetch(app.config.apiUrl + '/day-schedules')
-                .then(response => {
-                    console.log('Day schedules response status:', response.status);
-                    return response.json();
-                })
+            fetch(app.config.apiUrl + '/api/day-schedules')
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Day schedules response data:', data);
                     app.state.daySchedules = {};
                     if (Array.isArray(data)) {
                         data.forEach(item => {
                             app.state.daySchedules[item.date] = item.schedule;
                         });
-                    } else {
-                        console.error('Day schedules data is not an array:', data);
                     }
                     renderCalendar();
                 })
                 .catch(error => {
                     console.error('Error loading day schedules:', error);
-                    // Continue anyway
                     renderCalendar();
                 });
 
-            // Load day types
-            fetch(app.config.apiUrl + '/day-types')
-                .then(response => {
-                    console.log('Day types response status:', response.status);
-                    return response.json();
-                })
+            fetch(app.config.apiUrl + '/api/day-types')
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Day types response data:', data);
                     app.state.dayTypes = {};
                     if (Array.isArray(data)) {
                         data.forEach(item => {
                             app.state.dayTypes[item.date] = item.type;
                         });
-                    } else {
-                        console.error('Day types data is not an array:', data);
                     }
                     renderCalendar();
                 })
                 .catch(error => {
                     console.error('Error loading day types:', error);
-                    // Continue anyway
                     renderCalendar();
                 });
 
-            // Load events
-            fetch(app.config.apiUrl + `/events?school=${app.state.selectedSchool}`)
-                .then(response => {
-                    console.log('Events response status:', response.status);
-                    return response.json();
-                })
+            fetch(app.config.apiUrl + `/api/events?school=${app.state.selectedSchool}`)
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Events response data:', data);
                     app.state.events = {};
                     if (Array.isArray(data)) {
                         data.forEach(event => {
@@ -1821,25 +1724,17 @@
                             }
                             app.state.events[event.date].push(event);
                         });
-                    } else {
-                        console.error('Events data is not an array:', data);
                     }
                     renderCalendar();
                 })
                 .catch(error => {
                     console.error('Error loading events:', error);
-                    // Continue anyway
                     renderCalendar();
                 });
 
-            // Load materials
-            fetch(app.config.apiUrl + `/materials?school=${app.state.selectedSchool}`)
-                .then(response => {
-                    console.log('Materials response status:', response.status);
-                    return response.json();
-                })
+            fetch(app.config.apiUrl + `/api/materials?school=${app.state.selectedSchool}`)
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Materials response data:', data);
                     app.state.materials = {};
                     if (Array.isArray(data)) {
                         data.forEach(material => {
@@ -1851,19 +1746,14 @@
                             }
                             app.state.materials[material.date][material.grade_level].push(material);
                         });
-                    } else {
-                        console.error('Materials data is not an array:', data);
                     }
                 })
                 .catch(error => {
                     console.error('Error loading materials:', error);
-                    // Continue anyway - don't block other functionality
                 });
         }
 
         function renderCalendar() {
-            console.log('renderCalendar called, admin mode is:', app.state.adminMode);
-            
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
 
@@ -1880,7 +1770,6 @@
 
             grid.innerHTML = '';
 
-            // Add day headers
             const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             dayHeaders.forEach(day => {
                 const header = document.createElement('div');
@@ -1889,12 +1778,10 @@
                 grid.appendChild(header);
             });
 
-            // Calculate calendar days
             const firstDay = new Date(year, month, 1);
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-            // Create 42 days (6 weeks)
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
@@ -1904,17 +1791,15 @@
                 dayElement.className = 'calendar-day';
                 dayElement.setAttribute('data-date', dateStr);
 
-                // Check if today
                 const isToday = currentDate.toDateString() === new Date().toDateString();
                 if (isToday) dayElement.classList.add('today');
 
-                // Day number
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = currentDate.getDate();
                 dayElement.appendChild(dayNumber);
 
-                // A/B Schedule badge - ALWAYS CREATE
+                // A/B Schedule badge
                 const schedule = app.state.daySchedules[dateStr];
                 const abBadge = document.createElement('div');
                 abBadge.className = 'ab-schedule-badge';
@@ -1922,19 +1807,15 @@
                 if (schedule) {
                     abBadge.classList.add(`schedule-${schedule.toLowerCase()}`);
                     abBadge.textContent = schedule;
-                    console.log(`Created A/B badge for ${dateStr}: ${schedule}`);
                 } else {
                     abBadge.classList.add('placeholder');
                     abBadge.textContent = '?';
-                    abBadge.title = 'Click to assign A/B schedule';
-                    console.log(`Created placeholder A/B badge for ${dateStr}`);
+                    abBadge.title = 'Hover to assign A/B schedule';
                 }
                 
-                // Create dropdown menu
                 const abMenu = document.createElement('div');
                 abMenu.className = 'ab-schedule-menu';
                 
-                // Create menu items
                 const menuItems = [
                     { text: 'A', value: 'A', class: 'option-a' },
                     { text: 'B', value: 'B', class: 'option-b' },
@@ -1947,7 +1828,6 @@
                     menuItem.textContent = item.text;
                     menuItem.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        console.log('AB Menu item clicked:', dateStr, item.value);
                         setSchedule(dateStr, item.value);
                     });
                     abMenu.appendChild(menuItem);
@@ -1979,7 +1859,7 @@
                 adminPlus.onclick = () => openAdminModal(dateStr);
                 dayElement.appendChild(adminPlus);
 
-                // Day designation - ALWAYS CREATE IN ADMIN MODE
+                // Day designation
                 const dayType = app.state.dayTypes[dateStr];
                 const designation = document.createElement('div');
                 designation.className = 'day-designation';
@@ -1987,15 +1867,12 @@
                 if (dayType) {
                     designation.classList.add(dayType.toLowerCase().replace(/\s+/g, '-'));
                     designation.textContent = dayType;
-                    console.log(`Created day designation for ${dateStr}: ${dayType}`);
-                } else if (app.state.adminMode) {
+                } else {
                     designation.classList.add('placeholder');
-                    designation.textContent = 'Set Type';
-                    designation.title = 'Click to set day type';
-                    console.log(`Created placeholder day designation for ${dateStr}`);
+                    designation.textContent = 'Type';
+                    designation.title = 'Hover to set day type';
                 }
                 
-                // Create dropdown menu
                 const designationMenu = document.createElement('div');
                 designationMenu.className = 'day-designation-menu';
                 
@@ -2019,21 +1896,15 @@
                     menuItem.textContent = type.text;
                     menuItem.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        console.log('Day type menu item clicked:', dateStr, type.value);
                         setDayType(dateStr, type.value);
                     });
                     designationMenu.appendChild(menuItem);
                 });
                 
                 designation.appendChild(designationMenu);
-                
-                if (dayType || app.state.adminMode) {
-                    dayElement.appendChild(designation);
-                }
+                dayElement.appendChild(designation);
 
-                // Click handler for user modal
                 dayElement.addEventListener('click', (e) => {
-                    // Don't open user modal if clicking on admin elements
                     if (e.target.closest('.admin-plus') || 
                         e.target.closest('.ab-schedule-badge') || 
                         e.target.closest('.day-designation')) {
@@ -2047,31 +1918,22 @@
 
                 grid.appendChild(dayElement);
             }
-            
-            console.log('Calendar rendering complete. Admin mode:', app.state.adminMode);
-            console.log('Body classes:', document.body.className);
         }
 
         // A/B Schedule Management
         function setSchedule(dateStr, schedule) {
-            console.log('setSchedule called:', dateStr, schedule, app.state.connected);
-            
             if (!app.state.connected) {
                 showNotification('Database not connected', true);
                 return;
             }
             
-            fetch(app.config.apiUrl + '/day-schedules', {
+            fetch(app.config.apiUrl + '/api/day-schedules', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date: dateStr, schedule: schedule })
             })
-            .then(response => {
-                console.log('Schedule response:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Schedule response data:', data);
                 if (schedule) {
                     app.state.daySchedules[dateStr] = schedule;
                     showNotification(`Set ${dateStr} to ${schedule} schedule`);
@@ -2082,31 +1944,24 @@
                 renderCalendar();
             })
             .catch(error => {
-                console.error('Schedule error:', error);
                 showNotification('Error updating schedule: ' + error.message, true);
             });
         }
 
         // Day Type Management
         function setDayType(dateStr, type) {
-            console.log('setDayType called:', dateStr, type, app.state.connected);
-            
             if (!app.state.connected) {
                 showNotification('Database not connected', true);
                 return;
             }
             
-            fetch(app.config.apiUrl + '/day-types', {
+            fetch(app.config.apiUrl + '/api/day-types', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date: dateStr, type: type })
             })
-            .then(response => {
-                console.log('Day type response:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Day type response data:', data);
                 if (type) {
                     app.state.dayTypes[dateStr] = type;
                     showNotification(`Set ${dateStr} to ${type}`);
@@ -2117,7 +1972,6 @@
                 renderCalendar();
             })
             .catch(error => {
-                console.error('Day type error:', error);
                 showNotification('Error updating day type: ' + error.message, true);
             });
         }
@@ -2126,7 +1980,6 @@
         function openAdminModal(dateStr) {
             app.state.selectedDate = dateStr;
             
-            // Update modal title
             const date = new Date(dateStr);
             const formattedDate = date.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -2137,7 +1990,6 @@
             
             document.getElementById('adminModalDate').textContent = formattedDate;
             
-            // Update A/B schedule badge
             const schedule = app.state.daySchedules[dateStr];
             const scheduleBadge = document.getElementById('adminModalSchedule');
             if (schedule) {
@@ -2148,17 +2000,13 @@
                 scheduleBadge.style.display = 'none';
             }
             
-            // Load events and materials for this date
             loadModalData(dateStr);
-            
-            // Show modal
             document.getElementById('adminModal').classList.add('show');
         }
 
         function openUserModal(dateStr) {
             app.state.selectedDate = dateStr;
             
-            // Update modal title
             const date = new Date(dateStr);
             const formattedDate = date.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -2169,7 +2017,6 @@
             
             document.getElementById('userModalDate').textContent = `📅 ${formattedDate}`;
             
-            // Update A/B schedule badge
             const schedule = app.state.daySchedules[dateStr];
             const scheduleBadge = document.getElementById('userModalSchedule');
             if (schedule) {
@@ -2180,10 +2027,7 @@
                 scheduleBadge.style.display = 'none';
             }
             
-            // Load user view data
             loadUserModalData(dateStr);
-            
-            // Show modal
             document.getElementById('userModal').classList.add('show');
         }
 
@@ -2192,7 +2036,6 @@
         }
 
         function loadModalData(dateStr) {
-            // Load events for admin modal
             const eventsContainer = document.getElementById('existingEvents');
             const dayEvents = app.state.events[dateStr] || [];
             
@@ -2213,12 +2056,10 @@
                 eventsContainer.appendChild(eventCard);
             });
 
-            // Load materials for admin modal
             loadMaterialsForGrade(app.state.currentGrade);
         }
 
         function loadUserModalData(dateStr) {
-            // Load events for user modal
             const eventsContainer = document.getElementById('userEvents');
             const dayEvents = app.state.events[dateStr] || [];
             
@@ -2240,7 +2081,6 @@
                 });
             }
 
-            // Load materials for user modal
             loadUserMaterialsForGrade(app.state.currentGrade);
         }
 
@@ -2297,26 +2137,22 @@
         function switchGradeTab(grade) {
             app.state.currentGrade = grade;
             
-            // Update tab appearance
             document.querySelectorAll('#adminModal .grade-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Load materials for selected grade
             loadMaterialsForGrade(grade);
         }
 
         function switchUserGradeTab(grade) {
             app.state.currentGrade = grade;
             
-            // Update tab appearance
             document.querySelectorAll('#userModal .grade-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Load materials for selected grade
             loadUserMaterialsForGrade(grade);
         }
 
@@ -2345,7 +2181,7 @@
                 return;
             }
             
-            fetch(app.config.apiUrl + '/events', {
+            fetch(app.config.apiUrl + '/api/events', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2359,19 +2195,14 @@
             })
             .then(response => response.json())
             .then(event => {
-                // Add to local state
                 if (!app.state.events[app.state.selectedDate]) {
                     app.state.events[app.state.selectedDate] = [];
                 }
                 app.state.events[app.state.selectedDate].push(event);
                 
-                // Clear form
                 document.getElementById('addEventForm').reset();
-                
-                // Reload modal data
                 loadModalData(app.state.selectedDate);
                 renderCalendar();
-                
                 showNotification('Event added successfully');
             })
             .catch(error => {
@@ -2382,20 +2213,17 @@
         function deleteEvent(eventId) {
             if (!confirm('Are you sure you want to delete this event?')) return;
             
-            fetch(app.config.apiUrl + `/events/${eventId}`, {
+            fetch(app.config.apiUrl + `/api/events/${eventId}`, {
                 method: 'DELETE'
             })
             .then(response => response.json())
             .then(() => {
-                // Remove from local state
                 if (app.state.events[app.state.selectedDate]) {
                     app.state.events[app.state.selectedDate] = app.state.events[app.state.selectedDate].filter(e => e.id !== eventId);
                 }
                 
-                // Reload modal data
                 loadModalData(app.state.selectedDate);
                 renderCalendar();
-                
                 showNotification('Event deleted successfully');
             })
             .catch(error => {
@@ -2415,7 +2243,7 @@
                 return;
             }
             
-            fetch(app.config.apiUrl + '/materials', {
+            fetch(app.config.apiUrl + '/api/materials', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2430,7 +2258,6 @@
             })
             .then(response => response.json())
             .then(material => {
-                // Add to local state
                 if (!app.state.materials[app.state.selectedDate]) {
                     app.state.materials[app.state.selectedDate] = {};
                 }
@@ -2439,12 +2266,8 @@
                 }
                 app.state.materials[app.state.selectedDate][app.state.currentGrade].push(material);
                 
-                // Clear form
                 document.getElementById('addMaterialForm').reset();
-                
-                // Reload modal data
                 loadMaterialsForGrade(app.state.currentGrade);
-                
                 showNotification('Material added successfully');
             })
             .catch(error => {
@@ -2455,20 +2278,17 @@
         function deleteMaterial(materialId) {
             if (!confirm('Are you sure you want to delete this material?')) return;
             
-            fetch(app.config.apiUrl + `/materials/${materialId}`, {
+            fetch(app.config.apiUrl + `/api/materials/${materialId}`, {
                 method: 'DELETE'
             })
             .then(response => response.json())
             .then(() => {
-                // Remove from local state
                 for (let grade in app.state.materials[app.state.selectedDate] || {}) {
                     app.state.materials[app.state.selectedDate][grade] = 
                         app.state.materials[app.state.selectedDate][grade].filter(m => m.id !== materialId);
                 }
                 
-                // Reload modal data
                 loadMaterialsForGrade(app.state.currentGrade);
-                
                 showNotification('Material deleted successfully');
             })
             .catch(error => {
@@ -2496,25 +2316,11 @@
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing app...');
             setApiUrl();
-            
-            // Apply district theme initially
             document.body.classList.add('district-theme');
-            
-            // FORCE admin mode for debugging
-            console.log('FORCING admin mode for debugging');
-            app.state.adminMode = true;
-            document.body.classList.add('admin-active');
-            
             renderCalendar();
             showNotification('Calendar loaded successfully!');
-            
-            // Test connection on load
-            setTimeout(() => {
-                console.log('Testing connection after 1 second...');
-                testConnection();
-            }, 1000);
+            setTimeout(testConnection, 1000);
         });
     </script>
 </body>
