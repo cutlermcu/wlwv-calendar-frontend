@@ -1818,19 +1818,26 @@
 
         async function loadCalendarSchedules() {
             try {
+                console.log('Attempting to load schedules...');
                 const response = await fetch(`${app.config.apiUrl}/date-configs`);
                 
                 if (!response.ok) {
-                    console.warn('Date configs API not available:', response.status);
+                    console.warn('Date configs not available, status:', response.status);
                     return;
                 }
                 
                 const configs = await response.json();
+                console.log('Raw API response:', configs);
+                console.log('Number of configs loaded:', configs.length);
                 
-                // Update calendar display
-                configs.forEach(config => {
+                // Process each config
+                configs.forEach((config, index) => {
+                    console.log(`Processing config ${index}:`, config);
                     if (config.day_type) {
+                        console.log(`Updating schedule for ${config.date_key} to ${config.day_type}`);
                         updateCalendarDaySchedule(config.date_key, config.day_type);
+                    } else {
+                        console.log(`Config ${index} has no day_type:`, config);
                     }
                 });
                 
@@ -1840,22 +1847,61 @@
                 }
                 
             } catch (error) {
-                console.warn('Error loading date configs:', error);
+                console.error('Error loading schedules:', error);
             }
         }
 
         function updateCalendarDaySchedule(dateString, schedule) {
-            const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
+            console.log('🔧 TRYING TO UPDATE:', dateString, 'with schedule:', schedule);
             
-            scheduleDisplays.forEach(scheduleDisplay => {
+            const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
+            console.log('📍 Found', scheduleDisplays.length, 'elements with data-date:', dateString);
+            
+            if (scheduleDisplays.length === 0) {
+                console.log('❌ NO ELEMENTS FOUND for date:', dateString);
+                // Try to find ANY schedule displays
+                const allDisplays = document.querySelectorAll('.ab-schedule-display');
+                console.log('📋 All schedule displays on page:', allDisplays.length);
+                if (allDisplays.length > 0) {
+                    console.log('📋 First few data-dates:', Array.from(allDisplays).slice(0, 3).map(el => el.getAttribute('data-date')));
+                }
+                return;
+            }
+            
+            scheduleDisplays.forEach((scheduleDisplay, index) => {
+                console.log(`🔄 Processing display ${index} for ${dateString}`);
                 const scheduleLetter = scheduleDisplay.querySelector('.schedule-letter');
+                console.log('🔤 Found schedule letter element:', !!scheduleLetter);
                 
                 if (schedule) {
+                    console.log('✅ Setting visible with schedule:', schedule);
                     scheduleDisplay.style.display = 'block';
-                    scheduleLetter.textContent = schedule;
-                    scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                    scheduleDisplay.style.visibility = 'visible';
+                    scheduleDisplay.style.opacity = '1';
+                    
+                    if (scheduleLetter) {
+                        scheduleLetter.textContent = schedule;
+                        console.log('📝 Set letter to:', schedule);
+                    }
+                    
+                    const newClassName = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                    scheduleDisplay.className = newClassName;
+                    console.log('🎨 Set className to:', newClassName);
+                    
+                    // Force style update
+                    scheduleDisplay.style.background = schedule === 'A' ? '#3b82f6' : '#ef4444';
+                    scheduleDisplay.style.color = 'white';
+                    scheduleDisplay.style.padding = '4px 8px';
+                    scheduleDisplay.style.borderRadius = '4px';
+                    scheduleDisplay.style.position = 'absolute';
+                    scheduleDisplay.style.top = '8px';
+                    scheduleDisplay.style.right = '8px';
+                    scheduleDisplay.style.zIndex = '50';
+                    
+                    console.log('🎯 FORCED STYLES APPLIED');
                 } else {
                     scheduleDisplay.style.display = 'none';
+                    console.log('👻 Hidden (no schedule)');
                 }
             });
         }
@@ -1865,16 +1911,27 @@
             event.stopPropagation();
             
             try {
-                const response = await fetch(`${app.config.apiUrl}/date-configs`, {
+                // Try date-configs first, fallback to day-schedules
+                let response = await fetch(`${app.config.apiUrl}/date-configs`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         date_key: dateString,
                         day_type: schedule
                     })
                 });
+
+                if (!response.ok) {
+                    // Fallback to day-schedules format
+                    response = await fetch(`${app.config.apiUrl}/day-schedules`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            date: dateString,
+                            schedule: schedule
+                        })
+                    });
+                }
 
                 if (!response.ok) {
                     const errorText = await response.text();
