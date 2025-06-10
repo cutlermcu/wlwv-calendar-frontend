@@ -651,6 +651,175 @@
         .notification.show {
             transform: translateX(0);
         }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .modal-tab {
+            padding: 10px 20px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .modal-tab.active {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .modal-tab:hover:not(.active) {
+            background: #e5e7eb;
+        }
+
+        .modal-form {
+            display: none;
+        }
+
+        .modal-form.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
     </style>
 </head>
 <body>
@@ -816,6 +985,108 @@
         </div>
     </div>
 
+    <!-- Events/Materials Modal -->
+    <div class="modal" id="eventsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Event/Material</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchModalTab('event')">📅 Event</button>
+                <button class="modal-tab" onclick="switchModalTab('material')">📚 Material</button>
+            </div>
+
+            <!-- Event Form -->
+            <form class="modal-form active" id="eventForm" onsubmit="handleEventSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Event Title *</label>
+                        <input type="text" class="form-input" id="eventTitle" required placeholder="Enter event title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-input" id="eventDepartment" placeholder="e.g., Math, Science, Athletics">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date *</label>
+                        <input type="date" class="form-input" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-input" id="eventTime">
+                    </div>
+                </div>
+
+                <div class="form-row full-width">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="eventDescription" placeholder="Event details and description"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </div>
+            </form>
+
+            <!-- Material Form -->
+            <form class="modal-form" id="materialForm" onsubmit="handleMaterialSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Material Title *</label>
+                        <input type="text" class="form-input" id="materialTitle" required placeholder="Enter material title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Grade Level *</label>
+                        <select class="form-select" id="materialGrade" required>
+                            <option value="">Select Grade</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date *</label>
+                        <input type="date" class="form-input" id="materialDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password (Optional)</label>
+                        <input type="text" class="form-input" id="materialPassword" placeholder="Leave blank if no password needed">
+                    </div>
+                </div>
+
+                <div class="form-row full-width">
+                    <div class="form-group">
+                        <label class="form-label">Link/URL *</label>
+                        <input type="url" class="form-input" id="materialLink" required placeholder="https://example.com/material">
+                    </div>
+                </div>
+
+                <div class="form-row full-width">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="materialDescription" placeholder="Material description and instructions"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -827,7 +1098,8 @@
                 adminMode: false,
                 connected: false,
                 dayTypes: {},
-                daySchedules: {}
+                daySchedules: {},
+                selectedDate: null
             },
             config: {
                 apiUrl: ''
@@ -1026,6 +1298,116 @@
             });
         }
 
+        // Modal Functions
+        function openModal(date) {
+            if (!app.state.adminMode) return;
+            
+            app.state.selectedDate = date;
+            
+            // Set the date in both forms
+            document.getElementById('eventDate').value = date;
+            document.getElementById('materialDate').value = date;
+            
+            // Update modal title
+            const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('modalTitle').textContent = `Add Event/Material - ${formattedDate}`;
+            
+            // Show modal
+            document.getElementById('eventsModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('eventsModal').classList.remove('show');
+            
+            // Clear forms
+            document.getElementById('eventForm').reset();
+            document.getElementById('materialForm').reset();
+            
+            app.state.selectedDate = null;
+        }
+
+        function switchModalTab(tabType) {
+            // Update tab buttons
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Update forms
+            document.querySelectorAll('.modal-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (tabType === 'event') {
+                document.querySelector('.modal-tab:first-child').classList.add('active');
+                document.getElementById('eventForm').classList.add('active');
+            } else {
+                document.querySelector('.modal-tab:last-child').classList.add('active');
+                document.getElementById('materialForm').classList.add('active');
+            }
+        }
+
+        function handleEventSubmit(event) {
+            event.preventDefault();
+            
+            const eventData = {
+                school: app.state.selectedSchool,
+                date: document.getElementById('eventDate').value,
+                title: document.getElementById('eventTitle').value,
+                department: document.getElementById('eventDepartment').value || null,
+                time: document.getElementById('eventTime').value || null,
+                description: document.getElementById('eventDescription').value || ''
+            };
+
+            fetch(app.config.apiUrl + '/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(eventData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('✅ Event added successfully!');
+                closeModal();
+                renderCalendar(); // Refresh calendar to show new event
+            })
+            .catch(error => {
+                showNotification('❌ Failed to add event: ' + error.message);
+            });
+        }
+
+        function handleMaterialSubmit(event) {
+            event.preventDefault();
+            
+            const materialData = {
+                school: app.state.selectedSchool,
+                date: document.getElementById('materialDate').value,
+                grade_level: parseInt(document.getElementById('materialGrade').value),
+                title: document.getElementById('materialTitle').value,
+                link: document.getElementById('materialLink').value,
+                description: document.getElementById('materialDescription').value || '',
+                password: document.getElementById('materialPassword').value || ''
+            };
+
+            fetch(app.config.apiUrl + '/materials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(materialData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('✅ Material added successfully!');
+                closeModal();
+                renderCalendar(); // Refresh calendar to show new material
+            })
+            .catch(error => {
+                showNotification('❌ Failed to add material: ' + error.message);
+            });
+        }
+
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
@@ -1174,13 +1556,28 @@
                     const plusButton = document.createElement('button');
                     plusButton.className = 'admin-plus';
                     plusButton.textContent = '+';
-                    plusButton.onclick = () => showNotification('Modal functionality coming soon...');
+                    plusButton.onclick = () => openModal(dateString);
                     dayElement.appendChild(plusButton);
                 }
 
                 grid.appendChild(dayElement);
             }
         }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('eventsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             setApiUrl();
