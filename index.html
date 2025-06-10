@@ -435,35 +435,22 @@
         .day-type-display {
             position: absolute;
             bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 8px;
+            background: rgba(168, 85, 247, 0.9);
             color: white;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
+            max-width: 80px;
             text-align: center;
             white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
+            cursor: pointer;
         }
 
-        /* Day type color coding */
-        .day-type-display.no-school { background: rgba(239, 68, 68, 0.9); }
-        .day-type-display.early-release { background: rgba(245, 158, 11, 0.9); }
-        .day-type-display.late-start { background: rgba(16, 185, 129, 0.9); }
-        .day-type-display.half-day { background: rgba(139, 92, 246, 0.9); }
-        .day-type-display.access { background: rgba(59, 130, 246, 0.9); }
-        .day-type-display.grading { background: rgba(139, 92, 246, 0.9); }
-        .day-type-display.staff-development { background: rgba(6, 182, 212, 0.9); }
-        .day-type-display.holiday { background: rgba(239, 68, 68, 0.9); }
-        .day-type-display.furlough { background: rgba(245, 158, 11, 0.9); }
-        .day-type-display.finals { background: rgba(16, 185, 129, 0.9); }
-
-        /* Day type dropdown menu */
+        /* Day type dropdown menu - THE ONLY NEW CSS ADDITION */
         .day-type-menu {
             position: absolute;
             bottom: 35px;
@@ -500,18 +487,6 @@
         .day-type-menu-item:hover {
             background: #f3f4f6;
         }
-
-        .day-type-menu-item.no-school { border-left: 4px solid #ef4444; }
-        .day-type-menu-item.early-release { border-left: 4px solid #f59e0b; }
-        .day-type-menu-item.late-start { border-left: 4px solid #10b981; }
-        .day-type-menu-item.half-day { border-left: 4px solid #8b5cf6; }
-        .day-type-menu-item.access { border-left: 4px solid #3b82f6; }
-        .day-type-menu-item.grading { border-left: 4px solid #8b5cf6; }
-        .day-type-menu-item.staff-development { border-left: 4px solid #06b6d4; }
-        .day-type-menu-item.holiday { border-left: 4px solid #ef4444; }
-        .day-type-menu-item.furlough { border-left: 4px solid #f59e0b; }
-        .day-type-menu-item.finals { border-left: 4px solid #10b981; }
-        .day-type-menu-item.clear { border-left: 4px solid #6b7280; }
 
         .notification {
             position: fixed;
@@ -790,36 +765,26 @@
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
-                connected: false,
-                daySchedules: {},
-                dayTypes: {},
-                events: {},
-                materials: {}
+                connected: false
             },
             config: {
                 apiUrl: ''
             }
         };
 
-        function detectEnvironment() {
-            const hostname = window.location.hostname;
-            if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('repl')) {
-                return 'development';
-            }
-            return 'production';
-        }
-
         function setApiUrl() {
-            app.state.environment = detectEnvironment();
+    app.state.environment = detectEnvironment();
+    
+    // Point to your backend Vercel URL
+    if (app.state.environment === 'production') {
+        app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
+    } else {
+        app.config.apiUrl = window.location.origin + '/api';
+    }
+    
+    console.log('Environment detected:', app.state.environment);
+    console.log('API URL set to:', app.config.apiUrl);
             
-            // Point to your backend Vercel URL
-            if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
-            } else {
-                app.config.apiUrl = window.location.origin;
-            }
-            
-            console.log('Environment detected:', app.state.environment);
             console.log('API URL set to:', app.config.apiUrl);
             
             // Update the form
@@ -827,85 +792,6 @@
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
-        }
-
-        function loadCalendarData() {
-            if (!app.state.connected) return;
-
-            // Load day schedules
-            fetch(app.config.apiUrl + '/api/day-schedules')
-                .then(response => response.ok ? response.json() : [])
-                .then(data => {
-                    app.state.daySchedules = {};
-                    data.forEach(item => {
-                        app.state.daySchedules[item.date] = item.schedule;
-                    });
-                    renderCalendar();
-                })
-                .catch(error => console.log('Could not load day schedules:', error.message));
-
-            // Load day types
-            fetch(app.config.apiUrl + '/api/day-types')
-                .then(response => response.ok ? response.json() : [])
-                .then(data => {
-                    app.state.dayTypes = {};
-                    data.forEach(item => {
-                        app.state.dayTypes[item.date] = item.type;
-                    });
-                    renderCalendar();
-                })
-                .catch(error => console.log('Could not load day types:', error.message));
-        }
-
-        function updateDaySchedule(date, schedule) {
-            if (!app.state.connected) return;
-
-            fetch(app.config.apiUrl + '/api/day-schedules', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date, schedule })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (schedule) {
-                        app.state.daySchedules[date] = schedule;
-                    } else {
-                        delete app.state.daySchedules[date];
-                    }
-                    renderCalendar();
-                    showNotification(`Schedule ${schedule ? 'set to ' + schedule : 'cleared'} for ${date}`);
-                }
-            })
-            .catch(error => showNotification('Failed to update schedule: ' + error.message, true));
-        }
-
-        function updateDayType(date, type) {
-            if (!app.state.connected) return;
-
-            fetch(app.config.apiUrl + '/api/day-types', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date, type })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (type) {
-                        app.state.dayTypes[date] = type;
-                    } else {
-                        delete app.state.dayTypes[date];
-                    }
-                    renderCalendar();
-                    showNotification(`Day type ${type ? 'set to ' + type : 'cleared'} for ${date}`);
-                }
-            })
-            .catch(error => showNotification('Failed to update day type: ' + error.message, true));
-        }
-
-        function openDayModal(date) {
-            // Placeholder for opening the day detail modal
-            showNotification(`Opening modal for ${date}`);
         }
 
         function showNotification(message, isError = false) {
@@ -956,7 +842,7 @@
         function testConnection() {
             showNotification('Testing connection...');
 
-            fetch(app.config.apiUrl + '/api/health')
+            fetch(app.config.apiUrl + '/health')
                 .then(response => {
                     if (response.ok) {
                         return response.json();
@@ -968,7 +854,6 @@
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
-                    loadCalendarData(); // Load calendar data after successful connection
                 })
                 .catch(error => {
                     app.state.connected = false;
@@ -984,7 +869,7 @@
             const dbUrl = document.getElementById('dbUrl').value;
             const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
 
-            fetch(app.config.apiUrl + '/api/init', {
+            fetch(app.config.apiUrl + '/init', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -1004,7 +889,6 @@
                 showNotification('✅ Database initialized successfully!');
                 app.state.connected = true;
                 updateConnectionStatus(true, 'Database connected');
-                loadCalendarData(); // Load calendar data after successful setup
                 
                 setTimeout(() => showScreen('calendar'), 1500);
             })
@@ -1051,7 +935,6 @@
                 }
             }
 
-            renderCalendar(); // Re-render to show/hide admin elements
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
         }
 
@@ -1102,7 +985,6 @@
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-                const dateString = currentDate.toISOString().split('T')[0];
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
@@ -1113,64 +995,25 @@
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = currentDate.getDate();
+
                 dayElement.appendChild(dayNumber);
 
-                // Add A/B schedule badge
-                const schedule = app.state.daySchedules[dateString];
-                if (schedule && app.state.adminMode) {
-                    const scheduleElement = document.createElement('div');
-                    scheduleElement.className = `ab-schedule schedule-${schedule.toLowerCase()}`;
-                    scheduleElement.textContent = schedule;
-                    
-                    // Add dropdown menu for A/B schedule
-                    const scheduleMenu = document.createElement('div');
-                    scheduleMenu.className = 'ab-schedule-menu';
-                    scheduleMenu.innerHTML = `
-                        <div class="ab-menu-item option-a" onclick="updateDaySchedule('${dateString}', 'A')">A</div>
-                        <div class="ab-menu-item option-b" onclick="updateDaySchedule('${dateString}', 'B')">B</div>
-                        <div class="ab-menu-item option-clear" onclick="updateDaySchedule('${dateString}', null)">Clear</div>
-                    `;
-                    scheduleElement.appendChild(scheduleMenu);
-                    dayElement.appendChild(scheduleElement);
-                }
-
-                // Add admin plus button
-                if (app.state.adminMode) {
-                    const plusButton = document.createElement('button');
-                    plusButton.className = 'admin-plus';
-                    plusButton.textContent = '+';
-                    plusButton.onclick = () => openDayModal(dateString);
-                    dayElement.appendChild(plusButton);
-                }
-
-                // Add day type designation
-                const dayType = app.state.dayTypes[dateString];
-                if (dayType || app.state.adminMode) {
+                // ONLY ADD THE DAY TYPE DROPDOWN HTML FOR TESTING
+                if (app.state.adminMode && currentDate.getDate() === 15) {
+                    // Test day type element with dropdown
                     const dayTypeElement = document.createElement('div');
-                    dayTypeElement.className = `day-type-display ${dayType ? dayType.replace(/\s+/g, '-').toLowerCase() : ''}`;
-                    dayTypeElement.textContent = dayType || (app.state.adminMode ? 'Set Type' : '');
-                    dayTypeElement.style.opacity = dayType ? '1' : '0.3';
+                    dayTypeElement.className = 'day-type-display';
+                    dayTypeElement.textContent = 'Staff Development';
                     
-                    // Add dropdown menu for day types (only in admin mode)
-                    if (app.state.adminMode) {
-                        const dayTypeMenu = document.createElement('div');
-                        dayTypeMenu.className = 'day-type-menu';
-                        dayTypeMenu.innerHTML = `
-                            <div class="day-type-menu-item no-school" onclick="updateDayType('${dateString}', 'No School')">No School</div>
-                            <div class="day-type-menu-item early-release" onclick="updateDayType('${dateString}', 'Early Release')">Early Release</div>
-                            <div class="day-type-menu-item late-start" onclick="updateDayType('${dateString}', 'Late Start')">Late Start</div>
-                            <div class="day-type-menu-item half-day" onclick="updateDayType('${dateString}', 'Half Day')">Half Day</div>
-                            <div class="day-type-menu-item access" onclick="updateDayType('${dateString}', 'Access')">Access</div>
-                            <div class="day-type-menu-item grading" onclick="updateDayType('${dateString}', 'Grading')">Grading</div>
-                            <div class="day-type-menu-item staff-development" onclick="updateDayType('${dateString}', 'Staff Development')">Staff Development</div>
-                            <div class="day-type-menu-item holiday" onclick="updateDayType('${dateString}', 'Holiday')">Holiday</div>
-                            <div class="day-type-menu-item furlough" onclick="updateDayType('${dateString}', 'Furlough')">Furlough</div>
-                            <div class="day-type-menu-item finals" onclick="updateDayType('${dateString}', 'Finals')">Finals</div>
-                            <div class="day-type-menu-item clear" onclick="updateDayType('${dateString}', null)">Clear</div>
-                        `;
-                        dayTypeElement.appendChild(dayTypeMenu);
-                    }
-                    
+                    const dayTypeMenu = document.createElement('div');
+                    dayTypeMenu.className = 'day-type-menu';
+                    dayTypeMenu.innerHTML = `
+                        <div class="day-type-menu-item" onclick="alert('No School clicked')">No School</div>
+                        <div class="day-type-menu-item" onclick="alert('Early Release clicked')">Early Release</div>
+                        <div class="day-type-menu-item" onclick="alert('Late Start clicked')">Late Start</div>
+                        <div class="day-type-menu-item" onclick="alert('Clear clicked')">Clear</div>
+                    `;
+                    dayTypeElement.appendChild(dayTypeMenu);
                     dayElement.appendChild(dayTypeElement);
                 }
 
@@ -1187,9 +1030,6 @@
             
             renderCalendar();
             showNotification('Calendar loaded successfully!');
-            
-            // Test connection on load
-            setTimeout(testConnection, 1000);
         });
     </script>
 </body>
