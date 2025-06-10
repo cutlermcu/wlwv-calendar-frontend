@@ -1791,52 +1791,119 @@
                 });
         }
 
-        function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            if (!grid) return;
+    function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    if (!grid) return;
 
-            const year = app.state.currentDate.getFullYear();
-            const month = app.state.currentDate.getMonth();
-
-            const monthDisplay = document.getElementById('currentMonth');
-            if (monthDisplay) {
-                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                }).format(app.state.currentDate);
-            }
-
-            grid.innerHTML = '';
-
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = day;
-                grid.appendChild(header);
+    // Load day types first, then render
+    if (app.state.connected) {
+        fetch(app.config.apiUrl + '/day-types')
+            .then(response => response.json())
+            .then(data => {
+                app.state.dayTypes = {};
+                data.forEach(item => {
+                    app.state.dayTypes[item.date] = item.type;
+                });
+                renderCalendarGrid();
+            })
+            .catch(error => {
+                console.log('No day types loaded:', error);
+                renderCalendarGrid();
             });
+    } else {
+        renderCalendarGrid();
+    }
+}
+function renderCalendarGrid() {
+    const grid = document.getElementById('calendarGrid');
+    const year = app.state.currentDate.getFullYear();
+    const month = app.state.currentDate.getMonth();
 
-            const firstDay = new Date(year, month, 1);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
+    const monthDisplay = document.getElementById('currentMonth');
+    if (monthDisplay) {
+        monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
+            month: 'long', 
+            year: 'numeric' 
+        }).format(app.state.currentDate);
+    }
 
-            for (let i = 0; i < 42; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-                const dateStr = formatDate(currentDate);
+    grid.innerHTML = '';
 
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.setAttribute('data-date', dateStr);
+    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dayHeaders.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+    });
 
-                const isToday = currentDate.toDateString() === new Date().toDateString();
-                if (isToday) dayElement.classList.add('today');
+    const firstDay = new Date(year, month, 1);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'day-number';
-                dayNumber.textContent = currentDate.getDate();
-                dayElement.appendChild(dayNumber);
+    for (let i = 0; i < 42; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
 
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+
+        const isToday = currentDate.toDateString() === new Date().toDateString();
+        if (isToday) dayElement.classList.add('today');
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = currentDate.getDate();
+
+        dayElement.appendChild(dayNumber);
+
+        // ADD DAY TYPE FUNCTIONALITY HERE
+        const dateString = formatDate(currentDate);
+        const dayType = app.state.dayTypes[dateString];
+
+        if (dayType) {
+            const dayDesignation = document.createElement('div');
+            dayDesignation.className = `day-designation ${dayType.toLowerCase().replace(/\s+/g, '-')}`;
+            dayDesignation.textContent = dayType;
+            
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'day-designation-menu';
+            dropdownMenu.innerHTML = `
+                <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
+                <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
+                <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
+                <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
+                <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
+                <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
+                <div class="menu-item clear" onclick="setDayType('${dateString}', null)">Clear</div>
+            `;
+            
+            dayDesignation.appendChild(dropdownMenu);
+            dayElement.appendChild(dayDesignation);
+            dayElement.classList.add('has-dropdown');
+        }
+
+        // Add empty dropdown for admin mode
+        if (app.state.adminMode && !dayType) {
+            const emptyDesignation = document.createElement('div');
+            emptyDesignation.className = 'day-designation-placeholder';
+            emptyDesignation.innerHTML = `
+                <div class="day-designation-menu">
+                    <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
+                    <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
+                    <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
+                    <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
+                    <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
+                    <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
+                </div>
+            `;
+            dayElement.appendChild(emptyDesignation);
+            dayElement.classList.add('has-dropdown');
+        }
+
+        grid.appendChild(dayElement);
+    }
+}
                 // A/B Schedule badge - only show if there's a schedule OR admin mode is active
                 const schedule = app.state.daySchedules[dateStr];
                 if (schedule || app.state.adminMode) {
