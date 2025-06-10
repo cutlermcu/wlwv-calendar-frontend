@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WLWV Life Calendar</title>
+    <meta name="description" content="West Linn-Wilsonville School District Calendar System - View schedules, events, and curriculum materials for WLHS and WVHS">
+    <meta name="keywords" content="WLWV, West Linn, Wilsonville, school calendar, events, curriculum, materials">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
     <style>
         * {
             margin: 0;
@@ -18,10 +21,12 @@
             color: #1a1a1a;
         }
 
+        /* Default district theme (red) for home page */
         body.district-theme {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
         }
 
+        /* School-specific themes only apply when viewing school calendar */
         body.school-wlhs {
             background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
@@ -48,22 +53,30 @@
             font-weight: 700;
         }
 
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* ADMIN VISIBILITY CONTROLS */
         .tabs {
-            display: none;
+            display: none; /* Hidden by default */
             gap: 10px;
             margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
+        /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
         }
 
         #schoolSelect {
-            display: none;
+            display: none; /* Hidden by default */
         }
 
+        /* Show school select only when admin mode is active */
         body.admin-active #schoolSelect {
             display: inline-block;
         }
@@ -117,9 +130,17 @@
             color: white;
         }
 
+        .btn-primary:hover {
+            background: #a01729;
+        }
+
         .btn-secondary {
             background: #e5e7eb;
             color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
         }
 
         .home-page {
@@ -240,6 +261,11 @@
             font-size: 14px;
         }
 
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
         .setup-form {
             max-width: 500px;
             margin: 0 auto;
@@ -275,6 +301,10 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .current-month {
@@ -321,8 +351,6 @@
             padding: 8px;
             min-height: 120px;
             position: relative;
-            overflow: visible;
-            z-index: auto;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -330,13 +358,63 @@
 
         .calendar-day:hover {
             background: #f1f5f9;
-             z-index: 1000;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
         }
 
         .day-number {
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 8px;
+        }
+
+        /* School-specific color palettes */
+        .school-wlhs {
+            --primary-color: #0f4a2b;
+            --secondary-color: #d4af37;
+            --accent-color: #1f6b47;
+            --light-bg: #f0f8f3;
+            --gradient-start: #0f4a2b;
+            --gradient-end: #1f6b47;
+        }
+
+        .school-wvhs {
+            --primary-color: #1e3a8a;
+            --secondary-color: #c0c0c0;
+            --accent-color: #3b82f6;
+            --light-bg: #f1f5f9;
+            --gradient-start: #1e3a8a;
+            --gradient-end: #3b82f6;
+        }
+
+        /* Dynamic background based on school */
+        body.school-wlhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        body.school-wvhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        /* Additional styles for calendar elements */
+        .event-title-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(196, 30, 58, 0.9);
+            color: white;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            max-width: 80px;
+            text-align: center;
         }
 
         .ab-schedule-display {
@@ -351,237 +429,711 @@
             font-weight: 600;
             min-width: 20px;
             text-align: center;
-            cursor: pointer;
-        }
-
-        .ab-schedule-display.schedule-a {
-            background: rgba(59, 130, 246, 0.9);
-        }
-
-        .ab-schedule-display.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        .ab-schedule-menu {
-            position: absolute;
-            top: 20px;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 8px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            z-index: 200;
-            min-width: 80px;
             pointer-events: none;
         }
 
-        .ab-schedule-menu::before {
-            content: '';
+        .day-type-display {
             position: absolute;
-            top: -20px;
-            right: 0;
-            width: 100%;
-            height: 20px;
-            background: transparent;
-        }
-
-        .ab-schedule-display:hover .ab-schedule-menu,
-        .ab-schedule-display .ab-schedule-menu:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: all;
-        }
-
-        .ab-menu-item {
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 2px;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(168, 85, 247, 0.9);
             color: white;
-        }
-
-        .ab-menu-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .ab-menu-item.option-a {
-            background: #3b82f6;
-        }
-
-        .ab-menu-item.option-b {
-            background: #ef4444;
-        }
-
-        .ab-menu-item.option-clear {
-            background: #6b7280;
-        }
-
-        .ab-menu-item:hover {
-            opacity: 0.8;
-        }
-
-        .ab-schedule-placeholder {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
             padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-            cursor: pointer;
-            background: rgba(107, 114, 128, 0.1);
-            color: #6b7280;
-            border: 1px dashed #9ca3af;
-        }
-
-        body.admin-active .calendar-day:hover .ab-schedule-placeholder {
-            opacity: 1;
-        }
-
-        .ab-schedule-placeholder:hover .ab-schedule-menu,
-        .ab-schedule-placeholder .ab-schedule-menu:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: all;
-        }
-
-        .day-designation {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            max-width: 80px;
             text-align: center;
             white-space: nowrap;
-            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
             color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
         }
 
-        .day-designation.access {
-            background: #3b82f6;
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .day-designation.grading {
-            background: #8b5cf6;
-        }
-
-        .day-designation.staff-development {
-            background: #06b6d4;
-        }
-
-        .day-designation.holiday {
+        .notification.error {
             background: #ef4444;
         }
 
-        .day-designation.furlough {
-            background: #f59e0b;
-        }
-
-        .day-designation.finals {
-            background: #10b981;
-        }
-
-        .day-designation-menu {
-            position: absolute;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 8px;
-            opacity: 0;
-            transition: all 0.2s ease;
-            z-index: 200;
-            min-width: 150px;
-            pointer-events: all;
-        }
-
-        .day-designation-menu::before {
-            content: '';
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* ===== MODAL SYSTEM STYLES ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 25px;
-            background: transparent;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
 
-        .day-designation:hover .day-designation-menu,
-        .day-designation .day-designation-menu:hover {
+        .modal.show {
             opacity: 1;
-            transform: translateX(-50%);
-            pointer-events: all;
+            visibility: visible;
         }
 
-        .menu-item {
-            padding: 8px 12px;
-            border-radius: 4px;
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 1400px;
+            width: 98%;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: background 0.1s ease;
-            color: #374151;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
         }
 
-        .menu-item:hover {
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: calc(85vh - 80px);
+            overflow-y: auto;
+        }
+
+        .modal-loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .modal-loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #c41e3a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== EVENTS CRUD STYLES ===== */
+        .crud-section {
+            margin-bottom: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .crud-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .crud-content {
+            padding: 20px;
+        }
+
+        .existing-items {
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .item-card:hover {
             background: #f3f4f6;
         }
 
-        .menu-item.access { border-left: 4px solid #3b82f6; }
-        .menu-item.grading { border-left: 4px solid #8b5cf6; }
-        .menu-item.staff-development { border-left: 4px solid #06b6d4; }
-        .menu-item.holiday { border-left: 4px solid #ef4444; }
-        .menu-item.furlough { border-left: 4px solid #f59e0b; }
-        .menu-item.finals { border-left: 4px solid #10b981; }
-        .menu-item.clear { border-left: 4px solid #6b7280; }
+        /* Department color coding for events */
+        .item-card.dept-asb {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+        }
 
-        .day-designation-placeholder {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            padding: 4px 8px;
+        .item-card.dept-life {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #10b981;
+        }
+
+        .item-card.dept-athletics {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+        }
+
+        .item-card.dept-art-theater {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-color: #8b5cf6;
+        }
+
+        .item-card.dept-counseling {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #06b6d4;
+        }
+
+        .item-card.dept-testing {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border-color: #ef4444;
+        }
+
+        .item-card.dept-staff {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-color: #64748b;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .item-details {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
             border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-add:hover {
+            background: #059669;
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
+
+        .add-form {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.title-group {
+            flex: 2;
+            min-width: 250px;
+        }
+
+        .form-group.time-group {
+            flex: 0 0 140px;
+            min-width: 140px;
+        }
+
+        .form-group.department-group {
+            flex: 0 0 160px;
+            min-width: 160px;
+        }
+
+        .form-group.description-group {
+            flex: 1.5;
+            min-width: 200px;
+        }
+
+        .form-group.button-group {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+
+        .form-label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .form-select {
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        /* ===== MATERIALS CRUD STYLES ===== */
+        .grade-tabs {
+            display: flex;
+            gap: 8px;
+            margin: 15px 20px 20px 20px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .grade-tab {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+            flex: 1;
+            text-align: center;
+        }
+
+        .grade-tab.active {
+            background: #c41e3a;
+            color: white;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+        }
+
+        .grade-tab:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .material-item-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .material-item-card:hover {
+            background: #f3f4f6;
+        }
+
+        .material-item-card.protected {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .material-details {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .material-url {
+            font-size: 0.75rem;
+            color: #3b82f6;
+            text-decoration: none;
+            margin-top: 2px;
+            display: block;
+            word-break: break-all;
+        }
+
+        .material-url:hover {
+            text-decoration: underline;
+        }
+
+        .protected-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .form-group.url-group {
+            flex: 2;
+            min-width: 250px;
+        }
+
+        .form-group.password-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group.grade-group {
+            flex: 0 0 100px;
+        }
+
+        .url-validation-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        /* ===== USER VIEW MODAL STYLES ===== */
+        .user-section {
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .user-section-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-event-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .user-event-card:hover {
+            background: #f8fafc;
+        }
+
+        .user-event-card:last-child {
+            border-bottom: none;
+        }
+
+        .user-event-info {
+            flex: 1;
+        }
+
+        .user-event-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .user-event-details {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .user-event-badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
+        }
+
+        /* Department-specific badges */
+        .user-event-badge.dept-asb { background: #fde68a; color: #92400e; }
+        .user-event-badge.dept-life { background: #bbf7d0; color: #065f46; }
+        .user-event-badge.dept-athletics { background: #bfdbfe; color: #1e40af; }
+        .user-event-badge.dept-art-theater { background: #ddd6fe; color: #5b21b6; }
+        .user-event-badge.dept-counseling { background: #d1fae5; color: #0e7490; }
+        .user-event-badge.dept-testing { background: #fecaca; color: #991b1b; }
+        .user-event-badge.dept-staff { background: #e2e8f0; color: #334155; }
+
+        .user-grade-tabs {
+            display: flex;
+            gap: 6px;
+            margin: 15px 20px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .user-grade-tab {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
-            background: rgba(107, 114, 128, 0.1);
+            transition: all 0.2s ease;
             color: #6b7280;
-            border: 1px dashed #9ca3af;
+            flex: 1;
+            text-align: center;
         }
 
-        body.admin-active .calendar-day:hover .day-designation-placeholder {
-            opacity: 1;
+        .user-grade-tab.active {
+            background: #1e40af;
+            color: white;
+            box-shadow: 0 2px 6px rgba(30, 64, 175, 0.3);
         }
 
-        .day-designation-placeholder:hover .day-designation-menu,
-        .day-designation-placeholder .day-designation-menu:hover {
-            opacity: 1;
-            transform: translateX(-50%);
-            pointer-events: all;
+        .user-grade-tab:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
         }
 
+        .user-material-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .user-material-card:hover {
+            background: #f8fafc;
+        }
+
+        .user-material-card:last-child {
+            border-bottom: none;
+        }
+
+        .user-material-info {
+            flex: 1;
+        }
+
+        .user-material-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .user-material-description {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .user-material-meta {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .user-access-button {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-access-button:hover {
+            background: #2563eb;
+        }
+
+        .user-access-button.protected {
+            background: #f59e0b;
+        }
+
+        .user-access-button.protected:hover {
+            background: #d97706;
+        }
+
+        .user-empty-state {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 30px 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Plus button for admin mode */
         .admin-plus {
             position: absolute;
             top: 50%;
@@ -593,7 +1145,7 @@
             color: white;
             border: none;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             opacity: 0;
@@ -602,16 +1154,136 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-            z-index: 50;
-        }
-
-        body.admin-active .calendar-day:hover .admin-plus {
-            opacity: 1;
+            z-index: 10;
         }
 
         .admin-plus:hover {
             background: #a01729;
             transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* Show plus button on hover in admin mode */
+        body.admin-active .calendar-day:hover .admin-plus {
+            opacity: 1;
+        }
+
+        /* User mode: make entire day clickable */
+        body:not(.admin-active) .calendar-day {
+            cursor: pointer;
+        }
+
+        body:not(.admin-active) .calendar-day:hover {
+            background: #f1f5f9;
+            border: 2px solid #c41e3a;
+        }
+
+        /* ===== A/B SCHEDULE DROPDOWN STYLES ===== */
+        .ab-schedule-display {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+            display: block; /* Always visible when schedule exists */
+        }
+
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .ab-schedule-display:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Interactive only in admin mode */
+        body:not(.admin-active) .ab-schedule-display {
+            cursor: default;
+        }
+
+        body:not(.admin-active) .ab-schedule-display .ab-schedule-menu {
+            display: none;
+        }
+
+        .ab-schedule-menu {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 80px;
+        }
+
+        /* Only show dropdown in admin mode */
+        body.admin-active .ab-schedule-display:hover .ab-schedule-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .ab-menu-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 4px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .ab-menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ab-menu-item.option-a {
+            background: #3b82f6;
+        }
+
+        .ab-menu-item.option-a:hover {
+            background: #2563eb;
+            transform: translateX(2px);
+        }
+
+        .ab-menu-item.option-b {
+            background: #ef4444;
+        }
+
+        .ab-menu-item.option-b:hover {
+            background: #dc2626;
+            transform: translateX(2px);
+        }
+
+        .ab-menu-item.option-clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .ab-menu-item.option-clear:hover {
+            background: #4b5563;
+            transform: translateX(2px);
         }
 
         .connection-status {
@@ -635,190 +1307,26 @@
             border: 1px solid #fecaca;
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 3000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
 
-        .notification.show {
-            transform: translateX(0);
-        }
+            .header h1 {
+                font-size: 2rem;
+            }
 
-        /* Modal Styles */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
+            .schools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 30px auto;
+            }
 
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a1a1a;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            padding: 5px;
-            border-radius: 4px;
-        }
-
-        .modal-close:hover {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .modal-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .modal-tab {
-            padding: 10px 20px;
-            background: #f3f4f6;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #6b7280;
-            transition: all 0.2s ease;
-        }
-
-        .modal-tab.active {
-            background: #c41e3a;
-            color: white;
-        }
-
-        .modal-tab:hover:not(.active) {
-            background: #e5e7eb;
-        }
-
-        .modal-form {
-            display: none;
-        }
-
-        .modal-form.active {
-            display: block;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .form-row.full-width {
-            grid-template-columns: 1fr;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #c41e3a;
-            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
-        }
-
-        .form-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-textarea:focus {
-            outline: none;
-            border-color: #c41e3a;
-            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: #c41e3a;
-            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .btn-cancel {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background: #4b5563;
+            .calendar-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -850,15 +1358,15 @@
                         <p>Access WLHS calendar, events, and curriculum materials</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wlhs-events-count">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wlhs-schedule">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wlhs-day-type">-</div>
                                 <div class="stat-label">Day Type</div>
                             </div>
                         </div>
@@ -870,15 +1378,15 @@
                         <p>Access WHS calendar, events, and curriculum materials</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wvhs-events-count">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wvhs-schedule">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number">-</div>
+                                <div class="stat-number" id="wvhs-day-type">-</div>
                                 <div class="stat-label">Day Type</div>
                             </div>
                         </div>
@@ -912,12 +1420,14 @@
                         <label class="form-label">Database URL (Optional)</label>
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="Leave empty to use environment variable">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="" required readonly style="background: #f3f4f6; color: #6b7280;">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
                     </div>
 
                     <div style="display: flex; gap: 10px; justify-content: center;">
@@ -929,28 +1439,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <!-- Admin Screen -->
-        <div class="screen" id="admin">
-            <div style="padding: 30px;">
-                <h2>Admin Panel</h2>
-                <p>Database administration and event management</p>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="initializeDatabase()">
-                        Initialize Database Tables
-                    </button>
-                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
-                        Test Connection
-                    </button>
-                </div>
-
-                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
-                    <h3>System Status</h3>
-                    <div id="dbStatus">Checking database connection...</div>
-                </div>
             </div>
         </div>
 
@@ -983,107 +1471,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Admin Screen -->
+        <div class="screen" id="admin">
+            <div style="padding: 30px;">
+                <h2>Admin Panel</h2>
+                <p>Database administration and event management</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="initializeDatabase()">
+                        Initialize Database Tables
+                    </button>
+                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
+                        Test Connection
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                    <h3>System Status</h3>
+                    <div id="dbStatus">Checking database connection...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Events/Materials Modal -->
-    <div class="modal" id="eventsModal">
+    <!-- Modal System -->
+    <div class="modal" id="dayModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Add Event/Material</h2>
+                <div class="modal-title" id="modalTitle">
+                    <span id="modalDate">Loading...</span>
+                    <span id="modalScheduleBadge" style="display: none;"></span>
+                </div>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-
-            <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchModalTab('event')">📅 Event</button>
-                <button class="modal-tab" onclick="switchModalTab('material')">📚 Material</button>
+            <div class="modal-body" id="modalBody">
+                <div class="modal-loading">
+                    <div class="modal-loading-spinner"></div>
+                    <div>Loading day information...</div>
+                </div>
             </div>
-
-            <!-- Event Form -->
-            <form class="modal-form active" id="eventForm" onsubmit="handleEventSubmit(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Event Title *</label>
-                        <input type="text" class="form-input" id="eventTitle" required placeholder="Enter event title">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Department</label>
-                        <input type="text" class="form-input" id="eventDepartment" placeholder="e.g., Math, Science, Athletics">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Date *</label>
-                        <input type="date" class="form-input" id="eventDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Time</label>
-                        <input type="time" class="form-input" id="eventTime">
-                    </div>
-                </div>
-
-                <div class="form-row full-width">
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-textarea" id="eventDescription" placeholder="Event details and description"></textarea>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Event</button>
-                </div>
-            </form>
-
-            <!-- Material Form -->
-            <form class="modal-form" id="materialForm" onsubmit="handleMaterialSubmit(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Material Title *</label>
-                        <input type="text" class="form-input" id="materialTitle" required placeholder="Enter material title">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Grade Level *</label>
-                        <select class="form-select" id="materialGrade" required>
-                            <option value="">Select Grade</option>
-                            <option value="9">Grade 9</option>
-                            <option value="10">Grade 10</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Date *</label>
-                        <input type="date" class="form-input" id="materialDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password (Optional)</label>
-                        <input type="text" class="form-input" id="materialPassword" placeholder="Leave blank if no password needed">
-                    </div>
-                </div>
-
-                <div class="form-row full-width">
-                    <div class="form-group">
-                        <label class="form-label">Link/URL *</label>
-                        <input type="url" class="form-input" id="materialLink" required placeholder="https://example.com/material">
-                    </div>
-                </div>
-
-                <div class="form-row full-width">
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-textarea" id="materialDescription" placeholder="Material description and instructions"></textarea>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Material</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -1091,65 +1518,57 @@
     <div class="notification" id="notification"></div>
 
     <script>
+        // Global application state
         const app = {
             state: {
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
                 connected: false,
-                dayTypes: {},
-                daySchedules: {},
-                selectedDate: null
+                selectedModalDate: null,
+                lastSelectedGradeTab: 9,
+                unsavedChanges: false
             },
             config: {
                 apiUrl: ''
+            },
+            cache: {
+                dateData: new Map() // Cache for modal data
             }
         };
 
-        function detectEnvironment() {
-            const hostname = window.location.hostname;
-            if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('.local')) {
-                return 'development';
-            } else {
-                return 'production';
-            }
-        }
-
         function setApiUrl() {
-            app.state.environment = detectEnvironment();
+            // Detect environment
+            const hostname = window.location.hostname;
+            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost');
+            app.state.environment = isLocalhost ? 'development' : 'production';
+            
+            // Point to your backend Vercel URL
             if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+                app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
             } else {
                 app.config.apiUrl = window.location.origin + '/api';
             }
             
+            console.log('Environment detected:', app.state.environment);
+            console.log('API URL set to:', app.config.apiUrl);
+            
+            // Update the form
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
         }
 
-        function showNotification(message) {
+        function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
             if (notification) {
                 notification.textContent = message;
-                notification.classList.add('show');
+                notification.className = `notification ${isError ? 'error' : ''} show`;
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
             }
-        }
-
-        function formatDate(dateInput) {
-            if (!dateInput) return null;
-            if (dateInput instanceof Date) {
-                return dateInput.toISOString().split('T')[0];
-            }
-            const date = new Date(dateInput);
-            if (isNaN(date.getTime())) {
-                throw new Error('Invalid date format');
-            }
-            return date.toISOString().split('T')[0];
         }
 
         function showScreen(screenId) {
@@ -1177,6 +1596,8 @@
 
         function goToSchool(schoolCode) {
             app.state.selectedSchool = schoolCode;
+            
+            // Apply school theme
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
@@ -1197,25 +1618,77 @@
                 })
                 .then(data => {
                     app.state.connected = true;
+                    updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
                 })
                 .catch(error => {
                     app.state.connected = false;
-                    showNotification('❌ Connection failed: ' + error.message);
+                    updateConnectionStatus(false, 'Connection failed: ' + error.message);
+                    showNotification('❌ Connection failed: ' + error.message, true);
                 });
         }
 
         function handleSetup(event) {
             event.preventDefault();
-            showNotification('Database setup functionality coming soon...');
+            showNotification('Initializing database...');
+
+            const dbUrl = document.getElementById('dbUrl').value;
+            const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
+
+            fetch(app.config.apiUrl + '/init', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || `HTTP ${response.status}: ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                showNotification('✅ Database initialized successfully!');
+                app.state.connected = true;
+                updateConnectionStatus(true, 'Database connected');
+                
+                setTimeout(() => showScreen('calendar'), 1500);
+            })
+            .catch(error => {
+                showNotification('❌ Setup failed: ' + error.message, true);
+                updateConnectionStatus(false, 'Failed to initialize database');
+            });
         }
 
         function initializeDatabase() {
-            showNotification('Database initialization functionality coming soon...');
+            return handleSetup({ preventDefault: () => {} });
+        }
+
+        function updateConnectionStatus(connected, message) {
+            const status = document.getElementById('connectionStatus');
+            if (status) {
+                status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
+                status.innerHTML = `
+                    <span>${connected ? '🟢' : '🔴'}</span>
+                    <span>${message}</span>
+                `;
+            }
+
+            const dbStatus = document.getElementById('dbStatus');
+            if (dbStatus) {
+                dbStatus.innerHTML = connected ? 
+                    `✅ ${message}` : 
+                    `❌ ${message}`;
+            }
         }
 
         function toggleAdminMode() {
             app.state.adminMode = !app.state.adminMode;
+
             const button = document.getElementById('adminToggle');
             if (button) {
                 button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
@@ -1227,8 +1700,8 @@
                     document.body.classList.remove('admin-active');
                 }
             }
+
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
-            renderCalendar();
         }
 
         function changeMonth(direction) {
@@ -1246,201 +1719,10 @@
             showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
         }
 
-        function setABSchedule(date, schedule) {
-            if (!app.state.adminMode) return;
-            
-            const requestBody = { date: date, schedule: schedule };
-            
-            fetch(app.config.apiUrl + '/day-schedules', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (schedule) {
-                    app.state.daySchedules[date] = schedule;
-                    showNotification(`Set ${date} to ${schedule} Day`);
-                } else {
-                    delete app.state.daySchedules[date];
-                    showNotification(`Cleared schedule for ${date}`);
-                }
-                renderCalendar();
-            })
-            .catch(error => {
-                showNotification('Failed to update schedule: ' + error.message);
-            });
-        }
-
-        function setDayType(date, type) {
-            if (!app.state.adminMode) return;
-            
-            const requestBody = { date: date, type: type };
-            
-            fetch(app.config.apiUrl + '/day-types', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (type) {
-                    app.state.dayTypes[date] = type;
-                    showNotification(`Set ${date} to ${type}`);
-                } else {
-                    delete app.state.dayTypes[date];
-                    showNotification(`Cleared day type for ${date}`);
-                }
-                renderCalendar();
-            })
-            .catch(error => {
-                showNotification('Failed to update day type: ' + error.message);
-            });
-        }
-
-        // Modal Functions
-        function openModal(date) {
-            if (!app.state.adminMode) return;
-            
-            app.state.selectedDate = date;
-            
-            // Set the date in both forms
-            document.getElementById('eventDate').value = date;
-            document.getElementById('materialDate').value = date;
-            
-            // Update modal title
-            const formattedDate = new Date(date).toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            document.getElementById('modalTitle').textContent = `Add Event/Material - ${formattedDate}`;
-            
-            // Show modal
-            document.getElementById('eventsModal').classList.add('show');
-        }
-
-        function closeModal() {
-            document.getElementById('eventsModal').classList.remove('show');
-            
-            // Clear forms
-            document.getElementById('eventForm').reset();
-            document.getElementById('materialForm').reset();
-            
-            app.state.selectedDate = null;
-        }
-
-        function switchModalTab(tabType) {
-            // Update tab buttons
-            document.querySelectorAll('.modal-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Update forms
-            document.querySelectorAll('.modal-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            
-            if (tabType === 'event') {
-                document.querySelector('.modal-tab:first-child').classList.add('active');
-                document.getElementById('eventForm').classList.add('active');
-            } else {
-                document.querySelector('.modal-tab:last-child').classList.add('active');
-                document.getElementById('materialForm').classList.add('active');
-            }
-        }
-
-        function handleEventSubmit(event) {
-            event.preventDefault();
-            
-            const eventData = {
-                school: app.state.selectedSchool,
-                date: document.getElementById('eventDate').value,
-                title: document.getElementById('eventTitle').value,
-                department: document.getElementById('eventDepartment').value || null,
-                time: document.getElementById('eventTime').value || null,
-                description: document.getElementById('eventDescription').value || ''
-            };
-
-            fetch(app.config.apiUrl + '/events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(eventData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                showNotification('✅ Event added successfully!');
-                closeModal();
-                renderCalendar(); // Refresh calendar to show new event
-            })
-            .catch(error => {
-                showNotification('❌ Failed to add event: ' + error.message);
-            });
-        }
-
-        function handleMaterialSubmit(event) {
-            event.preventDefault();
-            
-            const materialData = {
-                school: app.state.selectedSchool,
-                date: document.getElementById('materialDate').value,
-                grade_level: parseInt(document.getElementById('materialGrade').value),
-                title: document.getElementById('materialTitle').value,
-                link: document.getElementById('materialLink').value,
-                description: document.getElementById('materialDescription').value || '',
-                password: document.getElementById('materialPassword').value || ''
-            };
-
-            fetch(app.config.apiUrl + '/materials', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(materialData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                showNotification('✅ Material added successfully!');
-                closeModal();
-                renderCalendar(); // Refresh calendar to show new material
-            })
-            .catch(error => {
-                showNotification('❌ Failed to add material: ' + error.message);
-            });
-        }
-
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
 
-            if (app.state.connected) {
-                Promise.all([
-                    fetch(app.config.apiUrl + '/day-types').then(r => r.json()).catch(() => []),
-                    fetch(app.config.apiUrl + '/day-schedules').then(r => r.json()).catch(() => [])
-                ])
-                .then(([dayTypesData, schedulesData]) => {
-                    app.state.dayTypes = {};
-                    dayTypesData.forEach(item => {
-                        app.state.dayTypes[item.date] = item.type;
-                    });
-                    
-                    app.state.daySchedules = {};
-                    schedulesData.forEach(item => {
-                        app.state.daySchedules[item.date] = item.schedule;
-                    });
-                    
-                    renderCalendarGrid();
-                })
-                .catch(error => {
-                    console.log('Failed to load calendar data:', error);
-                    renderCalendarGrid();
-                });
-            } else {
-                renderCalendarGrid();
-            }
-        }
-
-        function renderCalendarGrid() {
-            const grid = document.getElementById('calendarGrid');
             const year = app.state.currentDate.getFullYear();
             const month = app.state.currentDate.getMonth();
 
@@ -1467,123 +1749,1146 @@
             startDate.setDate(startDate.getDate() - firstDay.getDay());
 
             for (let i = 0; i < 42; i++) {
-                const currentDateLoop = new Date(startDate);
-                currentDateLoop.setDate(startDate.getDate() + i);
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
 
+                const isToday = currentDate.toDateString() === new Date().toDateString();
+                if (isToday) dayElement.classList.add('today');
+
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
-                dayNumber.textContent = currentDateLoop.getDate();
+                dayNumber.textContent = currentDate.getDate();
+
                 dayElement.appendChild(dayNumber);
-
-                const dateString = formatDate(currentDateLoop);
-                const abSchedule = app.state.daySchedules[dateString];
-                const dayType = app.state.dayTypes[dateString];
-
-                if (abSchedule) {
-                    const scheduleElement = document.createElement('div');
-                    scheduleElement.className = `ab-schedule-display schedule-${abSchedule.toLowerCase()}`;
-                    scheduleElement.textContent = abSchedule;
-                    
-                    const scheduleDropdown = document.createElement('div');
-                    scheduleDropdown.className = 'ab-schedule-menu';
-                    scheduleDropdown.innerHTML = `
-                        <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
-                        <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
-                        <div class="ab-menu-item option-clear" onclick="setABSchedule('${dateString}', null)">Clear</div>
-                    `;
-                    
-                    scheduleElement.appendChild(scheduleDropdown);
-                    dayElement.appendChild(scheduleElement);
-                }
-
-                if (app.state.adminMode && !abSchedule) {
-                    const emptySchedule = document.createElement('div');
-                    emptySchedule.className = 'ab-schedule-placeholder';
-                    emptySchedule.innerHTML = `
-                        +
-                        <div class="ab-schedule-menu">
-                            <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
-                            <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
-                        </div>
-                    `;
-                    dayElement.appendChild(emptySchedule);
-                }
-
-                if (dayType) {
-                    const dayDesignation = document.createElement('div');
-                    dayDesignation.className = `day-designation ${dayType.toLowerCase().replace(/\s+/g, '-')}`;
-                    dayDesignation.textContent = dayType;
-                    
-                    const dropdownMenu = document.createElement('div');
-                    dropdownMenu.className = 'day-designation-menu';
-                    dropdownMenu.innerHTML = `
-                        <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
-                        <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
-                        <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
-                        <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
-                        <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
-                        <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
-                        <div class="menu-item clear" onclick="setDayType('${dateString}', null)">Clear</div>
-                    `;
-                    
-                    dayDesignation.appendChild(dropdownMenu);
-                    dayElement.appendChild(dayDesignation);
-                    dayElement.classList.add('has-dropdown');
-                }
-
-                if (app.state.adminMode && !dayType) {
-                    const emptyDesignation = document.createElement('div');
-                    emptyDesignation.className = 'day-designation-placeholder';
-                    emptyDesignation.innerHTML = `
-                        +
-                        <div class="day-designation-menu">
-                            <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
-                            <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
-                            <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
-                            <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
-                            <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
-                            <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
-                        </div>
-                    `;
-                    dayElement.appendChild(emptyDesignation);
-                    dayElement.classList.add('has-dropdown');
-                }
-
-                if (app.state.adminMode) {
+                
+                // Add A/B schedule display
+                const scheduleDisplay = document.createElement('div');
+                scheduleDisplay.className = 'ab-schedule-display';
+                scheduleDisplay.style.display = 'none'; // Hidden until we load data
+                scheduleDisplay.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
+                scheduleDisplay.innerHTML = `
+                    <span class="schedule-letter">?</span>
+                    <div class="ab-schedule-menu">
+                        <div class="ab-menu-item option-a" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'A', event)">A</div>
+                        <div class="ab-menu-item option-b" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'B', event)">B</div>
+                        <div class="ab-menu-item option-clear" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', null, event)">Clear</div>
+                    </div>
+                `;
+                dayElement.appendChild(scheduleDisplay);
+                
+                // Add plus button for admin mode
+                if (i < 42) { // Only add to actual calendar days
                     const plusButton = document.createElement('button');
                     plusButton.className = 'admin-plus';
                     plusButton.textContent = '+';
-                    plusButton.onclick = () => openModal(dateString);
+                    plusButton.onclick = (e) => {
+                        e.stopPropagation();
+                        openModal(currentDate, true); // true = admin mode
+                    };
                     dayElement.appendChild(plusButton);
                 }
+                
+                // Add click handler for user mode (entire day cell)
+                dayElement.addEventListener('click', (e) => {
+                    // Only open modal if we're not in admin mode and no plus button was clicked
+                    if (!app.state.adminMode && !e.target.classList.contains('admin-plus') && !e.target.closest('.ab-schedule-display')) {
+                        openModal(currentDate, false); // false = user mode
+                    }
+                });
 
                 grid.appendChild(dayElement);
             }
         }
 
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('eventsModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
-
+        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             setApiUrl();
+            
+            // Apply district theme initially
             document.body.classList.add('district-theme');
+            
             renderCalendar();
+            loadCalendarSchedules(); // Load A/B schedule data
             showNotification('Calendar loaded successfully!');
+        });
+
+        // ===== A/B SCHEDULE FUNCTIONS =====
+
+        async function loadCalendarSchedules() {
+            console.log('Loading calendar schedules...');
+            
+            if (!app.state.connected) {
+                console.log('Not connected to database, skipping schedule load');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/day-schedules`);
+                console.log('Schedule API response:', response.status);
+                
+                if (!response.ok) {
+                    console.warn('Day schedules API not available:', response.status);
+                    return;
+                }
+                
+                const schedules = await response.json();
+                console.log('Loaded schedules:', schedules);
+                
+                // Update calendar display
+                schedules.forEach(schedule => {
+                    console.log('Updating schedule for date:', schedule.date, 'schedule:', schedule.schedule);
+                    updateCalendarDaySchedule(schedule.date, schedule.schedule);
+                });
+                
+                showNotification(`Loaded ${schedules.length} A/B schedules`);
+                
+            } catch (error) {
+                console.error('Error loading day schedules:', error);
+                showNotification('❌ Failed to load A/B schedules: ' + error.message, true);
+            }
+        }
+
+        function updateCalendarDaySchedule(dateString, schedule) {
+            // Find all schedule displays for this date
+            const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
+            
+            scheduleDisplays.forEach(scheduleDisplay => {
+                const scheduleLetter = scheduleDisplay.querySelector('.schedule-letter');
+                
+                if (schedule) {
+                    scheduleDisplay.style.display = 'block';
+                    scheduleLetter.textContent = schedule;
+                    scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                } else {
+                    scheduleDisplay.style.display = 'none';
+                }
+            });
+        }
+
+        async function setDaySchedule(dateString, schedule, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!app.state.connected) {
+                showNotification('❌ Database not connected', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/day-schedules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: dateString,
+                        schedule: schedule
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                // Update the visual display
+                updateCalendarDaySchedule(dateString, schedule);
+                
+                // Clear cache for this date so it reloads fresh data
+                app.cache.dateData.delete(dateString);
+                
+                const scheduleText = schedule ? `${schedule} Day` : 'cleared';
+                showNotification(`✅ Schedule set to ${scheduleText} for ${new Date(dateString).toLocaleDateString()}`);
+
+            } catch (error) {
+                console.error('Error setting day schedule:', error);
+                showNotification('❌ Failed to update schedule: ' + error.message, true);
+            }
+        }
+
+        // ===== MODAL SYSTEM FUNCTIONS =====
+
+        function openModal(date, isAdminMode) {
+            app.state.selectedModalDate = date;
+            const modal = document.getElementById('dayModal');
+            const modalTitle = document.getElementById('modalDate');
+            const modalBody = document.getElementById('modalBody');
+            
+            // Format date for display
+            const formattedDate = new Intl.DateTimeFormat('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            }).format(date);
+            
+            modalTitle.textContent = formattedDate;
+            
+            // Show loading state
+            modalBody.innerHTML = `
+                <div class="modal-loading">
+                    <div class="modal-loading-spinner"></div>
+                    <div>Loading day information...</div>
+                </div>
+            `;
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Load data on demand
+            loadModalData(date, isAdminMode);
+            
+            showNotification(`Opened ${isAdminMode ? 'admin' : 'user'} view for ${formattedDate}`);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('dayModal');
+            
+            // Check for unsaved changes
+            if (app.state.unsavedChanges) {
+                if (!confirm('You have unsaved changes. Are you sure you want to close?')) {
+                    return;
+                }
+                app.state.unsavedChanges = false;
+            }
+            
+            modal.classList.remove('show');
+            app.state.selectedModalDate = null;
+        }
+
+        function loadModalData(date, isAdminMode) {
+            const dateKey = date.toISOString().split('T')[0];
+            const modalBody = document.getElementById('modalBody');
+            
+            // Check cache first
+            if (app.cache.dateData.has(dateKey)) {
+                const cachedData = app.cache.dateData.get(dateKey);
+                renderModalContent(cachedData, isAdminMode);
+                return;
+            }
+            
+            // Load real data from API
+            Promise.all([
+                loadEventsData(dateKey),
+                loadMaterialsData(dateKey),
+                loadScheduleData(dateKey)
+            ])
+            .then(([events, materials, scheduleData]) => {
+                const data = {
+                    events: events,
+                    materials: materials,
+                    schedule: scheduleData.schedule,
+                    dayType: scheduleData.dayType
+                };
+                
+                // Cache the data
+                app.cache.dateData.set(dateKey, data);
+                renderModalContent(data, isAdminMode);
+            })
+            .catch(error => {
+                console.error('Error loading modal data:', error);
+                modalBody.innerHTML = `
+                    <div class="error-message">
+                        <strong>Error loading data:</strong> ${error.message}
+                        <br><button class="btn btn-sm" onclick="loadModalData(app.state.selectedModalDate, ${isAdminMode})" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function loadEventsData(dateKey) {
+            if (!app.state.connected) {
+                return []; // Return empty if not connected
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events?school=${app.state.selectedSchool}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load events: ${response.statusText}`);
+                }
+                const events = await response.json();
+                return events.filter(event => event.date === dateKey);
+            } catch (error) {
+                console.warn('Events API not available, using empty data:', error);
+                return [];
+            }
+        }
+
+        async function loadMaterialsData(dateKey) {
+            if (!app.state.connected) {
+                return { 9: [], 10: [], 11: [], 12: [] };
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials?school=${app.state.selectedSchool}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load materials: ${response.statusText}`);
+                }
+                const materials = await response.json();
+                const filteredMaterials = materials.filter(material => material.date === dateKey);
+                
+                // Group by grade level
+                const groupedMaterials = { 9: [], 10: [], 11: [], 12: [] };
+                filteredMaterials.forEach(material => {
+                    if (groupedMaterials[material.grade_level]) {
+                        groupedMaterials[material.grade_level].push(material);
+                    }
+                });
+                
+                return groupedMaterials;
+            } catch (error) {
+                console.warn('Materials API not available, using empty data:', error);
+                return { 9: [], 10: [], 11: [], 12: [] };
+            }
+        }
+
+        async function loadScheduleData(dateKey) {
+            // For now, return mock schedule data
+            // This will be replaced with real API calls when A/B schedule and day types are implemented
+            return {
+                schedule: Math.random() > 0.5 ? 'A' : 'B',
+                dayType: null
+            };
+        }
+
+        function renderModalContent(data, isAdminMode) {
+            const modalBody = document.getElementById('modalBody');
+            const scheduleBadge = document.getElementById('modalScheduleBadge');
+            
+            // Show A/B schedule badge if available
+            if (data.schedule) {
+                scheduleBadge.textContent = data.schedule;
+                scheduleBadge.style.display = 'inline-block';
+                scheduleBadge.style.background = data.schedule === 'A' ? '#3b82f6' : '#ef4444';
+                scheduleBadge.style.color = 'white';
+                scheduleBadge.style.padding = '4px 8px';
+                scheduleBadge.style.borderRadius = '6px';
+                scheduleBadge.style.fontSize = '0.9rem';
+                scheduleBadge.style.fontWeight = '600';
+            } else {
+                scheduleBadge.style.display = 'none';
+            }
+            
+            if (isAdminMode) {
+                renderAdminModalContent(modalBody, data);
+            } else {
+                renderUserModalContent(modalBody, data);
+            }
+        }
+
+        function renderAdminModalContent(container, data) {
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            
+            container.innerHTML = `
+                <!-- Events Section -->
+                <div class="crud-section">
+                    <div class="crud-header">
+                        📅 Events
+                    </div>
+                    <div class="crud-content">
+                        <div class="existing-items" id="eventsList">
+                            ${renderEventsList(data.events)}
+                        </div>
+                        
+                        <div class="add-form">
+                            <div id="eventError" style="display: none;"></div>
+                            <div class="form-row">
+                                <div class="form-group title-group">
+                                    <label class="form-label">Event Title</label>
+                                    <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" maxlength="255">
+                                </div>
+                                <div class="form-group time-group">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" class="form-input" id="eventTime">
+                                </div>
+                                <div class="form-group department-group">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" id="eventDepartment">
+                                        <option value="">Select department</option>
+                                        <option value="ASB">ASB</option>
+                                        <option value="Life">Life</option>
+                                        <option value="Athletics">Athletics</option>
+                                        <option value="Art/Theater">Art/Theater</option>
+                                        <option value="Counseling">Counseling</option>
+                                        <option value="Testing">Testing</option>
+                                        <option value="Staff">Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group description-group">
+                                    <label class="form-label">Description (Optional)</label>
+                                    <input type="text" class="form-input" id="eventDescription" placeholder="Event description">
+                                </div>
+                                <div class="form-group button-group">
+                                    <button class="btn btn-add" onclick="addEvent('${dateKey}')">Add Event</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials Section -->
+                <div class="crud-section">
+                    <div class="crud-header">
+                        📚 Materials
+                    </div>
+                    <div class="grade-tabs">
+                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 9 ? 'active' : ''}" onclick="switchGradeTab(9)">Grade 9</button>
+                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 10 ? 'active' : ''}" onclick="switchGradeTab(10)">Grade 10</button>
+                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 11 ? 'active' : ''}" onclick="switchGradeTab(11)">Grade 11</button>
+                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 12 ? 'active' : ''}" onclick="switchGradeTab(12)">Grade 12</button>
+                    </div>
+                    <div class="crud-content">
+                        <div class="existing-items" id="materialsList">
+                            ${renderMaterialsList(data.materials[app.state.lastSelectedGradeTab] || [])}
+                        </div>
+                        
+                        <div class="add-form">
+                            <div id="materialError" style="display: none;"></div>
+                            <div class="form-row">
+                                <div class="form-group title-group">
+                                    <label class="form-label">Material Title</label>
+                                    <input type="text" class="form-input" id="materialTitle" placeholder="Enter material title" maxlength="255">
+                                </div>
+                                <div class="form-group url-group">
+                                    <label class="form-label">Link/URL</label>
+                                    <input type="url" class="form-input" id="materialLink" placeholder="https://example.com/document.pdf">
+                                    <div class="url-validation-error" id="urlError" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group description-group">
+                                    <label class="form-label">Description (Optional)</label>
+                                    <input type="text" class="form-input" id="materialDescription" placeholder="Brief description of the material">
+                                </div>
+                                <div class="form-group password-group">
+                                    <label class="form-label">Password (Optional)</label>
+                                    <input type="text" class="form-input" id="materialPassword" placeholder="Leave empty for public access">
+                                </div>
+                                <div class="form-group button-group">
+                                    <button class="btn btn-add" onclick="addMaterial('${dateKey}')">Add Material</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEventsList(events) {
+            if (!events || events.length === 0) {
+                return '<div class="empty-state">No events scheduled for this day</div>';
+            }
+
+            return events.map(event => {
+                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
+                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
+                
+                return `
+                    <div class="item-card ${departmentClass}" id="event-${event.id}">
+                        <div class="item-info">
+                            <div class="item-title">${escapeHtml(event.title)}</div>
+                            <div class="item-details">
+                                ${timeDisplay ? `${timeDisplay} • ` : ''}${event.department || 'No Department'}
+                                ${event.description ? `<br><small>${escapeHtml(event.description)}</small>` : ''}
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editEvent(${event.id})">Edit</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteEvent(${event.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== EVENT CRUD FUNCTIONS =====
+
+        async function addEvent(dateKey) {
+            const title = document.getElementById('eventTitle').value.trim();
+            const time = document.getElementById('eventTime').value;
+            const department = document.getElementById('eventDepartment').value;
+            const description = document.getElementById('eventDescription').value.trim();
+            const errorDiv = document.getElementById('eventError');
+
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+
+            // Validation
+            if (!title) {
+                showEventError('Event title is required');
+                return;
+            }
+
+            if (!app.state.connected) {
+                showEventError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: dateKey,
+                        title: title,
+                        time: time || null,
+                        department: department || null,
+                        description: description || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const newEvent = await response.json();
+                
+                // Clear form
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventTime').value = '';
+                document.getElementById('eventDepartment').value = '';
+                document.getElementById('eventDescription').value = '';
+
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    cachedData.events.push(newEvent);
+                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                }
+
+                app.state.unsavedChanges = false;
+                showNotification('✅ Event added successfully!');
+
+            } catch (error) {
+                console.error('Error adding event:', error);
+                showEventError('Failed to add event: ' + error.message);
+            }
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+
+            if (!app.state.connected) {
+                showEventError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                // Update cache and UI
+                const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    cachedData.events = cachedData.events.filter(event => event.id !== eventId);
+                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                }
+
+                showNotification('✅ Event deleted successfully!');
+
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showEventError('Failed to delete event: ' + error.message);
+            }
+        }
+
+        function editEvent(eventId) {
+            // Simple edit implementation - populate form with event data
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            const event = cachedData.events.find(e => e.id === eventId);
+            
+            if (event) {
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventTime').value = event.time || '';
+                document.getElementById('eventDepartment').value = event.department || '';
+                document.getElementById('eventDescription').value = event.description || '';
+                
+                // Change add button to update button
+                const addButton = document.querySelector('.btn-add');
+                addButton.textContent = 'Update Event';
+                addButton.onclick = () => updateEvent(eventId, dateKey);
+                
+                // Add cancel button
+                addButton.insertAdjacentHTML('afterend', `
+                    <button class="btn btn-cancel" onclick="cancelEditEvent('${dateKey}')" style="margin-left: 10px;">Cancel</button>
+                `);
+                
+                app.state.unsavedChanges = true;
+                showNotification('Editing event - make changes and click Update');
+            }
+        }
+
+        async function updateEvent(eventId, dateKey) {
+            const title = document.getElementById('eventTitle').value.trim();
+            const time = document.getElementById('eventTime').value;
+            const department = document.getElementById('eventDepartment').value;
+            const description = document.getElementById('eventDescription').value.trim();
+
+            if (!title) {
+                showEventError('Event title is required');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        time: time || null,
+                        department: department || null,
+                        description: description || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const updatedEvent = await response.json();
+                
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    const index = cachedData.events.findIndex(e => e.id === eventId);
+                    if (index !== -1) {
+                        cachedData.events[index] = updatedEvent;
+                        document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
+                    }
+                }
+
+                cancelEditEvent(dateKey);
+                app.state.unsavedChanges = false;
+                showNotification('✅ Event updated successfully!');
+
+            } catch (error) {
+                console.error('Error updating event:', error);
+                showEventError('Failed to update event: ' + error.message);
+            }
+        }
+
+        function cancelEditEvent(dateKey) {
+            // Clear form
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventDepartment').value = '';
+            document.getElementById('eventDescription').value = '';
+            
+            // Reset add button
+            const addButton = document.querySelector('.btn-add');
+            addButton.textContent = 'Add Event';
+            addButton.onclick = () => addEvent(dateKey);
+            
+            // Remove cancel button
+            const cancelButton = document.querySelector('.btn-cancel');
+            if (cancelButton) {
+                cancelButton.remove();
+            }
+            
+            app.state.unsavedChanges = false;
+        }
+
+        function showEventError(message) {
+            const errorDiv = document.getElementById('eventError');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+
+        function formatTime12Hour(time24) {
+            if (!time24) return '';
+            const [hours, minutes] = time24.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function renderMaterialsList(materials) {
+            if (!materials || materials.length === 0) {
+                return '<div class="empty-state">No materials for this grade level</div>';
+            }
+
+            return materials.map(material => {
+                const isProtected = material.password && material.password.trim() !== '';
+                const protectedClass = isProtected ? 'protected' : '';
+                
+                return `
+                    <div class="material-item-card ${protectedClass}" id="material-${material.id}">
+                        <div class="material-info">
+                            <div class="material-title">
+                                ${escapeHtml(material.title)}
+                                ${isProtected ? '<span class="protected-badge">🔒 Protected</span>' : ''}
+                            </div>
+                            <div class="material-details">
+                                Grade ${material.grade_level}
+                                ${material.description ? ` • ${escapeHtml(material.description)}` : ''}
+                            </div>
+                            <a href="${escapeHtml(material.link)}" target="_blank" class="material-url">${escapeHtml(material.link)}</a>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editMaterial(${material.id})">Edit</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteMaterial(${material.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== MATERIALS CRUD FUNCTIONS =====
+
+        function switchGradeTab(grade) {
+            app.state.lastSelectedGradeTab = grade;
+            
+            // Update tab appearance
+            document.querySelectorAll('.grade-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update materials list
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            if (cachedData) {
+                document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[grade] || []);
+            }
+            
+            // Clear any editing state
+            cancelEditMaterial(dateKey);
+        }
+
+        async function addMaterial(dateKey) {
+            const title = document.getElementById('materialTitle').value.trim();
+            const link = document.getElementById('materialLink').value.trim();
+            const description = document.getElementById('materialDescription').value.trim();
+            const password = document.getElementById('materialPassword').value.trim();
+            const errorDiv = document.getElementById('materialError');
+            const urlErrorDiv = document.getElementById('urlError');
+
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            urlErrorDiv.style.display = 'none';
+
+            // Validation
+            if (!title) {
+                showMaterialError('Material title is required');
+                return;
+            }
+
+            if (!link) {
+                showMaterialError('Link/URL is required');
+                return;
+            }
+
+            // URL validation
+            if (!isValidUrl(link)) {
+                urlErrorDiv.textContent = 'Please enter a valid URL (must start with http:// or https://)';
+                urlErrorDiv.style.display = 'block';
+                return;
+            }
+
+            if (!app.state.connected) {
+                showMaterialError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: dateKey,
+                        grade_level: app.state.lastSelectedGradeTab,
+                        title: title,
+                        link: link,
+                        description: description || '',
+                        password: password || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const newMaterial = await response.json();
+                
+                // Clear form
+                document.getElementById('materialTitle').value = '';
+                document.getElementById('materialLink').value = '';
+                document.getElementById('materialDescription').value = '';
+                document.getElementById('materialPassword').value = '';
+
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    if (!cachedData.materials[app.state.lastSelectedGradeTab]) {
+                        cachedData.materials[app.state.lastSelectedGradeTab] = [];
+                    }
+                    cachedData.materials[app.state.lastSelectedGradeTab].push(newMaterial);
+                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
+                }
+
+                app.state.unsavedChanges = false;
+                showNotification('✅ Material added successfully!');
+
+            } catch (error) {
+                console.error('Error adding material:', error);
+                showMaterialError('Failed to add material: ' + error.message);
+            }
+        }
+
+        async function deleteMaterial(materialId) {
+            if (!confirm('Are you sure you want to delete this material?')) {
+                return;
+            }
+
+            if (!app.state.connected) {
+                showMaterialError('Database not connected. Please check your connection.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                // Update cache and UI
+                const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    Object.keys(cachedData.materials).forEach(grade => {
+                        cachedData.materials[grade] = cachedData.materials[grade].filter(material => material.id !== materialId);
+                    });
+                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
+                }
+
+                showNotification('✅ Material deleted successfully!');
+
+            } catch (error) {
+                console.error('Error deleting material:', error);
+                showMaterialError('Failed to delete material: ' + error.message);
+            }
+        }
+
+        function editMaterial(materialId) {
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            
+            // Find material across all grades
+            let material = null;
+            Object.values(cachedData.materials).forEach(gradeMaterials => {
+                const found = gradeMaterials.find(m => m.id === materialId);
+                if (found) material = found;
+            });
+            
+            if (material) {
+                document.getElementById('materialTitle').value = material.title;
+                document.getElementById('materialLink').value = material.link;
+                document.getElementById('materialDescription').value = material.description || '';
+                document.getElementById('materialPassword').value = material.password || '';
+                
+                // Change add button to update button
+                const addButton = document.querySelector('.btn-add');
+                addButton.textContent = 'Update Material';
+                addButton.onclick = () => updateMaterial(materialId, dateKey);
+                
+                // Add cancel button
+                addButton.insertAdjacentHTML('afterend', `
+                    <button class="btn btn-cancel" onclick="cancelEditMaterial('${dateKey}')" style="margin-left: 10px;">Cancel</button>
+                `);
+                
+                app.state.unsavedChanges = true;
+                showNotification('Editing material - make changes and click Update');
+            }
+        }
+
+        async function updateMaterial(materialId, dateKey) {
+            const title = document.getElementById('materialTitle').value.trim();
+            const link = document.getElementById('materialLink').value.trim();
+            const description = document.getElementById('materialDescription').value.trim();
+            const password = document.getElementById('materialPassword').value.trim();
+
+            if (!title || !link) {
+                showMaterialError('Title and link are required');
+                return;
+            }
+
+            if (!isValidUrl(link)) {
+                document.getElementById('urlError').textContent = 'Please enter a valid URL';
+                document.getElementById('urlError').style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        link: link,
+                        description: description || '',
+                        password: password || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const updatedMaterial = await response.json();
+                
+                // Update cache and UI
+                const cachedData = app.cache.dateData.get(dateKey);
+                if (cachedData) {
+                    Object.keys(cachedData.materials).forEach(grade => {
+                        const index = cachedData.materials[grade].findIndex(m => m.id === materialId);
+                        if (index !== -1) {
+                            cachedData.materials[grade][index] = updatedMaterial;
+                        }
+                    });
+                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
+                }
+
+                cancelEditMaterial(dateKey);
+                app.state.unsavedChanges = false;
+                showNotification('✅ Material updated successfully!');
+
+            } catch (error) {
+                console.error('Error updating material:', error);
+                showMaterialError('Failed to update material: ' + error.message);
+            }
+        }
+
+        function cancelEditMaterial(dateKey) {
+            // Clear form
+            document.getElementById('materialTitle').value = '';
+            document.getElementById('materialLink').value = '';
+            document.getElementById('materialDescription').value = '';
+            document.getElementById('materialPassword').value = '';
+            
+            // Reset add button
+            const addButton = document.querySelector('.btn-add');
+            addButton.textContent = 'Add Material';
+            addButton.onclick = () => addMaterial(dateKey);
+            
+            // Remove cancel button
+            const cancelButton = document.querySelector('.btn-cancel');
+            if (cancelButton) {
+                cancelButton.remove();
+            }
+            
+            // Clear errors
+            document.getElementById('materialError').style.display = 'none';
+            document.getElementById('urlError').style.display = 'none';
+            
+            app.state.unsavedChanges = false;
+        }
+
+        function showMaterialError(message) {
+            const errorDiv = document.getElementById('materialError');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function renderUserModalContent(container, data) {
+            const currentGrade = app.state.lastSelectedGradeTab;
+            const currentMaterials = data.materials[currentGrade] || [];
+            
+            container.innerHTML = `
+                <!-- Events Section -->
+                <div class="user-section">
+                    <div class="user-section-header">
+                        📅 Today's Events
+                    </div>
+                    ${renderUserEvents(data.events)}
+                </div>
+
+                <!-- Materials Section -->
+                <div class="user-section">
+                    <div class="user-section-header">
+                        📚 Materials & Resources
+                    </div>
+                    <div class="user-grade-tabs">
+                        <button class="user-grade-tab ${currentGrade === 9 ? 'active' : ''}" onclick="switchUserGradeTab(9)">Grade 9</button>
+                        <button class="user-grade-tab ${currentGrade === 10 ? 'active' : ''}" onclick="switchUserGradeTab(10)">Grade 10</button>
+                        <button class="user-grade-tab ${currentGrade === 11 ? 'active' : ''}" onclick="switchUserGradeTab(11)">Grade 11</button>
+                        <button class="user-grade-tab ${currentGrade === 12 ? 'active' : ''}" onclick="switchUserGradeTab(12)">Grade 12</button>
+                    </div>
+                    <div id="userMaterialsList">
+                        ${renderUserMaterials(currentMaterials)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUserEvents(events) {
+            if (!events || events.length === 0) {
+                return '<div class="user-empty-state">No events scheduled for today</div>';
+            }
+
+            return events.map(event => {
+                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
+                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
+                
+                return `
+                    <div class="user-event-card">
+                        <div class="user-event-info">
+                            <div class="user-event-title">${escapeHtml(event.title)}</div>
+                            <div class="user-event-details">
+                                ${timeDisplay ? `${timeDisplay}` : 'All Day'}
+                                ${event.description ? ` • ${escapeHtml(event.description)}` : ''}
+                            </div>
+                        </div>
+                        <div class="user-event-badge ${departmentClass}">
+                            ${event.department || 'General'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderUserMaterials(materials) {
+            if (!materials || materials.length === 0) {
+                return '<div class="user-empty-state">No materials available for this grade level</div>';
+            }
+
+            return materials.map(material => {
+                const isProtected = material.password && material.password.trim() !== '';
+                
+                return `
+                    <div class="user-material-card">
+                        <div class="user-material-info">
+                            <div class="user-material-title">${escapeHtml(material.title)}</div>
+                            ${material.description ? `<div class="user-material-description">${escapeHtml(material.description)}</div>` : ''}
+                            <div class="user-material-meta">Grade ${material.grade_level}</div>
+                        </div>
+                        ${isProtected ? 
+                            `<button class="user-access-button protected" onclick="accessProtectedMaterial(${material.id}, '${escapeHtml(material.link)}')">
+                                🔒 Access
+                            </button>` :
+                            `<a href="${escapeHtml(material.link)}" target="_blank" class="user-access-button">
+                                📖 Open
+                            </a>`
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== USER VIEW FUNCTIONS =====
+
+        function switchUserGradeTab(grade) {
+            app.state.lastSelectedGradeTab = grade;
+            
+            // Update tab appearance
+            document.querySelectorAll('.user-grade-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update materials list
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            if (cachedData) {
+                document.getElementById('userMaterialsList').innerHTML = renderUserMaterials(cachedData.materials[grade] || []);
+            }
+        }
+
+        function accessProtectedMaterial(materialId, materialLink) {
+            const password = prompt('This material is password protected. Please enter the password:');
+            
+            if (password === null) {
+                return; // User cancelled
+            }
+            
+            if (password === '') {
+                alert('Please enter a password to access this material.');
+                return;
+            }
+            
+            // Find the material to check password
+            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
+            const cachedData = app.cache.dateData.get(dateKey);
+            
+            let material = null;
+            if (cachedData) {
+                Object.values(cachedData.materials).forEach(gradeMaterials => {
+                    const found = gradeMaterials.find(m => m.id === materialId);
+                    if (found) material = found;
+                });
+            }
+            
+            if (material && material.password === password) {
+                // Correct password - open the material
+                window.open(materialLink, '_blank');
+                showNotification('✅ Access granted! Opening material...');
+            } else {
+                // Incorrect password
+                alert('Incorrect password. Please try again.');
+                showNotification('❌ Access denied - incorrect password', true);
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('dayModal');
+                if (modal.classList.contains('show')) {
+                    closeModal();
+                }
+            }
         });
     </script>
 </body>
