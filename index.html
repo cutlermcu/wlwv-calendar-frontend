@@ -630,37 +630,40 @@
         <div class="screen" id="setup">
             <div class="setup-screen">
                 <h2>Database Setup</h2>
-                <p style="margin-bottom: 30px;">Configure your database connection</p>
+                <p style="margin-bottom: 30px;">Initialize database tables (connection handled by Vercel secrets)</p>
 
                 <div id="connectionStatus" class="connection-status disconnected">
                     <span>🔴</span>
                     <span>Checking connection...</span>
                 </div>
 
-                <form class="setup-form" onsubmit="handleSetup(event)">
-                    <div class="form-group">
-                        <label class="form-label">Database URL (Optional)</label>
-                        <input type="text" class="form-input" id="dbUrl" 
-                               placeholder="Leave empty to use environment variable">
-                        <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
-                    </div>
-
+                <div class="setup-form">
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="" required readonly style="background: #f3f4f6; color: #6b7280;">
-                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
+                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected backend API endpoint</small>
                     </div>
 
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button type="submit" class="btn btn-primary">
-                            Initialize Database
-                        </button>
+                    <div id="setupInfo" style="margin: 20px 0; padding: 15px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; color: #0c4a6e;">
+                        <h4 style="margin-bottom: 10px;">ℹ️ Setup Information</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 5px;">• Database connection configured via Vercel secrets</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 5px;">• This will initialize required database tables</p>
+                        <p style="font-size: 0.9rem;">• Test connection first to verify backend is accessible</p>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                         <button type="button" class="btn btn-secondary" onclick="testConnection()">
-                            Test Connection
+                            🔍 Test Connection
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="initializeTables()">
+                            🚀 Initialize Tables
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="checkSystemStatus()">
+                            📊 System Status
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -811,7 +814,8 @@
         }
 
         function testConnection() {
-            showNotification('Testing connection...');
+            showNotification('Testing backend connection...');
+            updateConnectionStatus(false, 'Testing connection...');
 
             fetch(app.config.apiUrl + '/health')
                 .then(response => {
@@ -823,22 +827,40 @@
                 })
                 .then(data => {
                     app.state.connected = true;
-                    updateConnectionStatus(true, 'Connected successfully!');
-                    showNotification('✅ Connection successful!');
+                    const message = data.connected ? 
+                        `Connected! Database: ${data.database || 'Unknown'}` : 
+                        'Backend online but database not connected';
+                    updateConnectionStatus(data.connected, message);
+                    showNotification('✅ Backend connection successful!');
+                    
+                    // Log detailed status
+                    console.log('Backend Status:', data);
                 })
                 .catch(error => {
                     app.state.connected = false;
-                    updateConnectionStatus(false, 'Connection failed: ' + error.message);
-                    showNotification('❌ Connection failed: ' + error.message, true);
+                    let errorMsg = 'Backend not accessible';
+                    
+                    if (error.message.includes('Failed to fetch')) {
+                        errorMsg = 'Backend offline or CORS issue';
+                    } else if (error.message.includes('404')) {
+                        errorMsg = 'Backend deployed but API endpoints missing';
+                    } else if (error.message.includes('500')) {
+                        errorMsg = 'Backend error (check database secrets)';
+                    }
+                    
+                    updateConnectionStatus(false, errorMsg);
+                    showNotification('❌ ' + errorMsg, true);
+                    console.error('Connection test failed:', error);
                 });
         }
 
-        function handleSetup(event) {
-            event.preventDefault();
-            showNotification('Initializing database...');
+        function initializeTables() {
+            if (!app.state.connected) {
+                showNotification('❌ Test connection first before initializing tables', true);
+                return;
+            }
 
-            const dbUrl = document.getElementById('dbUrl').value;
-            const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
+            showNotification('Initializing database tables...');
 
             fetch(app.config.apiUrl + '/init', {
                 method: 'POST',
@@ -846,7 +868,7 @@
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify({}) // Empty body since using Vercel secrets
             })
             .then(response => {
                 if (!response.ok) {
@@ -857,16 +879,59 @@
                 return response.json();
             })
             .then(data => {
-                showNotification('✅ Database initialized successfully!');
-                app.state.connected = true;
-                updateConnectionStatus(true, 'Database connected');
+                showNotification('✅ Database tables initialized successfully!');
+                updateConnectionStatus(true, 'Database fully configured');
                 
-                setTimeout(() => showScreen('calendar'), 1500);
+                // Auto-navigate to calendar after successful setup
+                setTimeout(() => {
+                    showNotification('🎉 Setup complete! Opening calendar...');
+                    showScreen('calendar');
+                }, 1500);
             })
             .catch(error => {
-                showNotification('❌ Setup failed: ' + error.message, true);
-                updateConnectionStatus(false, 'Failed to initialize database');
+                let errorMsg = 'Failed to initialize tables';
+                
+                if (error.message.includes('DATABASE_URL')) {
+                    errorMsg = 'Database connection string not configured in Vercel secrets';
+                } else if (error.message.includes('permission')) {
+                    errorMsg = 'Database permission error - check credentials';
+                } else if (error.message.includes('timeout')) {
+                    errorMsg = 'Database connection timeout';
+                }
+                
+                showNotification('❌ ' + errorMsg, true);
+                updateConnectionStatus(false, errorMsg);
+                console.error('Table initialization failed:', error);
             });
+        }
+
+        function checkSystemStatus() {
+            showNotification('Checking system status...');
+            
+            Promise.all([
+                fetch(app.config.apiUrl + '/health').then(r => r.json()).catch(e => ({error: e.message})),
+                fetch(app.config.apiUrl + '/day-schedules?school=wlhs').then(r => r.json()).catch(e => ({error: e.message})),
+                fetch(app.config.apiUrl + '/events?school=wlhs').then(r => r.json()).catch(e => ({error: e.message}))
+            ]).then(([health, schedules, events]) => {
+                console.log('System Status Check:');
+                console.log('Health:', health);
+                console.log('Schedules API:', schedules);
+                console.log('Events API:', events);
+                
+                let status = '📊 System Status:\n';
+                status += `Backend: ${health.status ? '✅' : '❌'}\n`;
+                status += `Database: ${health.connected ? '✅' : '❌'}\n`;
+                status += `Schedules API: ${Array.isArray(schedules) ? '✅' : '❌'}\n`;
+                status += `Events API: ${Array.isArray(events) ? '✅' : '❌'}`;
+                
+                showNotification(status);
+            });
+        }
+
+        function handleSetup(event) {
+            // Legacy function - redirect to new approach
+            event.preventDefault();
+            initializeTables();
         }
 
         function initializeDatabase() {
@@ -981,6 +1046,13 @@
             
             renderCalendar();
             showNotification('Calendar loaded successfully!');
+            
+            // Auto-test connection on page load
+            setTimeout(() => {
+                if (app.config.apiUrl) {
+                    testConnection();
+                }
+            }, 1000);
         });
     </script>
 </body>
