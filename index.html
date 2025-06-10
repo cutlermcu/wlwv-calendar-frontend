@@ -906,19 +906,19 @@
         };
 
         function setApiUrl() {
-    app.state.environment = detectEnvironment();
-    
-    // Point to your backend Vercel URL
-    if (app.state.environment === 'production') {
-        app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
-    } else {
-        app.config.apiUrl = window.location.origin + '/api';
-    }
-    
-    console.log('Environment detected:', app.state.environment);
-    console.log('API URL set to:', app.config.apiUrl);
-}
+            // Detect environment
+            const hostname = window.location.hostname;
+            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost');
+            app.state.environment = isLocalhost ? 'development' : 'production';
             
+            // Point to your backend Vercel URL
+            if (app.state.environment === 'production') {
+                app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
+            } else {
+                app.config.apiUrl = window.location.origin + '/api';
+            }
+            
+            console.log('Environment detected:', app.state.environment);
             console.log('API URL set to:', app.config.apiUrl);
             
             // Update the form
@@ -1145,11 +1145,12 @@
                 }
                 
                 // Add click handler for user mode (entire day cell)
-                dayElement.onclick = () => {
-                    if (!app.state.adminMode) {
+                dayElement.addEventListener('click', (e) => {
+                    // Only open modal if we're not in admin mode and no plus button was clicked
+                    if (!app.state.adminMode && !e.target.classList.contains('admin-plus')) {
                         openModal(currentDate, false); // false = user mode
                     }
-                };
+                });
 
                 grid.appendChild(dayElement);
             }
@@ -1312,14 +1313,6 @@
                 </div>
             `;
         }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', (e) => {
-            const modal = document.getElementById('dayModal');
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
 
         // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
