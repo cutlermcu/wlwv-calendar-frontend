@@ -1,8 +1,509 @@
-.notification.error {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WLWV Life Calendar</title>
+    <meta name="description" content="West Linn-Wilsonville School District Calendar System - View schedules, events, and curriculum materials for WLHS and WVHS">
+    <meta name="keywords" content="WLWV, West Linn, Wilsonville, school calendar, events, curriculum, materials">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+
+        /* Default district theme (red) for home page */
+        body.district-theme {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+        }
+
+        /* School-specific themes only apply when viewing school calendar */
+        body.school-wlhs {
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
+        }
+
+        body.school-wvhs {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* ADMIN VISIBILITY CONTROLS */
+        .tabs {
+            display: none; /* Hidden by default */
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Show tabs only when admin mode is active */
+        body.admin-active .tabs {
+            display: flex;
+        }
+
+        #schoolSelect {
+            display: none; /* Hidden by default */
+        }
+
+        /* Show school select only when admin mode is active */
+        body.admin-active #schoolSelect {
+            display: inline-block;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #c41e3a;
+        }
+
+        .screen {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #a01729;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .home-page {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .home-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin: 50px auto;
+            max-width: 800px;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .school-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border-color: #c41e3a;
+        }
+
+        .school-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .school-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .school-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .admin-access {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 30px;
+        }
+
+        .setup-screen {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
+        .setup-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .calendar-page {
+            padding: 0;
+            height: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .current-month {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .admin-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .admin-toggle.active {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            margin: 1px;
+            flex: 1;
+        }
+
+        .day-header {
+            background: #334155;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 8px;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day:hover {
+            background: #f1f5f9;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        /* School-specific color palettes */
+        .school-wlhs {
+            --primary-color: #0f4a2b;
+            --secondary-color: #d4af37;
+            --accent-color: #1f6b47;
+            --light-bg: #f0f8f3;
+            --gradient-start: #0f4a2b;
+            --gradient-end: #1f6b47;
+        }
+
+        .school-wvhs {
+            --primary-color: #1e3a8a;
+            --secondary-color: #c0c0c0;
+            --accent-color: #3b82f6;
+            --light-bg: #f1f5f9;
+            --gradient-start: #1e3a8a;
+            --gradient-end: #3b82f6;
+        }
+
+        /* Dynamic background based on school */
+        body.school-wlhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        body.school-wvhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        /* Additional styles for calendar elements */
+        .event-title-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(196, 30, 58, 0.9);
+            color: white;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            max-width: 80px;
+            text-align: center;
+        }
+
+        .ab-schedule-display {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .day-type-display {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(168, 85, 247, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            max-width: 80px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+
+        /* Admin plus button */
+        .admin-plus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            background: #c41e3a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+        }
+
+        /* Show plus button only in admin mode on hover */
+        body.admin-active .calendar-day:hover .admin-plus {
+            opacity: 1;
+        }
+
+        .admin-plus:hover {
+            background: #a01729;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
             background: #ef4444;
         }
 
-        /* Enhanced Modal System */
         .modal {
             position: fixed;
             top: 0;
@@ -27,485 +528,495 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            max-width: 900px;
+            padding: 30px;
+            max-width: 500px;
             width: 90%;
-            max-height: 85vh;
-            overflow: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .modal.show .modal-content {
             transform: translateY(0);
         }
 
-        /* Modal Header */
-        .modal-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header.user-mode {
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-        }
-
-        .modal-title-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-body {
-            padding: 30px;
-            max-height: calc(85vh - 80px);
-            overflow-y: auto;
-        }
-
-        /* A/B Schedule Badge */
-        .ab-badge {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 700;
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .ab-badge.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        /* CRUD Sections */
-        .crud-section {
-            margin-bottom: 35px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .crud-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .crud-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
+        .connection-status {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .crud-content {
-            padding: 20px;
-        }
-
-        .existing-items {
+            padding: 10px 15px;
             margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
+            border-radius: 8px;
         }
 
-        .existing-items:empty {
-            display: none;
-        }
-
-        .item-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .item-card:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Department color coding for events */
-        .item-card.dept-asb {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #f59e0b;
-            color: #92400e;
-        }
-
-        .item-card.dept-life {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            border-color: #10b981;
+        .connection-status.connected {
+            background: #ecfdf5;
             color: #065f46;
+            border: 1px solid #bbf7d0;
         }
 
-        .item-card.dept-athletics {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-color: #3b82f6;
-            color: #1e40af;
-        }
-
-        .item-card.dept-art-theater {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            border-color: #8b5cf6;
-            color: #5b21b6;
-        }
-
-        .item-card.dept-counseling {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            border-color: #06b6d4;
-            color: #0e7490;
-        }
-
-        .item-card.dept-testing {
-            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
-            border-color: #ef4444;
+        .connection-status.disconnected {
+            background: #fef2f2;
             color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
-        .item-card.dept-staff {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border-color: #64748b;
-            color: #334155;
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .schools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 30px auto;
+            }
+
+            .calendar-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 WLWV Life Calendar</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showScreen('home')">🏠 Home</button>
+            <button class="tab" onclick="showScreen('setup')">🔧 Setup</button>
+            <button class="tab" onclick="showScreen('calendar')">📅 Calendar</button>
+            <button class="tab" onclick="showScreen('admin')">⚙️ Admin</button>
+        </div>
+
+        <!-- Home Screen -->
+        <div class="screen active" id="home">
+            <div class="home-page">
+                <div class="home-header">
+                    <h1>WLWV Life Calendar</h1>
+                    <p>West Linn-Wilsonville School District Calendar System</p>
+                </div>
+
+                <div class="schools-grid">
+                    <div class="school-card" onclick="goToSchool('wlhs')">
+                        <div class="school-logo">🦁</div>
+                        <h2>West Linn High School</h2>
+                        <p>Access WLHS calendar, events, and curriculum materials</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-events-count">-</div>
+                                <div class="stat-label">Today's Events</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-schedule">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="school-card" onclick="goToSchool('wvhs')">
+                        <div class="school-logo">🐱</div>
+                        <h2>Wilsonville High School</h2>
+                        <p>Access WHS calendar, events, and curriculum materials</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-events-count">-</div>
+                                <div class="stat-label">Today's Events</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-schedule">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-access">
+                    <button class="btn btn-secondary" onclick="showScreen('setup')">
+                        🔧 Database Setup
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('admin')">
+                        ⚙️ Admin Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Screen -->
+        <div class="screen" id="setup">
+            <div class="setup-screen">
+                <h2>Database Setup</h2>
+                <p style="margin-bottom: 30px;">Configure your database connection</p>
+
+                <div id="connectionStatus" class="connection-status disconnected">
+                    <span>🔴</span>
+                    <span>Checking connection...</span>
+                </div>
+
+                <form class="setup-form" onsubmit="handleSetup(event)">
+                    <div class="form-group">
+                        <label class="form-label">Database URL (Optional)</label>
+                        <input type="text" class="form-input" id="dbUrl" 
+                               placeholder="Leave empty to use environment variable">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API Base URL</label>
+                        <input type="text" class="form-input" id="apiUrl" 
+                               value="" required readonly style="background: #f3f4f6; color: #6b7280;">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button type="submit" class="btn btn-primary">
+                            Initialize Database
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="testConnection()">
+                            Test Connection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Calendar Screen -->
+        <div class="screen" id="calendar">
+            <div class="calendar-page">
+                <div class="calendar-header">
+                    <div>
+                        <button class="nav-btn" onclick="showScreen('home')">🏠 Home</button>
+                        <span style="margin-left: 20px; font-size: 1.5rem; font-weight: 700;">
+                            🦁 West Linn High School
+                        </span>
+                    </div>
+                    <div class="calendar-controls">
+                        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                        <div class="current-month" id="currentMonth">June 2025</div>
+                        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                        <select id="schoolSelect" onchange="changeSchool()">
+                            <option value="wlhs">🦁 West Linn HS</option>
+                            <option value="wvhs">🐱 Wilsonville HS</option>
+                        </select>
+                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
+                            Admin Mode: OFF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Screen -->
+        <div class="screen" id="admin">
+            <div style="padding: 30px;">
+                <h2>Admin Panel</h2>
+                <p>Database administration and event management</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="initializeDatabase()">
+                        Initialize Database Tables
+                    </button>
+                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
+                        Test Connection
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                    <h3>System Status</h3>
+                    <div id="dbStatus">Checking database connection...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Global application state
+        const app = {
+            state: {
+                currentDate: new Date(),
+                selectedSchool: 'wlhs',
+                adminMode: false,
+                connected: false
+            },
+            config: {
+                apiUrl: ''
+            }
+        };
+
+        function setApiUrl() {
+            app.state.environment = detectEnvironment();
+            
+            // Point to your backend Vercel URL
+            if (app.state.environment === 'production') {
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
+            } else {
+                app.config.apiUrl = window.location.origin + '/api';
+            }
+            
+            console.log('Environment detected:', app.state.environment);
+            console.log('API URL set to:', app.config.apiUrl);
+            
+            // Update the form
+            const apiUrlInput = document.getElementById('apiUrl');
+            if (apiUrlInput) {
+                apiUrlInput.value = app.config.apiUrl;
+            }
         }
 
-        .item-info {
-            flex: 1;
+        function detectEnvironment() {
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'development';
+            }
+            return 'production';
         }
 
-        .item-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 2px;
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.textContent = message;
+                notification.className = `notification ${isError ? 'error' : ''} show`;
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
         }
 
-        .item-details {
-            font-size: 0.8rem;
-            color: #6b7280;
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                const tabText = tab.textContent.toLowerCase();
+                if (tabText.includes(screenId.toLowerCase())) {
+                    tab.classList.add('active');
+                }
+            });
+
+            showNotification(`Switched to ${screenId} screen`);
         }
 
-        .item-details .grade-label {
-            font-weight: 700;
+        function goToSchool(schoolCode) {
+            app.state.selectedSchool = schoolCode;
+            
+            // Apply school theme
+            document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
+            document.body.classList.add(`school-${schoolCode}`);
+            
+            showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
+            showScreen('calendar');
         }
 
-        .item-actions {
-            display: flex;
-            gap: 8px;
+        function testConnection() {
+            showNotification('Testing connection...');
+
+            fetch(app.config.apiUrl + '/health')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                })
+                .then(data => {
+                    app.state.connected = true;
+                    updateConnectionStatus(true, 'Connected successfully!');
+                    showNotification('✅ Connection successful!');
+                })
+                .catch(error => {
+                    app.state.connected = false;
+                    updateConnectionStatus(false, 'Connection failed: ' + error.message);
+                    showNotification('❌ Connection failed: ' + error.message, true);
+                });
         }
 
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        function handleSetup(event) {
+            event.preventDefault();
+            showNotification('Initializing database...');
+
+            const dbUrl = document.getElementById('dbUrl').value;
+            const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
+
+            fetch(app.config.apiUrl + '/init', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || `HTTP ${response.status}: ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                showNotification('✅ Database initialized successfully!');
+                app.state.connected = true;
+                updateConnectionStatus(true, 'Database connected');
+                
+                setTimeout(() => showScreen('calendar'), 1500);
+            })
+            .catch(error => {
+                showNotification('❌ Setup failed: ' + error.message, true);
+                updateConnectionStatus(false, 'Failed to initialize database');
+            });
         }
 
-        .btn-edit {
-            background: #3b82f6;
-            color: white;
+        function initializeDatabase() {
+            return handleSetup({ preventDefault: () => {} });
         }
 
-        .btn-edit:hover {
-            background: #2563eb;
+        function updateConnectionStatus(connected, message) {
+            const status = document.getElementById('connectionStatus');
+            if (status) {
+                status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
+                status.innerHTML = `
+                    <span>${connected ? '🟢' : '🔴'}</span>
+                    <span>${message}</span>
+                `;
+            }
+
+            const dbStatus = document.getElementById('dbStatus');
+            if (dbStatus) {
+                dbStatus.innerHTML = connected ? 
+                    `✅ ${message}` : 
+                    `❌ ${message}`;
+            }
         }
 
-        .btn-delete {
-            background: #ef4444;
-            color: white;
+        function toggleAdminMode() {
+            app.state.adminMode = !app.state.adminMode;
+
+            const button = document.getElementById('adminToggle');
+            if (button) {
+                button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
+                if (app.state.adminMode) {
+                    button.classList.add('active');
+                    document.body.classList.add('admin-active');
+                } else {
+                    button.classList.remove('active');
+                    document.body.classList.remove('admin-active');
+                }
+            }
+
+            showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
         }
 
-        .btn-delete:hover {
-            background: #dc2626;
+        function changeMonth(direction) {
+            app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
+            renderCalendar();
         }
 
-        /* Add Forms */
-        .add-form {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
+        function changeSchool() {
+            const select = document.getElementById('schoolSelect');
+            app.state.selectedSchool = select.value;
+            
+            document.body.classList.remove('school-wlhs', 'school-wvhs');
+            document.body.classList.add(`school-${select.value}`);
+
+            showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
         }
 
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            align-items: flex-end;
-            flex-wrap: wrap;
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+
+            const year = app.state.currentDate.getFullYear();
+            const month = app.state.currentDate.getMonth();
+
+            const monthDisplay = document.getElementById('currentMonth');
+            if (monthDisplay) {
+                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                }).format(app.state.currentDate);
+            }
+
+            grid.innerHTML = '';
+
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+
+                const isToday = currentDate.toDateString() === new Date().toDateString();
+                if (isToday) dayElement.classList.add('today');
+
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = currentDate.getDate();
+
+                // Add plus button for admin mode
+                const plusButton = document.createElement('button');
+                plusButton.className = 'admin-plus';
+                plusButton.textContent = '+';
+
+                dayElement.appendChild(dayNumber);
+                dayElement.appendChild(plusButton);
+                grid.appendChild(dayElement);
+            }
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 120px;
-        }
-
-        .form-group.title-group {
-            flex: 2 1 200px;
-        }
-
-        .form-group.time-group {
-            flex: 0 0 120px;
-        }
-
-        .form-group.department-group {
-            flex: 0 0 140px;
-        }
-
-        .form-group.link-group {
-            flex: 1 1 200px;
-        }
-
-        .form-group.password-group {
-            flex: 1 1 150px;
-        }
-
-        .form-group.button-group {
-            flex: 0 0 auto;
-        }
-
-        .form-label {
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .form-input {
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #c41e3a;
-        }
-
-        .form-select {
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            background: white;
-            cursor: pointer;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: #c41e3a;
-        }
-
-        .btn-add {
-            background: #10b981;
-            color: white;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-        }
-
-        .btn-add:hover {
-            background: #059669;
-        }
-
-        /* Grade Tabs */
-        .grade-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 10px;
-        }
-
-        .grade-tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #6b7280;
-        }
-
-        .grade-tab.active {
-            background: #c41e3a;
-            color: white;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-        }
-
-        .grade-tab:hover:not(.active) {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        /* User Mode Styles */
-        .user-section {
-            margin-bottom: 30px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .user-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .user-section-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-event-card {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-event-card:last-child {
-            border-bottom: none;
-        }
-
-        .user-event-info {
-            flex: 1;
-        }
-
-        .user-event-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .user-event-details {
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .user-event-badge {
-            background: #e5e7eb;
-            color: #374151;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .user-material-card {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .user-material-card:hover {
-            background: #f8fafc;
-        }
-
-        .user-material-card:last-child {
-            border-bottom: none;
-        }
-
-        .user-material-info {
-            flex: 1;
-        }
-
-        .user-material-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .user-material-description {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .user-material-meta {
-            font-size: 0.75rem;
-            color: #9ca3af;
-        }
-
-        .user-access-button {
-            background: #3b82f6;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .user-access-button:hover {
-            background: #2563eb;
-        }
-
-        .user-access-button.protected {
-            background: #f59e0b;
-        }
-
-        .user-access-button.protected:hover {
-            background: #d97706;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 20px;
-            color: #6b7280;
-            font-style: italic;
-        }
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setApiUrl();
+            
+            // Apply district theme initially
+            document.body.classList.add('district-theme');
+            
+            renderCalendar();
+            showNotification('Calendar loaded successfully!');
+        });
+    </script>
+</body>
+</html>
