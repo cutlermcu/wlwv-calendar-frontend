@@ -417,11 +417,38 @@
             text-align: center;
         }
 
+        /* Admin plus button (center) */
+        .admin-plus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            background: #c41e3a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+        }
+
+        .admin-plus:hover {
+            background: #a01729;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* A/B Schedule display with updated styling */
         .ab-schedule-display {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(99, 102, 241, 0.9);
             color: white;
             padding: 2px 6px;
             border-radius: 4px;
@@ -429,7 +456,15 @@
             font-weight: 600;
             min-width: 20px;
             text-align: center;
-            pointer-events: none;
+            cursor: pointer;
+        }
+
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
         }
 
         .day-type-display {
@@ -940,6 +975,9 @@
                 }
             }
 
+            // Re-render calendar to show/hide admin elements
+            renderCalendar();
+
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
         }
 
@@ -1000,45 +1038,67 @@
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = currentDate.getDate();
-
                 dayElement.appendChild(dayNumber);
 
-                // Create day type display and dropdown if needed
-                const dayType = getDayType(currentDate); // You'll need to implement this function
+                // Add A/B schedule display (admin mode)
+                if (app.state.adminMode) {
+                    const abSchedule = getABSchedule(currentDate); // You'll need to implement this
+                    if (abSchedule) {
+                        const abDisplay = document.createElement('div');
+                        abDisplay.className = `ab-schedule-display schedule-${abSchedule.toLowerCase()}`;
+                        abDisplay.textContent = abSchedule;
+                        dayElement.appendChild(abDisplay);
+                    }
+
+                    // Add admin plus button
+                    const plusButton = document.createElement('button');
+                    plusButton.className = 'admin-plus';
+                    plusButton.textContent = '+';
+                    plusButton.onclick = (e) => {
+                        e.stopPropagation();
+                        openDayModal(currentDate);
+                    };
+                    dayElement.appendChild(plusButton);
+                }
+
+                // Add day type display and dropdown
+                const dayType = getDayType(currentDate);
                 if (dayType) {
                     const dayTypeDisplay = document.createElement('div');
                     dayTypeDisplay.className = 'day-type-display';
                     dayTypeDisplay.textContent = dayType;
                     dayElement.appendChild(dayTypeDisplay);
 
-                    // Create dropdown
-                    const dropdown = document.createElement('div');
-                    dropdown.className = 'day-type-dropdown';
-                    
-                    const dayTypes = [
-                        { value: 'access', label: 'Access' },
-                        { value: 'grading', label: 'Grading' },
-                        { value: 'staff-development', label: 'Staff Development' },
-                        { value: 'holiday', label: 'Holiday' },
-                        { value: 'furlough', label: 'Furlough' },
-                        { value: 'finals', label: 'Finals' },
-                        { value: 'no-school', label: 'No School' },
-                        { value: 'early-release', label: 'Early Release' },
-                        { value: 'late-start', label: 'Late Start' },
-                        { value: 'half-day', label: 'Half Day' },
-                        { value: 'professional-development', label: 'Professional Development' },
-                        { value: 'clear', label: 'Clear' }
-                    ];
+                    // Create dropdown (only in admin mode)
+                    if (app.state.adminMode) {
+                        const dropdown = document.createElement('div');
+                        dropdown.className = 'day-type-dropdown';
+                        
+                        const dayTypes = [
+                            { value: 'access', label: 'Access' },
+                            { value: 'grading', label: 'Grading' },
+                            { value: 'staff-development', label: 'Staff Development' },
+                            { value: 'holiday', label: 'Holiday' },
+                            { value: 'furlough', label: 'Furlough' },
+                            { value: 'finals', label: 'Finals' },
+                            { value: 'no-school', label: 'No School' },
+                            { value: 'early-release', label: 'Early Release' },
+                            { value: 'late-start', label: 'Late Start' },
+                            { value: 'half-day', label: 'Half Day' },
+                            { value: 'professional-development', label: 'Professional Development' },
+                            { value: 'clear', label: 'Clear' }
+                        ];
 
-                    dayTypes.forEach(type => {
-                        const option = document.createElement('div');
-                        option.className = `dropdown-option ${type.value}`;
-                        option.textContent = type.label;
-                        option.onclick = () => setDayType(currentDate, type.value === 'clear' ? null : type.value);
-                        dropdown.appendChild(option);
-                    });
+                        dayTypes.forEach(type => {
+                            const option = document.createElement('div');
+                            option.className = `dropdown-option ${type.value}`;
+                            option.textContent = type.label;
+                            option.onclick = () => setDayType(currentDate, type.value === 'clear' ? null : type.value);
+                            dropdown.appendChild(option);
+                        });
 
-                    dayElement.appendChild(dropdown);
+                        dayElement.appendChild(dropdown);
+                    }
                 }
 
                 grid.appendChild(dayElement);
@@ -1052,11 +1112,23 @@
             return null; // Replace with actual implementation
         }
 
+        function getABSchedule(date) {
+            // Return 'A' or 'B' for the given date or null if none
+            // This should check your A/B schedule data
+            return null; // Replace with actual implementation
+        }
+
         function setDayType(date, type) {
             // Set the day type for the given date
             // This should update your day types data and re-render
             console.log('Setting day type:', date, type);
-            // Add your implementation here
+            renderCalendar(); // Re-render after setting
+        }
+
+        function openDayModal(date) {
+            // Open the day management modal for the given date
+            console.log('Opening day modal for:', date);
+            // Add your modal implementation here
         }
 
         // Initialize when DOM is loaded
