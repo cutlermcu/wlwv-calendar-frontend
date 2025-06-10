@@ -429,7 +429,106 @@
             font-weight: 600;
             min-width: 20px;
             text-align: center;
+            cursor: pointer;
+        }
+
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* A/B Schedule Dropdown */
+        .ab-schedule-menu {
+            position: absolute;
+            top: 35px;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 200;
+            min-width: 80px;
             pointer-events: none;
+        }
+
+        /* Only show A/B dropdown when hovering over the A/B badge itself */
+        .ab-schedule-display:hover .ab-schedule-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .ab-menu-item {
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2px;
+            color: white;
+        }
+
+        .ab-menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ab-menu-item.option-a {
+            background: #3b82f6;
+        }
+
+        .ab-menu-item.option-b {
+            background: #ef4444;
+        }
+
+        .ab-menu-item.option-clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .ab-menu-item:hover {
+            opacity: 0.8;
+        }
+
+        /* A/B Schedule placeholder for admin mode */
+        .ab-schedule-placeholder {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+            border: 1px dashed #9ca3af;
+        }
+
+        /* Show A/B placeholder when in admin mode and hovering over the top-right area */
+        body.admin-active .calendar-day:hover .ab-schedule-placeholder {
+            opacity: 1;
+        }
+
+        /* Show A/B dropdown when hovering over the placeholder itself */
+        .ab-schedule-placeholder:hover .ab-schedule-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: all;
         }
 
         .day-type-display {
@@ -863,7 +962,8 @@
                 selectedSchool: 'wlhs',
                 adminMode: false,
                 connected: false,
-                dayTypes: {} // NEW: Store day types data
+                dayTypes: {}, // Store day types data
+                daySchedules: {} // NEW: Store A/B schedule data
             },
             config: {
                 apiUrl: ''
@@ -1075,7 +1175,32 @@
             return date.toISOString().split('T')[0];
         }
 
-        // NEW: Function to set day type
+        // NEW: Function to set A/B schedule
+        function setABSchedule(date, schedule) {
+            if (!app.state.adminMode) return;
+            
+            const requestBody = { date: date, schedule: schedule };
+            
+            fetch(app.config.apiUrl + '/day-schedules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (schedule) {
+                    app.state.daySchedules[date] = schedule;
+                    showNotification(`Set ${date} to ${schedule} Day`);
+                } else {
+                    delete app.state.daySchedules[date];
+                    showNotification(`Cleared schedule for ${date}`);
+                }
+                renderCalendar(); // Refresh the calendar
+            })
+            .catch(error => {
+                showNotification('Failed to update schedule: ' + error.message, true);
+            });
+        }
         function setDayType(date, type) {
             if (!app.state.adminMode) return;
             
@@ -1107,21 +1232,31 @@
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
 
-            // Load day types first, then render
+            // Load both day types and schedules, then render
             if (app.state.connected) {
-                fetch(app.config.apiUrl + '/day-types')
-                    .then(response => response.json())
-                    .then(data => {
-                        app.state.dayTypes = {};
-                        data.forEach(item => {
-                            app.state.dayTypes[item.date] = item.type;
-                        });
-                        renderCalendarGrid();
-                    })
-                    .catch(error => {
-                        console.log('No day types loaded:', error);
-                        renderCalendarGrid();
+                Promise.all([
+                    fetch(app.config.apiUrl + '/day-types').then(r => r.json()).catch(() => []),
+                    fetch(app.config.apiUrl + '/day-schedules').then(r => r.json()).catch(() => [])
+                ])
+                .then(([dayTypesData, schedulesData]) => {
+                    // Load day types
+                    app.state.dayTypes = {};
+                    dayTypesData.forEach(item => {
+                        app.state.dayTypes[item.date] = item.type;
                     });
+                    
+                    // Load schedules
+                    app.state.daySchedules = {};
+                    schedulesData.forEach(item => {
+                        app.state.daySchedules[item.date] = item.schedule;
+                    });
+                    
+                    renderCalendarGrid();
+                })
+                .catch(error => {
+                    console.log('Failed to load calendar data:', error);
+                    renderCalendarGrid();
+                });
             } else {
                 renderCalendarGrid();
             }
@@ -1171,8 +1306,42 @@
 
                 dayElement.appendChild(dayNumber);
 
-                // NEW: Add day type functionality
+                // NEW: Add A/B schedule functionality
                 const dateString = formatDate(currentDate);
+                const abSchedule = app.state.daySchedules[dateString];
+
+                if (abSchedule) {
+                    const scheduleElement = document.createElement('div');
+                    scheduleElement.className = `ab-schedule-display schedule-${abSchedule.toLowerCase()}`;
+                    scheduleElement.textContent = abSchedule;
+                    
+                    const scheduleDropdown = document.createElement('div');
+                    scheduleDropdown.className = 'ab-schedule-menu';
+                    scheduleDropdown.innerHTML = `
+                        <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
+                        <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
+                        <div class="ab-menu-item option-clear" onclick="setABSchedule('${dateString}', null)">Clear</div>
+                    `;
+                    
+                    scheduleElement.appendChild(scheduleDropdown);
+                    dayElement.appendChild(scheduleElement);
+                }
+
+                // Add empty A/B dropdown for admin mode
+                if (app.state.adminMode && !abSchedule) {
+                    const emptySchedule = document.createElement('div');
+                    emptySchedule.className = 'ab-schedule-placeholder';
+                    emptySchedule.innerHTML = `
+                        +
+                        <div class="ab-schedule-menu">
+                            <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
+                            <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
+                        </div>
+                    `;
+                    dayElement.appendChild(emptySchedule);
+                }
+
+                // NEW: Add day type functionality
                 const dayType = app.state.dayTypes[dateString];
 
                 if (dayType) {
