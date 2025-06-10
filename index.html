@@ -584,18 +584,24 @@
             top: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: red;
-            border: 2px solid blue;
+            background: red !important;
+            border: 2px solid blue !important;
             border-radius: 6px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             padding: 4px;
             min-width: 120px;
             z-index: 2000;
             margin-top: 2px;
-            display: block !important;
             pointer-events: auto;
-            opacity: 1;
-            visibility: visible;
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: 120px !important;
+            height: 200px !important;
+        }
+
+        /* FORCE VISIBLE - override everything */
+        .day-designation .day-designation-menu {
+            display: block !important;
         }
 
         /* Show day designation dropdown on hover */
