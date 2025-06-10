@@ -21,10 +21,12 @@
             color: #1a1a1a;
         }
 
+        /* Default district theme (red) for home page */
         body.district-theme {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
         }
 
+        /* School-specific themes only apply when viewing school calendar */
         body.school-wlhs {
             background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
@@ -56,22 +58,25 @@
             opacity: 0.9;
         }
 
+        /* ADMIN VISIBILITY CONTROLS */
         .tabs {
-            display: none;
+            display: none; /* Hidden by default */
             gap: 10px;
             margin-bottom: 30px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
+        /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
         }
 
         #schoolSelect {
-            display: none;
+            display: none; /* Hidden by default */
         }
 
+        /* Show school select only when admin mode is active */
         body.admin-active #schoolSelect {
             display: inline-block;
         }
@@ -282,14 +287,6 @@
             align-items: center;
         }
 
-        body.school-wlhs .calendar-header {
-            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
-        }
-
-        body.school-wvhs .calendar-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        }
-
         .calendar-controls {
             display: flex;
             gap: 15px;
@@ -357,13 +354,10 @@
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: all 0.2s ease;
-            z-index: 1;
         }
 
         .calendar-day:hover {
             background: #f1f5f9;
-            z-index: 100;
         }
 
         .calendar-day.today {
@@ -377,284 +371,40 @@
             margin-bottom: 8px;
         }
 
-        /* A/B Schedule Badge */
-        .ab-schedule-badge {
+        /* School-specific color palettes */
+        .school-wlhs {
+            --primary-color: #0f4a2b;
+            --secondary-color: #d4af37;
+            --accent-color: #1f6b47;
+            --light-bg: #f0f8f3;
+            --gradient-start: #0f4a2b;
+            --gradient-end: #1f6b47;
+        }
+
+        .school-wvhs {
+            --primary-color: #1e3a8a;
+            --secondary-color: #c0c0c0;
+            --accent-color: #3b82f6;
+            --light-bg: #f1f5f9;
+            --gradient-start: #1e3a8a;
+            --gradient-end: #3b82f6;
+        }
+
+        /* Dynamic background based on school */
+        body.school-wlhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        body.school-wvhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        /* Additional styles for calendar elements */
+        .event-title-indicator {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-
-        .ab-schedule-badge.schedule-a {
-            background: rgba(59, 130, 246, 0.9);
-        }
-
-        .ab-schedule-badge.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        .ab-schedule-badge.admin-placeholder {
-            background: #6b7280;
-            border: 1px solid #d1d5db;
-        }
-
-        .ab-schedule-badge.admin-placeholder:hover {
-            background: #4b5563;
-        }
-
-        .ab-schedule-badge:hover {
-            transform: scale(1.1);
-        }
-
-        /* A/B Schedule Dropdown */
-        .ab-schedule-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            padding: 4px;
-            min-width: 60px;
-            z-index: 1000;
-            display: none;
-        }
-
-        .ab-schedule-badge:hover .ab-schedule-menu {
-            display: block;
-        }
-
-        .ab-menu-item {
-            padding: 6px 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 2px;
-            color: white;
-            transition: opacity 0.2s ease;
-        }
-
-        .ab-menu-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .ab-menu-item.option-a {
-            background: #3b82f6;
-        }
-
-        .ab-menu-item.option-b {
-            background: #ef4444;
-        }
-
-        .ab-menu-item.option-clear {
-            background: #6b7280;
-        }
-
-        .ab-menu-item:hover {
-            opacity: 0.8;
-        }
-
-        /* Admin Plus Button */
-        .admin-plus {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 32px;
-            height: 32px;
-            background: #c41e3a;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            opacity: 0;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-            z-index: 50;
-        }
-
-        body.admin-active .calendar-day:hover .admin-plus {
-            opacity: 1;
-        }
-
-        .admin-plus:hover {
-            background: #a01729;
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-        /* Day Designation */
-        .day-designation {
-            position: absolute;
-            bottom: 8px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            z-index: 10;
-        }
-
-        .day-designation.admin-placeholder {
-            background: #6b7280;
-            color: white;
-            border: 1px solid #d1d5db;
-        }
-
-        .day-designation.admin-placeholder:hover {
-            background: #4b5563;
-        }
-
-        .day-designation.no-school {
-            background: #ef4444;
-            color: white;
-        }
-
-        .day-designation.early-release {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .day-designation.late-start {
-            background: #10b981;
-            color: white;
-        }
-
-        .day-designation.half-day {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .day-designation.access {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .day-designation.grading {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .day-designation.staff-development {
-            background: #06b6d4;
-            color: white;
-        }
-
-        .day-designation.holiday {
-            background: #ef4444;
-            color: white;
-        }
-
-        .day-designation.furlough {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .day-designation.finals {
-            background: #10b981;
-            color: white;
-        }
-
-        /* Day Designation Dropdown */
-        .day-designation-menu {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            padding: 4px;
-            min-width: 120px;
-            z-index: 2000;
-            margin-top: 2px;
-            display: none;
-            pointer-events: auto;
-        }
-
-        /* Show day designation dropdown on hover */
-        .day-designation:hover .day-designation-menu {
-            display: block !important;
-        }
-
-        /* Show day designation dropdown on hover */
-        .day-designation:hover .day-designation-menu {
-            display: block !important;
-            pointer-events: auto;
-        }
-
-        /* Keep dropdown visible when hovering over it */
-        .day-designation-menu:hover {
-            display: block !important;
-        }
-
-        /* Ensure day designation itself allows pointer events */
-        .day-designation {
-            pointer-events: auto;
-        }
-
-        .designation-menu-item {
-            padding: 6px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: background 0.1s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .designation-menu-item:hover {
-            background: #f3f4f6;
-        }
-
-        .designation-menu-item.no-school { border-left-color: #ef4444; }
-        .designation-menu-item.early-release { border-left-color: #f59e0b; }
-        .designation-menu-item.late-start { border-left-color: #10b981; }
-        .designation-menu-item.half-day { border-left-color: #8b5cf6; }
-        .designation-menu-item.access { border-left-color: #3b82f6; }
-        .designation-menu-item.grading { border-left-color: #8b5cf6; }
-        .designation-menu-item.staff-development { border-left-color: #06b6d4; }
-        .designation-menu-item.holiday { border-left-color: #ef4444; }
-        .designation-menu-item.furlough { border-left-color: #f59e0b; }
-        .designation-menu-item.finals { border-left-color: #10b981; }
-        .designation-menu-item.clear { border-left-color: #6b7280; }
-
-        /* Event Indicators */
-        .event-indicators {
-            position: absolute;
-            top: 25px;
-            left: 8px;
-            right: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-        }
-
-        .event-indicator {
             background: rgba(196, 30, 58, 0.9);
             color: white;
             padding: 1px 4px;
@@ -662,39 +412,95 @@
             font-size: 0.6rem;
             font-weight: 600;
             white-space: nowrap;
-            max-width: 70px;
+            pointer-events: none;
+            max-width: 80px;
+            text-align: center;
+        }
+
+        .ab-schedule-display {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .day-type-display {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(168, 85, 247, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            max-width: 80px;
+            text-align: center;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            pointer-events: none;
         }
 
-        .event-indicator.dept-asb { background: rgba(245, 158, 11, 0.9); }
-        .event-indicator.dept-life { background: rgba(16, 185, 129, 0.9); }
-        .event-indicator.dept-athletics { background: rgba(59, 130, 246, 0.9); }
-        .event-indicator.dept-art-theater { background: rgba(139, 92, 246, 0.9); }
-        .event-indicator.dept-counseling { background: rgba(6, 182, 212, 0.9); }
-        .event-indicator.dept-testing { background: rgba(239, 68, 68, 0.9); }
-        .event-indicator.dept-staff { background: rgba(100, 116, 139, 0.9); }
-
-        .connection-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            margin-bottom: 20px;
+        /* Day Type Dropdown CSS */
+        .day-type-dropdown {
+            position: absolute;
+            bottom: 30px;
+            left: 8px;
+            background: white;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 150px;
         }
 
-        .connection-status.connected {
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #bbf7d0;
+        .day-type-display:hover + .day-type-dropdown,
+        .day-type-dropdown:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
-        .connection-status.disconnected {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+        .dropdown-option {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.1s ease;
+            color: #374151;
         }
+
+        .dropdown-option:hover {
+            background: #f3f4f6;
+        }
+
+        .dropdown-option.no-school { border-left: 4px solid #ef4444; }
+        .dropdown-option.early-release { border-left: 4px solid #f59e0b; }
+        .dropdown-option.late-start { border-left: 4px solid #10b981; }
+        .dropdown-option.half-day { border-left: 4px solid #8b5cf6; }
+        .dropdown-option.professional-development { border-left: 4px solid #06b6d4; }
+        .dropdown-option.access { border-left: 4px solid #3b82f6; }
+        .dropdown-option.grading { border-left: 4px solid #8b5cf6; }
+        .dropdown-option.staff-development { border-left: 4px solid #06b6d4; }
+        .dropdown-option.holiday { border-left: 4px solid #ef4444; }
+        .dropdown-option.furlough { border-left: 4px solid #f59e0b; }
+        .dropdown-option.finals { border-left: 4px solid #10b981; }
+        .dropdown-option.clear { border-left: 4px solid #6b7280; }
 
         .notification {
             position: fixed;
@@ -717,7 +523,6 @@
             background: #ef4444;
         }
 
-        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
@@ -742,377 +547,38 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            max-width: 900px;
+            padding: 30px;
+            max-width: 500px;
             width: 90%;
             max-height: 80vh;
-            overflow: hidden;
+            overflow-y: auto;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .modal.show .modal-content {
             transform: translateY(0);
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        body.school-wlhs .modal-header {
-            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
-        }
-
-        body.school-wvhs .modal-header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .modal-ab-badge {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            min-width: 25px;
-            text-align: center;
-        }
-
-        .modal-ab-badge.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-body {
-            padding: 30px;
-            max-height: calc(80vh - 80px);
-            overflow-y: auto;
-        }
-
-        /* CRUD Section Styles */
-        .crud-section {
-            margin-bottom: 35px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .crud-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
+        .connection-status {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .crud-content {
-            padding: 20px;
-        }
-
-        .existing-items {
+            padding: 10px 15px;
             margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
+            border-radius: 8px;
         }
 
-        .item-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .connection-status.connected {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #bbf7d0;
         }
 
-        .item-card.dept-asb {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #f59e0b;
-        }
-
-        .item-card.dept-life {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            border-color: #10b981;
-        }
-
-        .item-card.dept-athletics {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-color: #3b82f6;
-        }
-
-        .item-card.dept-art-theater {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            border-color: #8b5cf6;
-        }
-
-        .item-card.dept-counseling {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            border-color: #06b6d4;
-        }
-
-        .item-card.dept-testing {
-            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
-            border-color: #ef4444;
-        }
-
-        .item-card.dept-staff {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border-color: #64748b;
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 2px;
-        }
-
-        .item-details {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-edit {
-            background: #3b82f6;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-delete {
-            background: #ef4444;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .add-form {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 120px;
-        }
-
-        .form-group.flex-2 {
-            flex: 2;
-            min-width: 200px;
-        }
-
-        .form-group.flex-1 {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .form-input, .form-select {
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .form-select {
-            background: white;
-            cursor: pointer;
-        }
-
-        .btn-add {
-            background: #10b981;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-add:hover {
-            background: #059669;
-        }
-
-        .grade-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 10px;
-        }
-
-        .grade-tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #6b7280;
-        }
-
-        .grade-tab.active {
-            background: #c41e3a;
-            color: white;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-        }
-
-        .grade-tab:hover:not(.active) {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        /* User Modal Styles */
-        .user-modal .modal-header {
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-        }
-
-        .user-section {
-            margin-bottom: 25px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .user-section-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-event-card, .user-material-card {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-event-card:last-child, .user-material-card:last-child {
-            border-bottom: none;
-        }
-
-        .user-material-card:hover {
-            background: #f8fafc;
-        }
-
-        .user-event-title, .user-material-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .user-event-details, .user-material-description {
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .user-event-badge {
-            background: #e5e7eb;
-            color: #374151;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .user-access-button {
-            background: #3b82f6;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .user-access-button:hover {
-            background: #2563eb;
-        }
-
-        .user-access-button.protected {
-            background: #f59e0b;
-        }
-
-        .user-access-button.protected:hover {
-            background: #d97706;
+        .connection-status.disconnected {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
         /* Responsive improvements */
@@ -1134,20 +600,6 @@
             .calendar-controls {
                 flex-wrap: wrap;
                 gap: 10px;
-            }
-
-            .modal-content {
-                width: 95%;
-                max-height: 90vh;
-            }
-
-            .form-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .form-group {
-                min-width: auto;
             }
         }
     </style>
@@ -1317,156 +769,6 @@
         </div>
     </div>
 
-    <!-- Admin Modal -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">
-                    <span id="adminModalDate">Monday, June 15, 2025</span>
-                    <div class="modal-ab-badge" id="adminModalSchedule">A</div>
-                </div>
-                <button class="modal-close" onclick="closeModal('adminModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <!-- Events Section -->
-                <div class="crud-section">
-                    <div class="crud-header">
-                        📅 Events
-                    </div>
-                    <div class="crud-content">
-                        <div class="existing-items" id="existingEvents">
-                            <!-- Events will be loaded here -->
-                        </div>
-                        
-                        <div class="add-form">
-                            <form id="addEventForm">
-                                <div class="form-row">
-                                    <div class="form-group flex-2">
-                                        <label class="form-label">Event Title</label>
-                                        <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" required>
-                                    </div>
-                                    <div class="form-group flex-1">
-                                        <label class="form-label">Time</label>
-                                        <input type="time" class="form-input" id="eventTime">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group flex-1">
-                                        <label class="form-label">Department</label>
-                                        <select class="form-select" id="eventDepartment">
-                                            <option value="">Select department</option>
-                                            <option value="ASB">ASB</option>
-                                            <option value="Life">Life</option>
-                                            <option value="Athletics">Athletics</option>
-                                            <option value="Art/Theater">Art/Theater</option>
-                                            <option value="Counseling">Counseling</option>
-                                            <option value="Testing">Testing</option>
-                                            <option value="Staff">Staff</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group flex-2">
-                                        <label class="form-label">Description</label>
-                                        <input type="text" class="form-input" id="eventDescription" placeholder="Optional description">
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="btn-add">Add Event</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Materials Section -->
-                <div class="crud-section">
-                    <div class="crud-header">
-                        📚 Materials
-                    </div>
-                    <div class="crud-content">
-                        <div class="grade-tabs">
-                            <button class="grade-tab active" onclick="switchGradeTab(9)">Grade 9</button>
-                            <button class="grade-tab" onclick="switchGradeTab(10)">Grade 10</button>
-                            <button class="grade-tab" onclick="switchGradeTab(11)">Grade 11</button>
-                            <button class="grade-tab" onclick="switchGradeTab(12)">Grade 12</button>
-                        </div>
-                        
-                        <div class="existing-items" id="existingMaterials">
-                            <!-- Materials will be loaded here -->
-                        </div>
-                        
-                        <div class="add-form">
-                            <form id="addMaterialForm">
-                                <div class="form-row">
-                                    <div class="form-group flex-2">
-                                        <label class="form-label">Material Title</label>
-                                        <input type="text" class="form-input" id="materialTitle" placeholder="Enter material title" required>
-                                    </div>
-                                    <div class="form-group flex-2">
-                                        <label class="form-label">Link/URL</label>
-                                        <input type="url" class="form-input" id="materialLink" placeholder="https://..." required>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group flex-1">
-                                        <label class="form-label">Password (Optional)</label>
-                                        <input type="text" class="form-input" id="materialPassword" placeholder="Leave empty for public">
-                                    </div>
-                                    <div class="form-group flex-2">
-                                        <label class="form-label">Description</label>
-                                        <input type="text" class="form-input" id="materialDescription" placeholder="Optional description">
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="btn-add">Add Material</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Modal -->
-    <div class="modal user-modal" id="userModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">
-                    <span id="userModalDate">📅 Tuesday, June 16, 2025</span>
-                    <div class="modal-ab-badge" id="userModalSchedule">A</div>
-                </div>
-                <button class="modal-close" onclick="closeModal('userModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <!-- Events Section -->
-                <div class="user-section">
-                    <div class="user-section-header">
-                        📅 Today's Events
-                    </div>
-                    <div id="userEvents">
-                        <!-- Events will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Materials Section -->
-                <div class="user-section">
-                    <div class="user-section-header">
-                        📚 Materials & Resources
-                    </div>
-                    <div class="grade-tabs">
-                        <button class="grade-tab active" onclick="switchUserGradeTab(9)">Grade 9</button>
-                        <button class="grade-tab" onclick="switchUserGradeTab(10)">Grade 10</button>
-                        <button class="grade-tab" onclick="switchUserGradeTab(11)">Grade 11</button>
-                        <button class="grade-tab" onclick="switchUserGradeTab(12)">Grade 12</button>
-                    </div>
-                    <div id="userMaterials">
-                        <!-- Materials will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -1477,48 +779,34 @@
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
-                connected: false,
-                selectedDate: null,
-                currentGrade: 9,
-                daySchedules: {},
-                dayTypes: {},
-                events: {},
-                materials: {}
+                connected: false
             },
             config: {
                 apiUrl: ''
             }
         };
 
-        function detectEnvironment() {
-            const hostname = window.location.hostname;
-            if (hostname.includes('vercel.app') || hostname.includes('netlify.app') || 
-                hostname.includes('github.io') || (!hostname.includes('localhost') && !hostname.includes('127.0.0.1'))) {
-                return 'production';
-            }
-            return 'development';
-        }
-
         function setApiUrl() {
-            app.state.environment = detectEnvironment();
+    app.state.environment = detectEnvironment();
+    
+    // Point to your backend Vercel URL
+    if (app.state.environment === 'production') {
+        app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
+    } else {
+        app.config.apiUrl = window.location.origin + '/api';
+    }
+    
+    console.log('Environment detected:', app.state.environment);
+    console.log('API URL set to:', app.config.apiUrl);
+}
             
-            if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
-            } else {
-                app.config.apiUrl = window.location.origin;
-            }
-            
-            console.log('Environment detected:', app.state.environment);
             console.log('API URL set to:', app.config.apiUrl);
             
+            // Update the form
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
             }
-        }
-
-        function formatDate(date) {
-            return date.toISOString().split('T')[0];
         }
 
         function showNotification(message, isError = false) {
@@ -1558,35 +846,19 @@
         function goToSchool(schoolCode) {
             app.state.selectedSchool = schoolCode;
             
-            const schoolSelect = document.getElementById('schoolSelect');
-            if (schoolSelect) {
-                schoolSelect.value = schoolCode;
-            }
-            
+            // Apply school theme
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
-            const headerSpan = document.querySelector('.calendar-header span');
-            if (headerSpan) {
-                if (schoolCode === 'wlhs') {
-                    headerSpan.textContent = '🦁 West Linn High School';
-                } else {
-                    headerSpan.textContent = '🐱 Wilsonville High School';
-                }
-            }
-            
             showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
             showScreen('calendar');
-            loadCalendarData();
         }
 
         function testConnection() {
             showNotification('Testing connection...');
-            console.log('Testing connection to:', app.config.apiUrl + '/api/health');
 
-            fetch(app.config.apiUrl + '/api/health')
+            fetch(app.config.apiUrl + '/health')
                 .then(response => {
-                    console.log('Health response status:', response.status);
                     if (response.ok) {
                         return response.json();
                     } else {
@@ -1594,13 +866,11 @@
                     }
                 })
                 .then(data => {
-                    console.log('Health response data:', data);
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
                 })
                 .catch(error => {
-                    console.error('Connection failed:', error);
                     app.state.connected = false;
                     updateConnectionStatus(false, 'Connection failed: ' + error.message);
                     showNotification('❌ Connection failed: ' + error.message, true);
@@ -1614,7 +884,7 @@
             const dbUrl = document.getElementById('dbUrl').value;
             const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
 
-            fetch(app.config.apiUrl + '/api/init', {
+            fetch(app.config.apiUrl + '/init', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -1667,7 +937,6 @@
 
         function toggleAdminMode() {
             app.state.adminMode = !app.state.adminMode;
-            console.log('Admin mode toggled to:', app.state.adminMode);
 
             const button = document.getElementById('adminToggle');
             if (button) {
@@ -1682,113 +951,21 @@
             }
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
-            
-            // FORCE re-render when admin mode changes
-            console.log('Re-rendering calendar after admin toggle');
-            renderCalendar();
         }
 
         function changeMonth(direction) {
             app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
             renderCalendar();
-            loadCalendarData();
         }
 
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
-            const schoolCode = select.value;
-            
-            app.state.selectedSchool = schoolCode;
+            app.state.selectedSchool = select.value;
             
             document.body.classList.remove('school-wlhs', 'school-wvhs');
-            document.body.classList.add(`school-${schoolCode}`);
+            document.body.classList.add(`school-${select.value}`);
 
-            const headerSpan = document.querySelector('.calendar-header span');
-            if (headerSpan) {
-                if (schoolCode === 'wlhs') {
-                    headerSpan.textContent = '🦁 West Linn High School';
-                } else {
-                    headerSpan.textContent = '🐱 Wilsonville High School';
-                }
-            }
-
-            showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
-            loadCalendarData();
-        }
-
-        function loadCalendarData() {
-            if (!app.state.connected) return;
-
-            fetch(app.config.apiUrl + '/api/day-schedules')
-                .then(response => response.json())
-                .then(data => {
-                    app.state.daySchedules = {};
-                    if (Array.isArray(data)) {
-                        data.forEach(item => {
-                            app.state.daySchedules[item.date] = item.schedule;
-                        });
-                    }
-                    renderCalendar();
-                })
-                .catch(error => {
-                    console.error('Error loading day schedules:', error);
-                    renderCalendar();
-                });
-
-            fetch(app.config.apiUrl + '/api/day-types')
-                .then(response => response.json())
-                .then(data => {
-                    app.state.dayTypes = {};
-                    if (Array.isArray(data)) {
-                        data.forEach(item => {
-                            app.state.dayTypes[item.date] = item.type;
-                        });
-                    }
-                    renderCalendar();
-                })
-                .catch(error => {
-                    console.error('Error loading day types:', error);
-                    renderCalendar();
-                });
-
-            fetch(app.config.apiUrl + `/api/events?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.events = {};
-                    if (Array.isArray(data)) {
-                        data.forEach(event => {
-                            if (!app.state.events[event.date]) {
-                                app.state.events[event.date] = [];
-                            }
-                            app.state.events[event.date].push(event);
-                        });
-                    }
-                    renderCalendar();
-                })
-                .catch(error => {
-                    console.error('Error loading events:', error);
-                    renderCalendar();
-                });
-
-            fetch(app.config.apiUrl + `/api/materials?school=${app.state.selectedSchool}`)
-                .then(response => response.json())
-                .then(data => {
-                    app.state.materials = {};
-                    if (Array.isArray(data)) {
-                        data.forEach(material => {
-                            if (!app.state.materials[material.date]) {
-                                app.state.materials[material.date] = {};
-                            }
-                            if (!app.state.materials[material.date][material.grade_level]) {
-                                app.state.materials[material.date][material.grade_level] = [];
-                            }
-                            app.state.materials[material.date][material.grade_level].push(material);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading materials:', error);
-                });
+            showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
         }
 
         function renderCalendar() {
@@ -1823,11 +1000,9 @@
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-                const dateStr = formatDate(currentDate);
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
-                dayElement.setAttribute('data-date', dateStr);
 
                 const isToday = currentDate.toDateString() === new Date().toDateString();
                 if (isToday) dayElement.classList.add('today');
@@ -1835,492 +1010,74 @@
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = currentDate.getDate();
+
                 dayElement.appendChild(dayNumber);
 
-                // A/B Schedule badge - only show if there's a schedule OR admin mode is active
-                const schedule = app.state.daySchedules[dateStr];
-                if (schedule || app.state.adminMode) {
-                    const abBadge = document.createElement('div');
-                    abBadge.className = 'ab-schedule-badge';
+                // Create day type display and dropdown if needed
+                const dayType = getDayType(currentDate); // You'll need to implement this function
+                if (dayType) {
+                    const dayTypeDisplay = document.createElement('div');
+                    dayTypeDisplay.className = 'day-type-display';
+                    dayTypeDisplay.textContent = dayType;
+                    dayElement.appendChild(dayTypeDisplay);
+
+                    // Create dropdown
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'day-type-dropdown';
                     
-                    if (schedule) {
-                        abBadge.classList.add(`schedule-${schedule.toLowerCase()}`);
-                        abBadge.textContent = schedule;
-                    } else if (app.state.adminMode) {
-                        // In admin mode, show a clean badge for assignment
-                        abBadge.classList.add('admin-placeholder');
-                        abBadge.textContent = '-';
-                        abBadge.title = 'Hover to assign A/B schedule';
-                    }
-                    
-                    const abMenu = document.createElement('div');
-                    abMenu.className = 'ab-schedule-menu';
-                    
-                    const menuItems = [
-                        { text: 'A', value: 'A', class: 'option-a' },
-                        { text: 'B', value: 'B', class: 'option-b' },
-                        { text: 'Clear', value: null, class: 'option-clear' }
+                    const dayTypes = [
+                        { value: 'access', label: 'Access' },
+                        { value: 'grading', label: 'Grading' },
+                        { value: 'staff-development', label: 'Staff Development' },
+                        { value: 'holiday', label: 'Holiday' },
+                        { value: 'furlough', label: 'Furlough' },
+                        { value: 'finals', label: 'Finals' },
+                        { value: 'no-school', label: 'No School' },
+                        { value: 'early-release', label: 'Early Release' },
+                        { value: 'late-start', label: 'Late Start' },
+                        { value: 'half-day', label: 'Half Day' },
+                        { value: 'professional-development', label: 'Professional Development' },
+                        { value: 'clear', label: 'Clear' }
                     ];
-                    
-                    menuItems.forEach(item => {
-                        const menuItem = document.createElement('div');
-                        menuItem.className = `ab-menu-item ${item.class}`;
-                        menuItem.textContent = item.text;
-                        menuItem.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            setSchedule(dateStr, item.value);
-                        });
-                        abMenu.appendChild(menuItem);
+
+                    dayTypes.forEach(type => {
+                        const option = document.createElement('div');
+                        option.className = `dropdown-option ${type.value}`;
+                        option.textContent = type.label;
+                        option.onclick = () => setDayType(currentDate, type.value === 'clear' ? null : type.value);
+                        dropdown.appendChild(option);
                     });
-                    
-                    abBadge.appendChild(abMenu);
-                    dayElement.appendChild(abBadge);
+
+                    dayElement.appendChild(dropdown);
                 }
-
-                // Event indicators
-                const dayEvents = app.state.events[dateStr];
-                if (dayEvents && dayEvents.length > 0) {
-                    const eventIndicators = document.createElement('div');
-                    eventIndicators.className = 'event-indicators';
-                    
-                    dayEvents.forEach(event => {
-                        const indicator = document.createElement('div');
-                        indicator.className = `event-indicator ${event.department ? 'dept-' + event.department.toLowerCase().replace('/', '-') : ''}`;
-                        indicator.textContent = event.title;
-                        eventIndicators.appendChild(indicator);
-                    });
-                    
-                    dayElement.appendChild(eventIndicators);
-                }
-
-                // Admin plus button
-                const adminPlus = document.createElement('button');
-                adminPlus.className = 'admin-plus';
-                adminPlus.textContent = '+';
-                adminPlus.onclick = () => openAdminModal(dateStr);
-                dayElement.appendChild(adminPlus);
-
-                // Day designation - only show if there's a type OR admin mode is active
-                const dayType = app.state.dayTypes[dateStr];
-                console.log(`Creating day designation for ${dateStr}: dayType=${dayType}, adminMode=${app.state.adminMode}`);
-
-                dayElement.addEventListener('click', (e) => {
-                    if (e.target.closest('.admin-plus') || 
-                        e.target.closest('.ab-schedule-badge') || 
-                        e.target.closest('.day-designation')) {
-                        return;
-                    }
-                    
-                    if (!app.state.adminMode) {
-                        openUserModal(dateStr);
-                    }
-                });
 
                 grid.appendChild(dayElement);
             }
         }
 
-        // A/B Schedule Management
-        function setSchedule(dateStr, schedule) {
-            if (!app.state.connected) {
-                showNotification('Database not connected', true);
-                return;
-            }
-            
-            fetch(app.config.apiUrl + '/api/day-schedules', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date: dateStr, schedule: schedule })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (schedule) {
-                    app.state.daySchedules[dateStr] = schedule;
-                    showNotification(`Set ${dateStr} to ${schedule} schedule`);
-                } else {
-                    delete app.state.daySchedules[dateStr];
-                    showNotification(`Cleared schedule for ${dateStr}`);
-                }
-                renderCalendar();
-            })
-            .catch(error => {
-                showNotification('Error updating schedule: ' + error.message, true);
-            });
+        // Placeholder functions - you'll need to implement these based on your data structure
+        function getDayType(date) {
+            // Return the day type for the given date or null if none
+            // This should check your day types data
+            return null; // Replace with actual implementation
         }
 
-        // Day Type Management
-        function setDayType(dateStr, type) {
-            if (!app.state.connected) {
-                showNotification('Database not connected', true);
-                return;
-            }
-            
-            fetch(app.config.apiUrl + '/api/day-types', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date: dateStr, type: type })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (type) {
-                    app.state.dayTypes[dateStr] = type;
-                    showNotification(`Set ${dateStr} to ${type}`);
-                } else {
-                    delete app.state.dayTypes[dateStr];
-                    showNotification(`Cleared day type for ${dateStr}`);
-                }
-                renderCalendar();
-            })
-            .catch(error => {
-                showNotification('Error updating day type: ' + error.message, true);
-            });
+        function setDayType(date, type) {
+            // Set the day type for the given date
+            // This should update your day types data and re-render
+            console.log('Setting day type:', date, type);
+            // Add your implementation here
         }
-
-        // Modal Management
-        function openAdminModal(dateStr) {
-            app.state.selectedDate = dateStr;
-            
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            document.getElementById('adminModalDate').textContent = formattedDate;
-            
-            const schedule = app.state.daySchedules[dateStr];
-            const scheduleBadge = document.getElementById('adminModalSchedule');
-            if (schedule) {
-                scheduleBadge.textContent = schedule;
-                scheduleBadge.className = `modal-ab-badge schedule-${schedule.toLowerCase()}`;
-                scheduleBadge.style.display = 'block';
-            } else {
-                scheduleBadge.style.display = 'none';
-            }
-            
-            loadModalData(dateStr);
-            document.getElementById('adminModal').classList.add('show');
-        }
-
-        function openUserModal(dateStr) {
-            app.state.selectedDate = dateStr;
-            
-            const date = new Date(dateStr);
-            const formattedDate = date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            document.getElementById('userModalDate').textContent = `📅 ${formattedDate}`;
-            
-            const schedule = app.state.daySchedules[dateStr];
-            const scheduleBadge = document.getElementById('userModalSchedule');
-            if (schedule) {
-                scheduleBadge.textContent = schedule;
-                scheduleBadge.className = `modal-ab-badge schedule-${schedule.toLowerCase()}`;
-                scheduleBadge.style.display = 'block';
-            } else {
-                scheduleBadge.style.display = 'none';
-            }
-            
-            loadUserModalData(dateStr);
-            document.getElementById('userModal').classList.add('show');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        function loadModalData(dateStr) {
-            const eventsContainer = document.getElementById('existingEvents');
-            const dayEvents = app.state.events[dateStr] || [];
-            
-            eventsContainer.innerHTML = '';
-            dayEvents.forEach(event => {
-                const eventCard = document.createElement('div');
-                eventCard.className = `item-card ${event.department ? 'dept-' + event.department.toLowerCase().replace('/', '-') : ''}`;
-                eventCard.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-title">${event.title}</div>
-                        <div class="item-details">${event.time || 'No time'} • ${event.department || 'No department'}</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-edit" onclick="editEvent(${event.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteEvent(${event.id})">Delete</button>
-                    </div>
-                `;
-                eventsContainer.appendChild(eventCard);
-            });
-
-            loadMaterialsForGrade(app.state.currentGrade);
-        }
-
-        function loadUserModalData(dateStr) {
-            const eventsContainer = document.getElementById('userEvents');
-            const dayEvents = app.state.events[dateStr] || [];
-            
-            eventsContainer.innerHTML = '';
-            if (dayEvents.length === 0) {
-                eventsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;">No events today</div>';
-            } else {
-                dayEvents.forEach(event => {
-                    const eventCard = document.createElement('div');
-                    eventCard.className = 'user-event-card';
-                    eventCard.innerHTML = `
-                        <div class="user-event-info">
-                            <div class="user-event-title">${event.title}</div>
-                            <div class="user-event-details">${event.time || 'Time TBD'}${event.description ? ' • ' + event.description : ''}</div>
-                        </div>
-                        <div class="user-event-badge">${event.department || 'General'}</div>
-                    `;
-                    eventsContainer.appendChild(eventCard);
-                });
-            }
-
-            loadUserMaterialsForGrade(app.state.currentGrade);
-        }
-
-        function loadMaterialsForGrade(grade) {
-            const materialsContainer = document.getElementById('existingMaterials');
-            const dateMaterials = app.state.materials[app.state.selectedDate] || {};
-            const gradeMaterials = dateMaterials[grade] || [];
-            
-            materialsContainer.innerHTML = '';
-            gradeMaterials.forEach(material => {
-                const materialCard = document.createElement('div');
-                materialCard.className = 'item-card';
-                materialCard.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-title">${material.title}</div>
-                        <div class="item-details">Grade ${material.grade_level} • ${material.password ? '🔒 Protected' : '📖 Public'}</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-edit" onclick="editMaterial(${material.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteMaterial(${material.id})">Delete</button>
-                    </div>
-                `;
-                materialsContainer.appendChild(materialCard);
-            });
-        }
-
-        function loadUserMaterialsForGrade(grade) {
-            const materialsContainer = document.getElementById('userMaterials');
-            const dateMaterials = app.state.materials[app.state.selectedDate] || {};
-            const gradeMaterials = dateMaterials[grade] || [];
-            
-            materialsContainer.innerHTML = '';
-            if (gradeMaterials.length === 0) {
-                materialsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;">No materials for Grade ' + grade + ' today</div>';
-            } else {
-                gradeMaterials.forEach(material => {
-                    const materialCard = document.createElement('div');
-                    materialCard.className = 'user-material-card';
-                    materialCard.innerHTML = `
-                        <div class="user-material-info">
-                            <div class="user-material-title">${material.title}</div>
-                            <div class="user-material-description">${material.description || 'No description available'}</div>
-                            <div class="user-material-meta">Grade ${material.grade_level}</div>
-                        </div>
-                        <button class="user-access-button ${material.password ? 'protected' : ''}" onclick="accessMaterial('${material.link}', '${material.password || ''}')">
-                            ${material.password ? '🔒 Access' : '📖 Open'}
-                        </button>
-                    `;
-                    materialsContainer.appendChild(materialCard);
-                });
-            }
-        }
-
-        function switchGradeTab(grade) {
-            app.state.currentGrade = grade;
-            
-            document.querySelectorAll('#adminModal .grade-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            loadMaterialsForGrade(grade);
-        }
-
-        function switchUserGradeTab(grade) {
-            app.state.currentGrade = grade;
-            
-            document.querySelectorAll('#userModal .grade-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            loadUserMaterialsForGrade(grade);
-        }
-
-        function accessMaterial(link, password) {
-            if (password) {
-                const enteredPassword = prompt('This material is password protected. Please enter the password:');
-                if (enteredPassword !== password) {
-                    showNotification('Incorrect password', true);
-                    return;
-                }
-            }
-            
-            window.open(link, '_blank');
-            showNotification('Opening material...');
-        }
-
-        // Event Management
-        function addEvent() {
-            const title = document.getElementById('eventTitle').value;
-            const time = document.getElementById('eventTime').value;
-            const department = document.getElementById('eventDepartment').value;
-            const description = document.getElementById('eventDescription').value;
-            
-            if (!title) {
-                showNotification('Event title is required', true);
-                return;
-            }
-            
-            fetch(app.config.apiUrl + '/api/events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    school: app.state.selectedSchool,
-                    date: app.state.selectedDate,
-                    title: title,
-                    time: time || null,
-                    department: department || null,
-                    description: description || ''
-                })
-            })
-            .then(response => response.json())
-            .then(event => {
-                if (!app.state.events[app.state.selectedDate]) {
-                    app.state.events[app.state.selectedDate] = [];
-                }
-                app.state.events[app.state.selectedDate].push(event);
-                
-                document.getElementById('addEventForm').reset();
-                loadModalData(app.state.selectedDate);
-                renderCalendar();
-                showNotification('Event added successfully');
-            })
-            .catch(error => {
-                showNotification('Error adding event: ' + error.message, true);
-            });
-        }
-
-        function deleteEvent(eventId) {
-            if (!confirm('Are you sure you want to delete this event?')) return;
-            
-            fetch(app.config.apiUrl + `/api/events/${eventId}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(() => {
-                if (app.state.events[app.state.selectedDate]) {
-                    app.state.events[app.state.selectedDate] = app.state.events[app.state.selectedDate].filter(e => e.id !== eventId);
-                }
-                
-                loadModalData(app.state.selectedDate);
-                renderCalendar();
-                showNotification('Event deleted successfully');
-            })
-            .catch(error => {
-                showNotification('Error deleting event: ' + error.message, true);
-            });
-        }
-
-        // Material Management
-        function addMaterial() {
-            const title = document.getElementById('materialTitle').value;
-            const link = document.getElementById('materialLink').value;
-            const password = document.getElementById('materialPassword').value;
-            const description = document.getElementById('materialDescription').value;
-            
-            if (!title || !link) {
-                showNotification('Material title and link are required', true);
-                return;
-            }
-            
-            fetch(app.config.apiUrl + '/api/materials', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    school: app.state.selectedSchool,
-                    date: app.state.selectedDate,
-                    grade_level: app.state.currentGrade,
-                    title: title,
-                    link: link,
-                    password: password || '',
-                    description: description || ''
-                })
-            })
-            .then(response => response.json())
-            .then(material => {
-                if (!app.state.materials[app.state.selectedDate]) {
-                    app.state.materials[app.state.selectedDate] = {};
-                }
-                if (!app.state.materials[app.state.selectedDate][app.state.currentGrade]) {
-                    app.state.materials[app.state.selectedDate][app.state.currentGrade] = [];
-                }
-                app.state.materials[app.state.selectedDate][app.state.currentGrade].push(material);
-                
-                document.getElementById('addMaterialForm').reset();
-                loadMaterialsForGrade(app.state.currentGrade);
-                showNotification('Material added successfully');
-            })
-            .catch(error => {
-                showNotification('Error adding material: ' + error.message, true);
-            });
-        }
-
-        function deleteMaterial(materialId) {
-            if (!confirm('Are you sure you want to delete this material?')) return;
-            
-            fetch(app.config.apiUrl + `/api/materials/${materialId}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(() => {
-                for (let grade in app.state.materials[app.state.selectedDate] || {}) {
-                    app.state.materials[app.state.selectedDate][grade] = 
-                        app.state.materials[app.state.selectedDate][grade].filter(m => m.id !== materialId);
-                }
-                
-                loadMaterialsForGrade(app.state.currentGrade);
-                showNotification('Material deleted successfully');
-            })
-            .catch(error => {
-                showNotification('Error deleting material: ' + error.message, true);
-            });
-        }
-
-        // Form Event Listeners
-        document.getElementById('addEventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            addEvent();
-        });
-
-        document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            addMaterial();
-        });
-
-        // Close modals when clicking outside
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal')) {
-                closeModal(e.target.id);
-            }
-        });
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             setApiUrl();
+            
+            // Apply district theme initially
             document.body.classList.add('district-theme');
+            
             renderCalendar();
             showNotification('Calendar loaded successfully!');
-            setTimeout(testConnection, 1000);
         });
     </script>
 </body>
