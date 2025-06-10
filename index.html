@@ -1177,6 +1177,109 @@
             border: 2px solid #c41e3a;
         }
 
+        /* ===== A/B SCHEDULE DROPDOWN STYLES ===== */
+        .ab-schedule-display {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+        }
+
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .ab-schedule-display:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Only show in admin mode */
+        body:not(.admin-active) .ab-schedule-display {
+            pointer-events: none;
+        }
+
+        .ab-schedule-menu {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 80px;
+        }
+
+        .ab-schedule-display:hover .ab-schedule-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .ab-menu-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 4px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .ab-menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ab-menu-item.option-a {
+            background: #3b82f6;
+        }
+
+        .ab-menu-item.option-a:hover {
+            background: #2563eb;
+            transform: translateX(2px);
+        }
+
+        .ab-menu-item.option-b {
+            background: #ef4444;
+        }
+
+        .ab-menu-item.option-b:hover {
+            background: #dc2626;
+            transform: translateX(2px);
+        }
+
+        .ab-menu-item.option-clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .ab-menu-item.option-clear:hover {
+            background: #4b5563;
+            transform: translateX(2px);
+        }
+
         .connection-status {
             display: flex;
             align-items: center;
@@ -1655,6 +1758,20 @@
 
                 dayElement.appendChild(dayNumber);
                 
+                // Add A/B schedule display
+                const scheduleDisplay = document.createElement('div');
+                scheduleDisplay.className = 'ab-schedule-display';
+                scheduleDisplay.style.display = 'none'; // Hidden by default, shown when data loaded
+                scheduleDisplay.innerHTML = `
+                    <span class="schedule-letter">?</span>
+                    <div class="ab-schedule-menu">
+                        <div class="ab-menu-item option-a" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'A', event)">A</div>
+                        <div class="ab-menu-item option-b" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'B', event)">B</div>
+                        <div class="ab-menu-item option-clear" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', null, event)">Clear</div>
+                    </div>
+                `;
+                dayElement.appendChild(scheduleDisplay);
+                
                 // Add plus button for admin mode
                 if (i < 42) { // Only add to actual calendar days
                     const plusButton = document.createElement('button');
@@ -1670,7 +1787,7 @@
                 // Add click handler for user mode (entire day cell)
                 dayElement.addEventListener('click', (e) => {
                     // Only open modal if we're not in admin mode and no plus button was clicked
-                    if (!app.state.adminMode && !e.target.classList.contains('admin-plus')) {
+                    if (!app.state.adminMode && !e.target.classList.contains('admin-plus') && !e.target.closest('.ab-schedule-display')) {
                         openModal(currentDate, false); // false = user mode
                     }
                 });
@@ -1687,8 +1804,100 @@
             document.body.classList.add('district-theme');
             
             renderCalendar();
+            loadCalendarSchedules(); // Load A/B schedule data
             showNotification('Calendar loaded successfully!');
         });
+
+        // ===== A/B SCHEDULE FUNCTIONS =====
+
+        async function loadCalendarSchedules() {
+            if (!app.state.connected) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/day-schedules`);
+                if (!response.ok) {
+                    console.warn('Day schedules API not available');
+                    return;
+                }
+                
+                const schedules = await response.json();
+                
+                // Update calendar display
+                schedules.forEach(schedule => {
+                    updateCalendarDaySchedule(schedule.date, schedule.schedule);
+                });
+                
+            } catch (error) {
+                console.warn('Error loading day schedules:', error);
+            }
+        }
+
+        function updateCalendarDaySchedule(dateString, schedule) {
+            // Find the calendar day element for this date
+            const targetDate = new Date(dateString + 'T00:00:00');
+            const dayElements = document.querySelectorAll('.calendar-day');
+            
+            dayElements.forEach(dayElement => {
+                const dayNumber = dayElement.querySelector('.day-number');
+                if (dayNumber && parseInt(dayNumber.textContent) === targetDate.getDate()) {
+                    const scheduleDisplay = dayElement.querySelector('.ab-schedule-display');
+                    const scheduleLetter = scheduleDisplay?.querySelector('.schedule-letter');
+                    
+                    if (scheduleDisplay && scheduleLetter) {
+                        if (schedule) {
+                            scheduleDisplay.style.display = 'block';
+                            scheduleLetter.textContent = schedule;
+                            scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                        } else {
+                            scheduleDisplay.style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
+        async function setDaySchedule(dateString, schedule, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!app.state.connected) {
+                showNotification('❌ Database not connected', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${app.config.apiUrl}/day-schedules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: dateString,
+                        schedule: schedule
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                // Update the visual display
+                updateCalendarDaySchedule(dateString, schedule);
+                
+                // Clear cache for this date so it reloads fresh data
+                app.cache.dateData.delete(dateString);
+                
+                const scheduleText = schedule ? `${schedule} Day` : 'cleared';
+                showNotification(`✅ Schedule set to ${scheduleText} for ${new Date(dateString).toLocaleDateString()}`);
+
+            } catch (error) {
+                console.error('Error setting day schedule:', error);
+                showNotification('❌ Failed to update schedule: ' + error.message, true);
+            }
+        }
 
         // ===== MODAL SYSTEM FUNCTIONS =====
 
