@@ -1664,6 +1664,7 @@
 
         function toggleAdminMode() {
             app.state.adminMode = !app.state.adminMode;
+            console.log('Admin mode toggled to:', app.state.adminMode);
 
             const button = document.getElementById('adminToggle');
             if (button) {
@@ -1678,6 +1679,9 @@
             }
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
+            
+            // FORCE re-render when admin mode changes
+            console.log('Re-rendering calendar after admin toggle');
             renderCalendar();
         }
 
