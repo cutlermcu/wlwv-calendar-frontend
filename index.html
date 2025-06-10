@@ -579,7 +579,7 @@
         /* Day Designation Dropdown */
         .day-designation-menu {
             position: absolute;
-            bottom: 100%;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
             background: white;
@@ -589,12 +589,17 @@
             padding: 4px;
             min-width: 120px;
             z-index: 1000;
-            margin-bottom: 4px;
+            margin-top: 2px;
             display: none;
         }
 
-        /* Show day designation dropdown on hover - simplified rule */
+        /* Show day designation dropdown on hover */
         .day-designation:hover .day-designation-menu {
+            display: block;
+        }
+
+        /* Keep dropdown visible when hovering over it */
+        .day-designation-menu:hover {
             display: block;
         }
 
