@@ -443,7 +443,7 @@
         /* A/B Schedule Dropdown */
         .ab-schedule-menu {
             position: absolute;
-            top: 35px;
+            top: 25px; /* Reduced gap - was 35px */
             right: 0;
             background: white;
             border: 1px solid #e5e7eb;
@@ -452,7 +452,7 @@
             padding: 8px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
+            transform: translateY(0); /* No transform offset */
             transition: all 0.2s ease;
             z-index: 200;
             min-width: 80px;
@@ -461,10 +461,9 @@
 
         /* Show A/B dropdown when hovering over the badge OR the menu itself */
         .ab-schedule-display:hover .ab-schedule-menu,
-        .ab-schedule-menu:hover {
+        .ab-schedule-display .ab-schedule-menu:hover {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
             pointer-events: all;
         }
 
@@ -473,7 +472,6 @@
         .ab-schedule-placeholder .ab-schedule-menu:hover {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
             pointer-events: all;
         }
 
@@ -619,9 +617,9 @@
         /* Day designation dropdown menu */
         .day-designation-menu {
             position: absolute;
-            bottom: 35px;
+            bottom: 25px; /* Reduced gap - was 35px */
             left: 50%;
-            transform: translateX(-50%) translateY(10px);
+            transform: translateX(-50%); /* No Y offset */
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
@@ -636,9 +634,9 @@
 
         /* Show dropdown when hovering over the day designation text OR the menu itself */
         .day-designation:hover .day-designation-menu,
-        .day-designation-menu:hover {
+        .day-designation .day-designation-menu:hover {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%);
             pointer-events: all;
         }
 
@@ -646,7 +644,7 @@
         .day-designation-placeholder:hover .day-designation-menu,
         .day-designation-placeholder .day-designation-menu:hover {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%);
             pointer-events: all;
         }
 
