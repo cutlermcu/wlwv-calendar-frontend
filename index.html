@@ -524,7 +524,8 @@
             pointer-events: none;
         }
 
-        .calendar-day.has-dropdown:hover .day-designation-menu {
+        /* Only show dropdown when hovering over the day designation text itself */
+        .day-designation:hover .day-designation-menu {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
             pointer-events: all;
@@ -560,13 +561,25 @@
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+            border: 1px dashed #9ca3af;
         }
 
+        /* Show placeholder when in admin mode and hovering over the bottom area */
         body.admin-active .calendar-day:hover .day-designation-placeholder {
             opacity: 1;
         }
 
-        body.admin-active .day-designation-placeholder:hover .day-designation-menu {
+        /* Show dropdown when hovering over the placeholder itself */
+        .day-designation-placeholder:hover .day-designation-menu {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
             pointer-events: all;
@@ -1188,7 +1201,9 @@
                 if (app.state.adminMode && !dayType) {
                     const emptyDesignation = document.createElement('div');
                     emptyDesignation.className = 'day-designation-placeholder';
+                    emptyDesignation.textContent = '+'; // Show a plus sign to indicate clickable
                     emptyDesignation.innerHTML = `
+                        +
                         <div class="day-designation-menu">
                             <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
                             <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
@@ -1199,7 +1214,6 @@
                         </div>
                     `;
                     dayElement.appendChild(emptyDesignation);
-                    dayElement.classList.add('has-dropdown');
                 }
 
                 grid.appendChild(dayElement);
