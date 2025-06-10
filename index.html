@@ -1552,9 +1552,11 @@
 
         function testConnection() {
             showNotification('Testing connection...');
+            console.log('Testing connection to:', app.config.apiUrl + '/api/health');
 
             fetch(app.config.apiUrl + '/api/health')
                 .then(response => {
+                    console.log('Health response status:', response.status);
                     if (response.ok) {
                         return response.json();
                     } else {
@@ -1562,11 +1564,13 @@
                     }
                 })
                 .then(data => {
+                    console.log('Health response data:', data);
                     app.state.connected = true;
                     updateConnectionStatus(true, 'Connected successfully!');
                     showNotification('✅ Connection successful!');
                 })
                 .catch(error => {
+                    console.error('Connection failed:', error);
                     app.state.connected = false;
                     updateConnectionStatus(false, 'Connection failed: ' + error.message);
                     showNotification('❌ Connection failed: ' + error.message, true);
