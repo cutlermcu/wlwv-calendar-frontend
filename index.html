@@ -550,22 +550,38 @@
             pointer-events: all;
         }
 
-        .day-type-display {
+        /* Plus button (center) for adding events/materials */
+        .admin-plus {
             position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background: rgba(168, 85, 247, 0.9);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            background: #c41e3a;
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
             font-weight: 600;
-            max-width: 80px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            pointer-events: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+            z-index: 50;
+        }
+
+        /* Show plus button only in admin mode when hovering over calendar day */
+        body.admin-active .calendar-day:hover .admin-plus {
+            opacity: 1;
+        }
+
+        .admin-plus:hover {
+            background: #a01729;
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
         /* Day designation styles - NEW */
@@ -769,17 +785,129 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
+            padding: 0;
+            max-width: 900px;
             width: 90%;
             max-height: 80vh;
-            overflow-y: auto;
+            overflow: hidden;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
         }
 
         .modal.show .modal-content {
             transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .crud-section {
+            margin-bottom: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .crud-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .crud-content {
+            padding: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+
+        .form-label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add:hover {
+            background: #059669;
         }
 
         .connection-status {
@@ -1425,7 +1553,14 @@
                     dayElement.appendChild(emptyDesignation);
                 }
 
-                grid.appendChild(dayElement);
+                // Add admin plus button in center
+                if (app.state.adminMode) {
+                    const plusButton = document.createElement('button');
+                    plusButton.className = 'admin-plus';
+                    plusButton.textContent = '+';
+                    plusButton.onclick = () => openDayModal(dateString);
+                    dayElement.appendChild(plusButton);
+                }
             }
         }
 
