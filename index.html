@@ -1193,6 +1193,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             z-index: 20;
+            display: block; /* Always visible when schedule exists */
         }
 
         .ab-schedule-display.schedule-a {
@@ -1208,9 +1209,13 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Only show in admin mode */
+        /* Interactive only in admin mode */
         body:not(.admin-active) .ab-schedule-display {
-            pointer-events: none;
+            cursor: default;
+        }
+
+        body:not(.admin-active) .ab-schedule-display .ab-schedule-menu {
+            display: none;
         }
 
         .ab-schedule-menu {
@@ -1230,7 +1235,8 @@
             min-width: 80px;
         }
 
-        .ab-schedule-display:hover .ab-schedule-menu {
+        /* Only show dropdown in admin mode */
+        body.admin-active .ab-schedule-display:hover .ab-schedule-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
@@ -1761,7 +1767,8 @@
                 // Add A/B schedule display
                 const scheduleDisplay = document.createElement('div');
                 scheduleDisplay.className = 'ab-schedule-display';
-                scheduleDisplay.style.display = 'none'; // Hidden by default, shown when data loaded
+                scheduleDisplay.style.display = 'none'; // Hidden until we load data
+                scheduleDisplay.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
                 scheduleDisplay.innerHTML = `
                     <span class="schedule-letter">?</span>
                     <div class="ab-schedule-menu">
@@ -1811,49 +1818,52 @@
         // ===== A/B SCHEDULE FUNCTIONS =====
 
         async function loadCalendarSchedules() {
+            console.log('Loading calendar schedules...');
+            
             if (!app.state.connected) {
+                console.log('Not connected to database, skipping schedule load');
                 return;
             }
 
             try {
                 const response = await fetch(`${app.config.apiUrl}/day-schedules`);
+                console.log('Schedule API response:', response.status);
+                
                 if (!response.ok) {
-                    console.warn('Day schedules API not available');
+                    console.warn('Day schedules API not available:', response.status);
                     return;
                 }
                 
                 const schedules = await response.json();
+                console.log('Loaded schedules:', schedules);
                 
                 // Update calendar display
                 schedules.forEach(schedule => {
+                    console.log('Updating schedule for date:', schedule.date, 'schedule:', schedule.schedule);
                     updateCalendarDaySchedule(schedule.date, schedule.schedule);
                 });
                 
+                showNotification(`Loaded ${schedules.length} A/B schedules`);
+                
             } catch (error) {
-                console.warn('Error loading day schedules:', error);
+                console.error('Error loading day schedules:', error);
+                showNotification('❌ Failed to load A/B schedules: ' + error.message, true);
             }
         }
 
         function updateCalendarDaySchedule(dateString, schedule) {
-            // Find the calendar day element for this date
-            const targetDate = new Date(dateString + 'T00:00:00');
-            const dayElements = document.querySelectorAll('.calendar-day');
+            // Find all schedule displays for this date
+            const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
             
-            dayElements.forEach(dayElement => {
-                const dayNumber = dayElement.querySelector('.day-number');
-                if (dayNumber && parseInt(dayNumber.textContent) === targetDate.getDate()) {
-                    const scheduleDisplay = dayElement.querySelector('.ab-schedule-display');
-                    const scheduleLetter = scheduleDisplay?.querySelector('.schedule-letter');
-                    
-                    if (scheduleDisplay && scheduleLetter) {
-                        if (schedule) {
-                            scheduleDisplay.style.display = 'block';
-                            scheduleLetter.textContent = schedule;
-                            scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
-                        } else {
-                            scheduleDisplay.style.display = 'none';
-                        }
-                    }
+            scheduleDisplays.forEach(scheduleDisplay => {
+                const scheduleLetter = scheduleDisplay.querySelector('.schedule-letter');
+                
+                if (schedule) {
+                    scheduleDisplay.style.display = 'block';
+                    scheduleLetter.textContent = schedule;
+                    scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                } else {
+                    scheduleDisplay.style.display = 'none';
                 }
             });
         }
