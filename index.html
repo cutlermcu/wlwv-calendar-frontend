@@ -1833,17 +1833,30 @@
                 
                 const configs = await response.json();
                 console.log('Loaded date configs:', configs);
+                console.log('Sample config structure:', configs[0]);
                 
-                // Update calendar display - assuming configs have date and schedule properties
+                // Update calendar display - using correct column names: date_key and day_type
                 configs.forEach(config => {
-                    if (config.schedule) {
-                        console.log('Updating schedule for date:', config.date, 'schedule:', config.schedule);
-                        updateCalendarDaySchedule(config.date, config.schedule);
+                    console.log('Processing config:', config);
+                    if (config.day_type) {
+                        console.log('Updating schedule for date:', config.date_key, 'day_type:', config.day_type);
+                        updateCalendarDaySchedule(config.date_key, config.day_type);
+                    } else {
+                        console.log('Config has no day_type:', config);
                     }
                 });
                 
-                const scheduleCount = configs.filter(c => c.schedule).length;
+                const scheduleCount = configs.filter(c => c.day_type).length;
                 showNotification(`✅ Loaded ${scheduleCount} A/B schedules`);
+                
+                // Debug: show all current schedule displays
+                setTimeout(() => {
+                    const allScheduleDisplays = document.querySelectorAll('.ab-schedule-display');
+                    console.log('All schedule displays after update:', allScheduleDisplays.length);
+                    allScheduleDisplays.forEach(display => {
+                        console.log('Schedule display:', display.getAttribute('data-date'), 'visible:', display.style.display !== 'none', 'content:', display.querySelector('.schedule-letter')?.textContent);
+                    });
+                }, 100);
                 
             } catch (error) {
                 console.error('Error loading date configs:', error);
@@ -1852,18 +1865,24 @@
         }
 
         function updateCalendarDaySchedule(dateString, schedule) {
+            console.log('Updating calendar day schedule:', dateString, 'to', schedule);
+            
             // Find all schedule displays for this date
             const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
+            console.log('Found schedule displays for date:', scheduleDisplays.length);
             
             scheduleDisplays.forEach(scheduleDisplay => {
                 const scheduleLetter = scheduleDisplay.querySelector('.schedule-letter');
+                console.log('Processing schedule display:', scheduleDisplay, 'letter element:', scheduleLetter);
                 
                 if (schedule) {
                     scheduleDisplay.style.display = 'block';
                     scheduleLetter.textContent = schedule;
                     scheduleDisplay.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                    console.log('Set schedule display to visible with schedule:', schedule);
                 } else {
                     scheduleDisplay.style.display = 'none';
+                    console.log('Hid schedule display (no schedule)');
                 }
             });
         }
@@ -1879,8 +1898,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        date: dateString,
-                        schedule: schedule
+                        date_key: dateString,
+                        day_type: schedule
                     })
                 });
 
