@@ -787,20 +787,8 @@
         };
 
         function setApiUrl() {
-            // Set API URL based on current location
-            let apiUrl;
-            
-            if (window.location.protocol === 'file:' || window.location.protocol === 'about:') {
-                // Local file or special context - use localhost
-                apiUrl = 'http://localhost:3000/api';
-            } else {
-                // Normal web context
-                const protocol = window.location.protocol;
-                const host = window.location.host;
-                apiUrl = `${protocol}//${host}/api`;
-            }
-            
-            app.config.apiUrl = apiUrl;
+            // For Claude artifacts, use the deployed Vercel API
+            app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
             
             console.log('API URL set to:', app.config.apiUrl);
             
