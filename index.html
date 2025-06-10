@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WLWV Life Calendar</title>
-    <meta name="description" content="West Linn-Wilsonville School District Calendar System - View schedules, events, and curriculum materials for WLHS and WVHS">
-    <meta name="keywords" content="WLWV, West Linn, Wilsonville, school calendar, events, curriculum, materials">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
     <style>
         * {
             margin: 0;
@@ -21,12 +18,10 @@
             color: #1a1a1a;
         }
 
-        /* Default district theme (red) for home page */
         body.district-theme {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
         }
 
-        /* School-specific themes only apply when viewing school calendar */
         body.school-wlhs {
             background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
         }
@@ -53,56 +48,6 @@
             font-weight: 700;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        /* ADMIN VISIBILITY CONTROLS */
-        .tabs {
-            display: none; /* Hidden by default */
-            gap: 10px;
-            margin-bottom: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Show tabs only when admin mode is active */
-        body.admin-active .tabs {
-            display: flex;
-        }
-
-        #schoolSelect {
-            display: none; /* Hidden by default */
-        }
-
-        /* Show school select only when admin mode is active */
-        body.admin-active #schoolSelect {
-            display: inline-block;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .tab.active {
-            background: white;
-            color: #c41e3a;
-        }
-
         .screen {
             background: white;
             border-radius: 20px;
@@ -113,34 +58,6 @@
 
         .screen.active {
             display: block;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: #c41e3a;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #a01729;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .btn-secondary:hover {
-            background: #d1d5db;
         }
 
         .home-page {
@@ -203,6 +120,132 @@
             color: #1a1a1a;
         }
 
+        .calendar-page {
+            padding: 0;
+            height: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            margin: 1px;
+            flex: 1;
+        }
+
+        .day-header {
+            background: #334155;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 8px;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day:hover {
+            background: #f1f5f9;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .tabs {
+            display: none;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        body.admin-active .tabs {
+            display: flex;
+        }
+
+        #schoolSelect {
+            display: none;
+        }
+
+        body.admin-active #schoolSelect {
+            display: inline-block;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #c41e3a;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
         .school-stats {
             display: flex;
             justify-content: space-around;
@@ -261,50 +304,15 @@
             font-size: 14px;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #c41e3a;
-        }
-
         .setup-form {
             max-width: 500px;
             margin: 0 auto;
-        }
-
-        .calendar-page {
-            padding: 0;
-            height: 900px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .calendar-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .calendar-controls {
             display: flex;
             gap: 15px;
             align-items: center;
-        }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .current-month {
@@ -328,588 +336,6 @@
             border-color: #10b981;
         }
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: #e2e8f0;
-            margin: 1px;
-            flex: 1;
-        }
-
-        .day-header {
-            background: #334155;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .calendar-day {
-            background: white;
-            padding: 8px;
-            min-height: 120px;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .calendar-day:hover {
-            background: #f1f5f9;
-        }
-
-        .calendar-day.today {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-        }
-
-        .day-number {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        /* School-specific color palettes */
-        .school-wlhs {
-            --primary-color: #0f4a2b;
-            --secondary-color: #d4af37;
-            --accent-color: #1f6b47;
-            --light-bg: #f0f8f3;
-            --gradient-start: #0f4a2b;
-            --gradient-end: #1f6b47;
-        }
-
-        .school-wvhs {
-            --primary-color: #1e3a8a;
-            --secondary-color: #c0c0c0;
-            --accent-color: #3b82f6;
-            --light-bg: #f1f5f9;
-            --gradient-start: #1e3a8a;
-            --gradient-end: #3b82f6;
-        }
-
-        /* Dynamic background based on school */
-        body.school-wlhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
-        }
-
-        body.school-wvhs .calendar-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
-        }
-
-        /* Additional styles for calendar elements */
-        .event-title-indicator {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(196, 30, 58, 0.9);
-            color: white;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            white-space: nowrap;
-            pointer-events: none;
-            max-width: 80px;
-            text-align: center;
-        }
-
-        .ab-schedule-display {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(99, 102, 241, 0.9);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .ab-schedule-display.schedule-a {
-            background: rgba(59, 130, 246, 0.9);
-        }
-
-        .ab-schedule-display.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        /* A/B Schedule Dropdown */
-        .ab-schedule-menu {
-            position: absolute;
-            top: 20px; /* Even closer */
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 8px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            z-index: 200;
-            min-width: 80px;
-            pointer-events: none;
-        }
-
-        /* Add invisible bridge between badge and menu */
-        .ab-schedule-menu::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: 0;
-            width: 100%;
-            height: 20px;
-            background: transparent;
-        }
-
-        /* Show A/B dropdown when hovering over the badge OR the menu itself */
-        .ab-schedule-display:hover .ab-schedule-menu,
-        .ab-schedule-display .ab-schedule-menu:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: all;
-        }
-
-        /* Show A/B dropdown when hovering over the placeholder OR the menu itself */
-        .ab-schedule-placeholder:hover .ab-schedule-menu,
-        .ab-schedule-placeholder .ab-schedule-menu:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: all;
-        }
-
-        .ab-menu-item {
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 2px;
-            color: white;
-        }
-
-        .ab-menu-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .ab-menu-item.option-a {
-            background: #3b82f6;
-        }
-
-        .ab-menu-item.option-b {
-            background: #ef4444;
-        }
-
-        .ab-menu-item.option-clear {
-            background: #6b7280;
-            color: white;
-        }
-
-        .ab-menu-item:hover {
-            opacity: 0.8;
-        }
-
-        /* A/B Schedule placeholder for admin mode */
-        .ab-schedule-placeholder {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-            cursor: pointer;
-            background: rgba(107, 114, 128, 0.1);
-            color: #6b7280;
-            border: 1px dashed #9ca3af;
-        }
-
-        /* Show A/B placeholder when in admin mode and hovering over the top-right area */
-        body.admin-active .calendar-day:hover .ab-schedule-placeholder {
-            opacity: 1;
-        }
-
-        /* Show A/B dropdown when hovering over the placeholder itself OR the menu */
-        .ab-schedule-placeholder:hover .ab-schedule-menu,
-        .ab-schedule-placeholder .ab-schedule-menu:hover {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-
-        /* Plus button (center) for adding events/materials */
-        .admin-plus {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 32px;
-            height: 32px;
-            background: #c41e3a;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            opacity: 0;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-            z-index: 50;
-        }
-
-        /* Show plus button only in admin mode when hovering over calendar day */
-        body.admin-active .calendar-day:hover .admin-plus {
-            opacity: 1;
-        }
-
-        .admin-plus:hover {
-            background: #a01729;
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-        /* Day designation styles - NEW */
-        .day-designation {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            color: white;
-        }
-
-        .day-designation.access {
-            background: #3b82f6;
-        }
-
-        .day-designation.grading {
-            background: #8b5cf6;
-        }
-
-        .day-designation.staff-development {
-            background: #06b6d4;
-        }
-
-        .day-designation.holiday {
-            background: #ef4444;
-        }
-
-        .day-designation.furlough {
-            background: #f59e0b;
-        }
-
-        .day-designation.finals {
-            background: #10b981;
-        }
-
-        .day-designation.no-school {
-            background: #ef4444;
-        }
-
-        .day-designation.early-release {
-            background: #f59e0b;
-        }
-
-        .day-designation.late-start {
-            background: #10b981;
-        }
-
-        .day-designation.half-day {
-            background: #8b5cf6;
-        }
-
-        /* Day designation dropdown menu */
-        .day-designation-menu {
-            position: absolute;
-            bottom: 20px; /* Even closer */
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 8px;
-            opacity: 0;
-            transition: all 0.2s ease;
-            z-index: 100;
-            min-width: 150px;
-            pointer-events: none;
-        }
-
-        /* Add invisible bridge between badge and menu */
-        .day-designation-menu::before {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            height: 20px;
-            background: transparent;
-        }
-
-        /* Show dropdown when hovering over the day designation text OR the menu itself */
-        .day-designation:hover .day-designation-menu,
-        .day-designation .day-designation-menu:hover {
-            opacity: 1;
-            transform: translateX(-50%);
-            pointer-events: all;
-        }
-
-        /* Show dropdown when hovering over the placeholder OR the menu itself */
-        .day-designation-placeholder:hover .day-designation-menu,
-        .day-designation-placeholder .day-designation-menu:hover {
-            opacity: 1;
-            transform: translateX(-50%);
-            pointer-events: all;
-        }
-
-        .menu-item {
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: background 0.1s ease;
-            color: #374151;
-        }
-
-        .menu-item:hover {
-            background: #f3f4f6;
-        }
-
-        .menu-item.access { border-left: 4px solid #3b82f6; }
-        .menu-item.grading { border-left: 4px solid #8b5cf6; }
-        .menu-item.staff-development { border-left: 4px solid #06b6d4; }
-        .menu-item.holiday { border-left: 4px solid #ef4444; }
-        .menu-item.furlough { border-left: 4px solid #f59e0b; }
-        .menu-item.finals { border-left: 4px solid #10b981; }
-        .menu-item.clear { border-left: 4px solid #6b7280; }
-
-        /* Day designation placeholder for admin mode */
-        .day-designation-placeholder {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            background: rgba(107, 114, 128, 0.1);
-            color: #6b7280;
-            border: 1px dashed #9ca3af;
-        }
-
-        /* Show placeholder when in admin mode and hovering over the bottom area */
-        body.admin-active .calendar-day:hover .day-designation-placeholder {
-            opacity: 1;
-        }
-
-        /* Show dropdown when hovering over the placeholder itself */
-        .day-designation-placeholder:hover .day-designation-menu {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: all;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 3000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.error {
-            background: #ef4444;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 0;
-            max-width: 900px;
-            width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-body {
-            padding: 30px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .crud-section {
-            margin-bottom: 35px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .crud-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .crud-content {
-            padding: 20px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 150px;
-        }
-
-        .form-label {
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .form-input, .form-select {
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            background: white;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #c41e3a;
-        }
-
-        .btn-add {
-            background: #10b981;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-add:hover {
-            background: #059669;
-        }
-
         .connection-status {
             display: flex;
             align-items: center;
@@ -930,27 +356,20 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
 
-        /* Responsive improvements */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .schools-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                margin: 30px auto;
-            }
-
-            .calendar-controls {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
@@ -966,8 +385,6 @@
             <button class="tab" onclick="showScreen('calendar')">📅 Calendar</button>
             <button class="tab" onclick="showScreen('admin')">⚙️ Admin</button>
         </div>
-
-        <!-- Home Screen -->
         <div class="screen active" id="home">
             <div class="home-page">
                 <div class="home-header">
@@ -982,15 +399,15 @@
                         <p>Access WLHS calendar, events, and curriculum materials</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number" id="wlhs-events-count">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number" id="wlhs-schedule">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number" id="wlhs-day-type">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Day Type</div>
                             </div>
                         </div>
@@ -1002,15 +419,15 @@
                         <p>Access WHS calendar, events, and curriculum materials</p>
                         <div class="school-stats">
                             <div class="stat">
-                                <div class="stat-number" id="wvhs-events-count">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Today's Events</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number" id="wvhs-schedule">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Today's Schedule</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-number" id="wvhs-day-type">-</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Day Type</div>
                             </div>
                         </div>
@@ -1044,14 +461,12 @@
                         <label class="form-label">Database URL (Optional)</label>
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="Leave empty to use environment variable">
-                        <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="" required readonly style="background: #f3f4f6; color: #6b7280;">
-                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
                     </div>
 
                     <div style="display: flex; gap: 10px; justify-content: center;">
@@ -1063,6 +478,28 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Admin Screen -->
+        <div class="screen" id="admin">
+            <div style="padding: 30px;">
+                <h2>Admin Panel</h2>
+                <p>Database administration and event management</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="initializeDatabase()">
+                        Initialize Database Tables
+                    </button>
+                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
+                        Test Connection
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                    <h3>System Status</h3>
+                    <div id="dbStatus">Checking database connection...</div>
+                </div>
             </div>
         </div>
 
@@ -1095,43 +532,18 @@
                 </div>
             </div>
         </div>
-
-        <!-- Admin Screen -->
-        <div class="screen" id="admin">
-            <div style="padding: 30px;">
-                <h2>Admin Panel</h2>
-                <p>Database administration and event management</p>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="initializeDatabase()">
-                        Initialize Database Tables
-                    </button>
-                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
-                        Test Connection
-                    </button>
-                </div>
-
-                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
-                    <h3>System Status</h3>
-                    <div id="dbStatus">Checking database connection...</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
     <script>
-        // Global application state
         const app = {
             state: {
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
-                connected: false,
-                dayTypes: {}, // Store day types data
-                daySchedules: {} // NEW: Store A/B schedule data
+                connected: false
             },
             config: {
                 apiUrl: ''
@@ -1140,11 +552,8 @@
 
         function detectEnvironment() {
             const hostname = window.location.hostname;
-            
             if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('.local')) {
                 return 'development';
-            } else if (hostname.includes('vercel.app') || hostname.includes('netlify.app') || hostname.includes('herokuapp.com')) {
-                return 'production';
             } else {
                 return 'production';
             }
@@ -1152,15 +561,11 @@
 
         function setApiUrl() {
             app.state.environment = detectEnvironment();
-            
             if (app.state.environment === 'production') {
                 app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
             } else {
                 app.config.apiUrl = window.location.origin + '/api';
             }
-            
-            console.log('Environment detected:', app.state.environment);
-            console.log('API URL set to:', app.config.apiUrl);
             
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
@@ -1168,11 +573,11 @@
             }
         }
 
-        function showNotification(message, isError = false) {
+        function showNotification(message) {
             const notification = document.getElementById('notification');
             if (notification) {
                 notification.textContent = message;
-                notification.className = `notification ${isError ? 'error' : ''} show`;
+                notification.classList.add('show');
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
@@ -1204,7 +609,6 @@
 
         function goToSchool(schoolCode) {
             app.state.selectedSchool = schoolCode;
-            
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
@@ -1214,88 +618,19 @@
 
         function testConnection() {
             showNotification('Testing connection...');
-
-            fetch(app.config.apiUrl + '/health')
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                })
-                .then(data => {
-                    app.state.connected = true;
-                    updateConnectionStatus(true, 'Connected successfully!');
-                    showNotification('✅ Connection successful!');
-                })
-                .catch(error => {
-                    app.state.connected = false;
-                    updateConnectionStatus(false, 'Connection failed: ' + error.message);
-                    showNotification('❌ Connection failed: ' + error.message, true);
-                });
         }
 
         function handleSetup(event) {
             event.preventDefault();
-            showNotification('Initializing database...');
-
-            const dbUrl = document.getElementById('dbUrl').value;
-            const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
-
-            fetch(app.config.apiUrl + '/init', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || `HTTP ${response.status}: ${response.statusText}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                showNotification('✅ Database initialized successfully!');
-                app.state.connected = true;
-                updateConnectionStatus(true, 'Database connected');
-                
-                setTimeout(() => showScreen('calendar'), 1500);
-            })
-            .catch(error => {
-                showNotification('❌ Setup failed: ' + error.message, true);
-                updateConnectionStatus(false, 'Failed to initialize database');
-            });
+            showNotification('Database setup functionality coming soon...');
         }
 
         function initializeDatabase() {
-            return handleSetup({ preventDefault: () => {} });
-        }
-
-        function updateConnectionStatus(connected, message) {
-            const status = document.getElementById('connectionStatus');
-            if (status) {
-                status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
-                status.innerHTML = `
-                    <span>${connected ? '🟢' : '🔴'}</span>
-                    <span>${message}</span>
-                `;
-            }
-
-            const dbStatus = document.getElementById('dbStatus');
-            if (dbStatus) {
-                dbStatus.innerHTML = connected ? 
-                    `✅ ${message}` : 
-                    `❌ ${message}`;
-            }
+            showNotification('Database initialization functionality coming soon...');
         }
 
         function toggleAdminMode() {
             app.state.adminMode = !app.state.adminMode;
-
             const button = document.getElementById('adminToggle');
             if (button) {
                 button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
@@ -1307,9 +642,7 @@
                     document.body.classList.remove('admin-active');
                 }
             }
-
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
-            renderCalendar(); // Re-render to show/hide admin elements
         }
 
         function changeMonth(direction) {
@@ -1327,112 +660,10 @@
             showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
         }
 
-        // Helper function to format dates consistently
-        function formatDate(dateInput) {
-            if (!dateInput) return null;
-
-            if (dateInput instanceof Date) {
-                return dateInput.toISOString().split('T')[0];
-            }
-
-            const date = new Date(dateInput);
-            if (isNaN(date.getTime())) {
-                throw new Error('Invalid date format');
-            }
-
-            return date.toISOString().split('T')[0];
-        }
-
-        // NEW: Function to set A/B schedule
-        function setABSchedule(date, schedule) {
-            if (!app.state.adminMode) return;
-            
-            const requestBody = { date: date, schedule: schedule };
-            
-            fetch(app.config.apiUrl + '/day-schedules', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (schedule) {
-                    app.state.daySchedules[date] = schedule;
-                    showNotification(`Set ${date} to ${schedule} Day`);
-                } else {
-                    delete app.state.daySchedules[date];
-                    showNotification(`Cleared schedule for ${date}`);
-                }
-                renderCalendar(); // Refresh the calendar
-            })
-            .catch(error => {
-                showNotification('Failed to update schedule: ' + error.message, true);
-            });
-        }
-        function setDayType(date, type) {
-            if (!app.state.adminMode) return;
-            
-            const requestBody = { date: date, type: type };
-            
-            fetch(app.config.apiUrl + '/day-types', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (type) {
-                    app.state.dayTypes[date] = type;
-                    showNotification(`Set ${date} to ${type}`);
-                } else {
-                    delete app.state.dayTypes[date];
-                    showNotification(`Cleared day type for ${date}`);
-                }
-                renderCalendar(); // Refresh the calendar
-            })
-            .catch(error => {
-                showNotification('Failed to update day type: ' + error.message, true);
-            });
-        }
-
-        // UPDATED: Split renderCalendar into two functions
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
 
-            // Load both day types and schedules, then render
-            if (app.state.connected) {
-                Promise.all([
-                    fetch(app.config.apiUrl + '/day-types').then(r => r.json()).catch(() => []),
-                    fetch(app.config.apiUrl + '/day-schedules').then(r => r.json()).catch(() => [])
-                ])
-                .then(([dayTypesData, schedulesData]) => {
-                    // Load day types
-                    app.state.dayTypes = {};
-                    dayTypesData.forEach(item => {
-                        app.state.dayTypes[item.date] = item.type;
-                    });
-                    
-                    // Load schedules
-                    app.state.daySchedules = {};
-                    schedulesData.forEach(item => {
-                        app.state.daySchedules[item.date] = item.schedule;
-                    });
-                    
-                    renderCalendarGrid();
-                })
-                .catch(error => {
-                    console.log('Failed to load calendar data:', error);
-                    renderCalendarGrid();
-                });
-            } else {
-                renderCalendarGrid();
-            }
-        }
-
-        // NEW: Actual calendar rendering function
-        function renderCalendarGrid() {
-            const grid = document.getElementById('calendarGrid');
             const year = app.state.currentDate.getFullYear();
             const month = app.state.currentDate.getMonth();
 
@@ -1459,117 +690,24 @@
             startDate.setDate(startDate.getDate() - firstDay.getDay());
 
             for (let i = 0; i < 42; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
+                const currentDateLoop = new Date(startDate);
+                currentDateLoop.setDate(startDate.getDate() + i);
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
 
-                const isToday = currentDate.toDateString() === new Date().toDateString();
-                if (isToday) dayElement.classList.add('today');
-
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
-                dayNumber.textContent = currentDate.getDate();
+                dayNumber.textContent = currentDateLoop.getDate();
 
                 dayElement.appendChild(dayNumber);
-
-                // NEW: Add A/B schedule functionality
-                const dateString = formatDate(currentDate);
-                const abSchedule = app.state.daySchedules[dateString];
-
-                if (abSchedule) {
-                    const scheduleElement = document.createElement('div');
-                    scheduleElement.className = `ab-schedule-display schedule-${abSchedule.toLowerCase()}`;
-                    scheduleElement.textContent = abSchedule;
-                    
-                    const scheduleDropdown = document.createElement('div');
-                    scheduleDropdown.className = 'ab-schedule-menu';
-                    scheduleDropdown.innerHTML = `
-                        <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
-                        <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
-                        <div class="ab-menu-item option-clear" onclick="setABSchedule('${dateString}', null)">Clear</div>
-                    `;
-                    
-                    scheduleElement.appendChild(scheduleDropdown);
-                    dayElement.appendChild(scheduleElement);
-                }
-
-                // Add empty A/B dropdown for admin mode
-                if (app.state.adminMode && !abSchedule) {
-                    const emptySchedule = document.createElement('div');
-                    emptySchedule.className = 'ab-schedule-placeholder';
-                    emptySchedule.innerHTML = `
-                        +
-                        <div class="ab-schedule-menu">
-                            <div class="ab-menu-item option-a" onclick="setABSchedule('${dateString}', 'A')">A</div>
-                            <div class="ab-menu-item option-b" onclick="setABSchedule('${dateString}', 'B')">B</div>
-                        </div>
-                    `;
-                    dayElement.appendChild(emptySchedule);
-                }
-
-                // NEW: Add day type functionality
-                const dayType = app.state.dayTypes[dateString];
-
-                if (dayType) {
-                    const dayDesignation = document.createElement('div');
-                    dayDesignation.className = `day-designation ${dayType.toLowerCase().replace(/\s+/g, '-')}`;
-                    dayDesignation.textContent = dayType;
-                    
-                    const dropdownMenu = document.createElement('div');
-                    dropdownMenu.className = 'day-designation-menu';
-                    dropdownMenu.innerHTML = `
-                        <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
-                        <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
-                        <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
-                        <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
-                        <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
-                        <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
-                        <div class="menu-item clear" onclick="setDayType('${dateString}', null)">Clear</div>
-                    `;
-                    
-                    dayDesignation.appendChild(dropdownMenu);
-                    dayElement.appendChild(dayDesignation);
-                    dayElement.classList.add('has-dropdown');
-                }
-
-                // Add empty dropdown for admin mode
-                if (app.state.adminMode && !dayType) {
-                    const emptyDesignation = document.createElement('div');
-                    emptyDesignation.className = 'day-designation-placeholder';
-                    emptyDesignation.textContent = '+'; // Show a plus sign to indicate clickable
-                    emptyDesignation.innerHTML = `
-                        +
-                        <div class="day-designation-menu">
-                            <div class="menu-item access" onclick="setDayType('${dateString}', 'Access')">Access</div>
-                            <div class="menu-item grading" onclick="setDayType('${dateString}', 'Grading')">Grading</div>
-                            <div class="menu-item staff-development" onclick="setDayType('${dateString}', 'Staff Development')">Staff Development</div>
-                            <div class="menu-item holiday" onclick="setDayType('${dateString}', 'Holiday')">Holiday</div>
-                            <div class="menu-item furlough" onclick="setDayType('${dateString}', 'Furlough')">Furlough</div>
-                            <div class="menu-item finals" onclick="setDayType('${dateString}', 'Finals')">Finals</div>
-                        </div>
-                    `;
-                    dayElement.appendChild(emptyDesignation);
-                }
-
-                // Add admin plus button in center
-                if (app.state.adminMode) {
-                    const plusButton = document.createElement('button');
-                    plusButton.className = 'admin-plus';
-                    plusButton.textContent = '+';
-                    plusButton.onclick = () => openDayModal(dateString);
-                    dayElement.appendChild(plusButton);
-                }
+                grid.appendChild(dayElement);
             }
         }
 
-        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             setApiUrl();
-            
             document.body.classList.add('district-theme');
-            
             renderCalendar();
             showNotification('Calendar loaded successfully!');
         });
