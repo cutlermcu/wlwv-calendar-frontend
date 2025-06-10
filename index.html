@@ -459,8 +459,18 @@
             pointer-events: none;
         }
 
-        /* Only show A/B dropdown when hovering over the A/B badge itself */
-        .ab-schedule-display:hover .ab-schedule-menu {
+        /* Show A/B dropdown when hovering over the badge OR the menu itself */
+        .ab-schedule-display:hover .ab-schedule-menu,
+        .ab-schedule-menu:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        /* Show A/B dropdown when hovering over the placeholder OR the menu itself */
+        .ab-schedule-placeholder:hover .ab-schedule-menu,
+        .ab-schedule-placeholder .ab-schedule-menu:hover {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
@@ -523,8 +533,9 @@
             opacity: 1;
         }
 
-        /* Show A/B dropdown when hovering over the placeholder itself */
-        .ab-schedule-placeholder:hover .ab-schedule-menu {
+        /* Show A/B dropdown when hovering over the placeholder itself OR the menu */
+        .ab-schedule-placeholder:hover .ab-schedule-menu,
+        .ab-schedule-placeholder .ab-schedule-menu:hover {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
@@ -623,8 +634,17 @@
             pointer-events: none;
         }
 
-        /* Only show dropdown when hovering over the day designation text itself */
-        .day-designation:hover .day-designation-menu {
+        /* Show dropdown when hovering over the day designation text OR the menu itself */
+        .day-designation:hover .day-designation-menu,
+        .day-designation-menu:hover {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: all;
+        }
+
+        /* Show dropdown when hovering over the placeholder OR the menu itself */
+        .day-designation-placeholder:hover .day-designation-menu,
+        .day-designation-placeholder .day-designation-menu:hover {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
             pointer-events: all;
