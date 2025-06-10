@@ -1859,50 +1859,52 @@
                 adminPlus.onclick = () => openAdminModal(dateStr);
                 dayElement.appendChild(adminPlus);
 
-                // Day designation
+                // Day designation - only show in admin mode or if there's already a type set
                 const dayType = app.state.dayTypes[dateStr];
-                const designation = document.createElement('div');
-                designation.className = 'day-designation';
-                
-                if (dayType) {
-                    designation.classList.add(dayType.toLowerCase().replace(/\s+/g, '-'));
-                    designation.textContent = dayType;
-                } else {
-                    designation.classList.add('placeholder');
-                    designation.textContent = 'Type';
-                    designation.title = 'Hover to set day type';
-                }
-                
-                const designationMenu = document.createElement('div');
-                designationMenu.className = 'day-designation-menu';
-                
-                const dayTypes = [
-                    { text: 'No School', value: 'No School', class: 'no-school' },
-                    { text: 'Early Release', value: 'Early Release', class: 'early-release' },
-                    { text: 'Late Start', value: 'Late Start', class: 'late-start' },
-                    { text: 'Half Day', value: 'Half Day', class: 'half-day' },
-                    { text: 'Access', value: 'Access', class: 'access' },
-                    { text: 'Grading', value: 'Grading', class: 'grading' },
-                    { text: 'Staff Development', value: 'Staff Development', class: 'staff-development' },
-                    { text: 'Holiday', value: 'Holiday', class: 'holiday' },
-                    { text: 'Furlough', value: 'Furlough', class: 'furlough' },
-                    { text: 'Finals', value: 'Finals', class: 'finals' },
-                    { text: 'Clear', value: null, class: 'clear' }
-                ];
-                
-                dayTypes.forEach(type => {
-                    const menuItem = document.createElement('div');
-                    menuItem.className = `designation-menu-item ${type.class}`;
-                    menuItem.textContent = type.text;
-                    menuItem.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        setDayType(dateStr, type.value);
+                if (dayType || app.state.adminMode) {
+                    const designation = document.createElement('div');
+                    designation.className = 'day-designation';
+                    
+                    if (dayType) {
+                        designation.classList.add(dayType.toLowerCase().replace(/\s+/g, '-'));
+                        designation.textContent = dayType;
+                    } else {
+                        designation.classList.add('placeholder');
+                        designation.textContent = 'Type';
+                        designation.title = 'Hover to set day type';
+                    }
+                    
+                    const designationMenu = document.createElement('div');
+                    designationMenu.className = 'day-designation-menu';
+                    
+                    const dayTypes = [
+                        { text: 'No School', value: 'No School', class: 'no-school' },
+                        { text: 'Early Release', value: 'Early Release', class: 'early-release' },
+                        { text: 'Late Start', value: 'Late Start', class: 'late-start' },
+                        { text: 'Half Day', value: 'Half Day', class: 'half-day' },
+                        { text: 'Access', value: 'Access', class: 'access' },
+                        { text: 'Grading', value: 'Grading', class: 'grading' },
+                        { text: 'Staff Development', value: 'Staff Development', class: 'staff-development' },
+                        { text: 'Holiday', value: 'Holiday', class: 'holiday' },
+                        { text: 'Furlough', value: 'Furlough', class: 'furlough' },
+                        { text: 'Finals', value: 'Finals', class: 'finals' },
+                        { text: 'Clear', value: null, class: 'clear' }
+                    ];
+                    
+                    dayTypes.forEach(type => {
+                        const menuItem = document.createElement('div');
+                        menuItem.className = `designation-menu-item ${type.class}`;
+                        menuItem.textContent = type.text;
+                        menuItem.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            setDayType(dateStr, type.value);
+                        });
+                        designationMenu.appendChild(menuItem);
                     });
-                    designationMenu.appendChild(menuItem);
-                });
-                
-                designation.appendChild(designationMenu);
-                dayElement.appendChild(designation);
+                    
+                    designation.appendChild(designationMenu);
+                    dayElement.appendChild(designation);
+                }
 
                 dayElement.addEventListener('click', (e) => {
                     if (e.target.closest('.admin-plus') || 
