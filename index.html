@@ -321,6 +321,8 @@
             padding: 8px;
             min-height: 120px;
             position: relative;
+            overflow: visible;
+            z-index: auto;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -328,6 +330,7 @@
 
         .calendar-day:hover {
             background: #f1f5f9;
+             z-index: 1000;
         }
 
         .day-number {
