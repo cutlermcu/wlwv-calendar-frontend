@@ -1545,7 +1545,7 @@
             
             // Point to your backend Vercel URL
             if (app.state.environment === 'production') {
-                app.config.apiUrl = 'wlwv-calendar-api.vercel.app';
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
             } else {
                 app.config.apiUrl = window.location.origin + '/api';
             }
@@ -1819,18 +1819,15 @@
 
         async function loadCalendarSchedules() {
             console.log('Loading calendar schedules...');
+            console.log('API URL:', app.config.apiUrl);
             
-            if (!app.state.connected) {
-                console.log('Not connected to database, skipping schedule load');
-                return;
-            }
-
             try {
                 const response = await fetch(`${app.config.apiUrl}/day-schedules`);
-                console.log('Schedule API response:', response.status);
+                console.log('Schedule API response:', response.status, response.statusText);
                 
                 if (!response.ok) {
-                    console.warn('Day schedules API not available:', response.status);
+                    console.warn('Day schedules API not available:', response.status, response.statusText);
+                    showNotification('⚠️ A/B schedules not available - check database connection', true);
                     return;
                 }
                 
@@ -1843,7 +1840,7 @@
                     updateCalendarDaySchedule(schedule.date, schedule.schedule);
                 });
                 
-                showNotification(`Loaded ${schedules.length} A/B schedules`);
+                showNotification(`✅ Loaded ${schedules.length} A/B schedules`);
                 
             } catch (error) {
                 console.error('Error loading day schedules:', error);
