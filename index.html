@@ -1899,22 +1899,28 @@
 
                 // Day designation - only show if there's a type OR admin mode is active
                 const dayType = app.state.dayTypes[dateStr];
+                console.log(`Creating day designation for ${dateStr}: dayType=${dayType}, adminMode=${app.state.adminMode}`);
+                
                 if (dayType || app.state.adminMode) {
+                    console.log(`Creating designation element for ${dateStr}`);
                     const designation = document.createElement('div');
                     designation.className = 'day-designation';
                     
                     if (dayType) {
                         designation.classList.add(dayType.toLowerCase().replace(/\s+/g, '-'));
                         designation.textContent = dayType;
+                        console.log(`Set existing day type: ${dayType}`);
                     } else if (app.state.adminMode) {
                         // In admin mode, show a clean placeholder for assignment
                         designation.classList.add('admin-placeholder');
                         designation.textContent = 'Day Type';
                         designation.title = 'Hover to set day type';
+                        console.log('Created admin placeholder for day type');
                     }
                     
                     const designationMenu = document.createElement('div');
                     designationMenu.className = 'day-designation-menu';
+                    console.log(`Created menu for ${dateStr}`);
                     
                     const dayTypes = [
                         { text: 'No School', value: 'No School', class: 'no-school' },
@@ -1943,6 +1949,9 @@
                     
                     designation.appendChild(designationMenu);
                     dayElement.appendChild(designation);
+                    console.log(`Added designation to day element for ${dateStr}`);
+                } else {
+                    console.log(`Skipping designation for ${dateStr} - no dayType and admin mode is off`);
                 }
 
                 dayElement.addEventListener('click', (e) => {
