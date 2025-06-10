@@ -593,16 +593,23 @@
             z-index: 2000;
             margin-top: 2px;
             display: none;
+            pointer-events: auto;
         }
 
         /* Show day designation dropdown on hover */
         .day-designation:hover .day-designation-menu {
-            display: block;
+            display: block !important;
+            pointer-events: auto;
         }
 
         /* Keep dropdown visible when hovering over it */
         .day-designation-menu:hover {
-            display: block;
+            display: block !important;
+        }
+
+        /* Ensure day designation itself allows pointer events */
+        .day-designation {
+            pointer-events: auto;
         }
 
         .designation-menu-item {
