@@ -1727,9 +1727,9 @@
         }
 
         function changeMonth(direction) {
-            app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
-            renderCalendar();
-        }
+                    app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
+            renderCalendarWithCRUD(); // Changed from renderCalendar()
+}
 
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
@@ -1741,7 +1741,7 @@
             showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
         }
 
-        function renderCalendar() {
+        function rrenderCalendarWithCRUD()
             const grid = document.getElementById('calendarGrid');
             if (!grid) return;
 
@@ -1826,17 +1826,21 @@
         }
 
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            setApiUrl();
-            
-            // Apply district theme initially
-            document.body.classList.add('district-theme');
-            
-            renderCalendar();
-            loadCalendarSchedules();
-            showNotification('Calendar loaded successfully!');
-        });
-
+                document.addEventListener('DOMContentLoaded', function() {
+                        setApiUrl();
+    
+    // Apply district theme initially
+                document.body.classList.add('district-theme');
+    
+    // Initialize CRUD functionality
+                        initializeCRUD();
+    
+    // Use the new render function with CRUD
+                        renderCalendarWithCRUD();
+    
+                        showNotification('Calendar loaded successfully!');
+                });
+        
         // ===== A/B SCHEDULE FUNCTIONS =====
 
         async function loadCalendarSchedules() {
