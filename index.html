@@ -1389,7 +1389,7 @@
                             <option value="wlhs">🦁 West Linn HS</option>
                             <option value="wvhs">🐱 Wilsonville HS</option>
                         </select>
-                        <button class="admin-toggle" id="adminToggle">
+                        <button class="admin-toggle" id="adminToggle" onclick="window.toggleAdminMode(event)">
                             Admin Mode: OFF
                         </button>
                     </div>
@@ -2700,25 +2700,32 @@
             document.body.classList.toggle('loading', loading);
         }
 
-        function toggleAdminMode(event) {
+        // Make toggleAdminMode globally accessible
+        window.toggleAdminMode = function(event) {
             if (event) event.preventDefault();
             
             console.log('Toggle admin mode called, current state:', app.state.adminMode);
             
             // If turning on admin mode, require password
             if (!app.state.adminMode) {
-                const password = window.prompt('Enter admin password:');
-                console.log('Password prompt shown');
-                if (password === null) {
-                    console.log('Password cancelled');
+                try {
+                    const password = window.prompt('Enter admin password:');
+                    console.log('Password prompt result:', password);
+                    if (password === null) {
+                        console.log('Password cancelled');
+                        return;
+                    }
+                    if (password !== 'wlwv') {
+                        console.log('Incorrect password');
+                        alert('Incorrect password');
+                        return;
+                    }
+                    console.log('Correct password');
+                } catch (e) {
+                    console.error('Error with prompt:', e);
+                    alert('Error showing password prompt');
                     return;
                 }
-                if (password !== 'wlwv') {
-                    console.log('Incorrect password');
-                    showNotification('Incorrect password', true);
-                    return;
-                }
-                console.log('Correct password');
             }
             
             app.state.adminMode = !app.state.adminMode;
@@ -2744,7 +2751,7 @@
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
             renderCalendar(); // Re-render to show/hide admin controls
-        }
+        };
 
         function changeMonth(direction) {
             app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
