@@ -469,6 +469,7 @@
             font-weight: 600;
             max-width: 90%;
             text-align: center;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             pointer-events: none;
@@ -525,9 +526,12 @@
             z-index: 50;
         }
 
-        .ab-schedule-display {
+        /* Admin mode A/B display should not stretch */
+        .ab-schedule-admin .ab-schedule-display {
             position: relative;
-            z-index: 2;
+            top: auto;
+            right: auto;
+            max-width: 24px;
         }
 
         .ab-dropdown {
@@ -591,9 +595,12 @@
             z-index: 50;
         }
 
-        .day-type-display {
+        /* Admin mode day type display should maintain styling */
+        .day-type-admin .day-type-display {
             position: relative;
-            z-index: 2;
+            bottom: auto;
+            left: auto;
+            transform: none;
         }
 
         .day-type-dropdown {
