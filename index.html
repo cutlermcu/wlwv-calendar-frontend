@@ -66,7 +66,23 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+/* Admin visibility */
+.admin-only {
+            display: none;
+        }
 
+body.admin-active .admin-only {
+            display: block;
+        }
+
+.grade-tab {
+        transition: all 0.2s ease;
+    }
+
+.grade-tab:hover:not(.active) {
+    background: #e5e7eb !important;
+    color: #374151 !important;
+}
         /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
@@ -432,6 +448,13 @@
             pointer-events: none;
         }
 
+        .ab-badge {
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
+        
+
         .day-type-display {
             position: absolute;
             bottom: 8px;
@@ -448,7 +471,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             pointer-events: none;
-        }
+}
 
         .notification {
             position: fixed;
@@ -482,27 +505,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
+            z-index: 2000;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
         }
 
-        .modal.show {
+       .modal.show {
             opacity: 1;
             visibility: visible;
-        }
-
+        }    
+        
         .modal-content {
             background: white;
             border-radius: 15px;
-            max-width: 1400px;
-            width: 98%;
-            max-height: 85vh;
+            width: 90%;
+            max-height: 90vh;
             overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             transform: translateY(-20px);
             transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .modal.show .modal-content {
@@ -616,7 +638,7 @@
         }
 
         .item-card:hover {
-            background: #f3f4f6;
+            background: #f3f4f6 !important;
         }
 
         /* Department color coding for events */
@@ -1182,18 +1204,15 @@
             position: absolute;
             top: 8px;
             right: 8px;
+            background: rgba(99, 102, 241, 0.9);
             color: white;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            min-width: 24px;
+            min-width: 20px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 20;
-            display: none; /* Hidden by default, shown when schedule exists */
-        }
+            pointer-events: none;
 
         .ab-schedule-display.schedule-a {
             background: rgba(59, 130, 246, 0.9);
