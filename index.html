@@ -1286,7 +1286,7 @@
                     </div>
                 </div>
 
-                <div class="admin-access">
+                <div class="admin-access" id="adminAccess">
                     <button class="btn btn-secondary" onclick="showScreen('setup')">
                         🔧 Database Setup
                     </button>
@@ -1923,9 +1923,15 @@
                         minute: '2-digit' 
                     }) : '';
                     
-                    const deptClass = event.department ? 
-                        `dept-${event.department.toLowerCase().replace(/[\/\s]+/g, '-')}` : 
-                        'dept-none';
+                    // Determine department class for color coding
+                    let deptClass = 'dept-none';
+                    let deptDisplay = 'General';
+                    
+                    if (event.department) {
+                        deptDisplay = event.department;
+                        const deptKey = event.department.toLowerCase().replace(/[\/\s]+/g, '-');
+                        deptClass = `dept-${deptKey}`;
+                    }
                     
                     content += `
                         <div class="event-card">
@@ -1936,7 +1942,7 @@
                                     ${event.description ? ' • ' + event.description : ''}
                                 </div>
                             </div>
-                            <div class="event-badge ${deptClass}">${event.department || 'General'}</div>
+                            <div class="event-badge ${deptClass}">${deptDisplay}</div>
                         </div>
                     `;
                 });
@@ -2657,6 +2663,12 @@
                     button.classList.remove('active');
                     document.body.classList.remove('admin-active');
                 }
+            }
+
+            // Toggle admin access buttons visibility
+            const adminAccess = document.getElementById('adminAccess');
+            if (adminAccess) {
+                adminAccess.style.display = app.state.adminMode ? 'flex' : 'none';
             }
 
             showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
