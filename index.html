@@ -2584,12 +2584,13 @@
         document.addEventListener('click', function(e) {
             console.log('Click detected on:', e.target);
             
-            // Handle A/B schedule badge click
-            if (e.target.closest('.ab-schedule-display') && e.target.closest('.ab-schedule-admin')) {
+            // Handle A/B schedule click - simplified check
+            const abAdmin = e.target.closest('.ab-schedule-admin');
+            if (abAdmin) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('AB schedule clicked');
-                const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
+                const dropdown = abAdmin.querySelector('.ab-dropdown');
                 if (dropdown) {
                     console.log('Found AB dropdown, toggling...');
                     // Close all other dropdowns
@@ -2597,15 +2598,17 @@
                         if (d !== dropdown) d.classList.remove('show');
                     });
                     dropdown.classList.toggle('show');
+                    console.log('Dropdown classes:', dropdown.className);
                 }
             }
             
-            // Handle day type badge click
-            if (e.target.closest('.day-type-display') && e.target.closest('.day-type-admin')) {
+            // Handle day type click - simplified check
+            const dayTypeAdmin = e.target.closest('.day-type-admin');
+            if (dayTypeAdmin) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('Day type clicked');
-                const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
+                const dropdown = dayTypeAdmin.querySelector('.day-type-dropdown');
                 if (dropdown) {
                     console.log('Found day type dropdown, toggling...');
                     // Close all other dropdowns
@@ -2613,11 +2616,29 @@
                         if (d !== dropdown) d.classList.remove('show');
                     });
                     dropdown.classList.toggle('show');
+                    console.log('Dropdown classes:', dropdown.className);
                 }
             }
             
+            // Handle option clicks
+            if (e.target.classList.contains('ab-option')) {
+                e.stopPropagation();
+                e.preventDefault();
+                const dateStr = e.target.dataset.date;
+                const schedule = e.target.dataset.schedule;
+                setABSchedule(dateStr, schedule === 'clear' ? null : schedule);
+            }
+            
+            if (e.target.classList.contains('day-type-option')) {
+                e.stopPropagation();
+                e.preventDefault();
+                const dateStr = e.target.dataset.date;
+                const type = e.target.dataset.type;
+                setDayType(dateStr, type === 'clear' ? null : type);
+            }
+            
             // Close dropdowns when clicking elsewhere
-            if (!e.target.closest('.ab-schedule-admin') && !e.target.closest('.day-type-admin')) {
+            if (!abAdmin && !dayTypeAdmin && !e.target.closest('.ab-dropdown') && !e.target.closest('.day-type-dropdown')) {
                 document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
                     d.classList.remove('show');
                 });
