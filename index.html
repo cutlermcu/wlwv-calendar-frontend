@@ -785,6 +785,9 @@
                     <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
                         Test Connection
                     </button>
+                    <button class="btn btn-secondary" onclick="resetDatabase()" style="margin-left: 10px; background: #ef4444; color: white;">
+                        Reset Database (Drop & Recreate)
+                    </button>
                 </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
@@ -1226,6 +1229,58 @@
 
         function initializeDatabase() {
             return handleSetup({ preventDefault: () => {} });
+        }
+
+        // Reset database by dropping and recreating tables
+        async function resetDatabase() {
+            if (!confirm('This will DELETE ALL DATA and recreate the tables. Are you sure?')) {
+                return;
+            }
+            
+            showNotification('Resetting database...');
+            setLoading(true);
+
+            try {
+                // First, drop the existing tables
+                const dropTablesCode = `
+                    DROP TABLE IF EXISTS materials CASCADE;
+                    DROP TABLE IF EXISTS events CASCADE;
+                    DROP TABLE IF EXISTS day_schedules CASCADE;
+                    DROP TABLE IF EXISTS day_types CASCADE;
+                `;
+                
+                // Use fetch to send raw SQL
+                const response = await fetch(app.config.apiUrl + '/init', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        dropFirst: true,
+                        sql: dropTablesCode 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reset database');
+                }
+
+                // Now initialize fresh tables
+                await handleSetup({ preventDefault: () => {} });
+                
+                showNotification('✅ Database reset successfully!');
+                
+                // Refresh the page to clear any cached data
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+                
+            } catch (error) {
+                showNotification('❌ Reset failed: ' + error.message, true);
+            } finally {
+                setLoading(false);
+            }
         }
 
         function updateConnectionStatus(connected, message) {
