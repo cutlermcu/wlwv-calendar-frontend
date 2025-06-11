@@ -228,12 +228,17 @@
         }
 
         .admin-access {
-            display: flex;
+            display: none;
             gap: 20px;
             justify-content: center;
             padding-top: 30px;
             border-top: 1px solid #e5e7eb;
             margin-top: 30px;
+        }
+
+        /* Show admin access buttons only in admin mode */
+        body.admin-active .admin-access {
+            display: flex;
         }
 
         .setup-screen {
@@ -927,12 +932,45 @@
         }
 
         .event-badge {
-            background: #e5e7eb;
-            color: #374151;
             padding: 4px 12px;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
+            color: white;
+        }
+
+        /* Department color coding for user modal */
+        .event-badge.dept-asb {
+            background: #f59e0b;
+        }
+
+        .event-badge.dept-life {
+            background: #10b981;
+        }
+
+        .event-badge.dept-athletics {
+            background: #3b82f6;
+        }
+
+        .event-badge.dept-art-theater {
+            background: #8b5cf6;
+        }
+
+        .event-badge.dept-counseling {
+            background: #06b6d4;
+        }
+
+        .event-badge.dept-testing {
+            background: #ef4444;
+        }
+
+        .event-badge.dept-staff {
+            background: #64748b;
+        }
+
+        .event-badge.dept-none {
+            background: #e5e7eb;
+            color: #374151;
         }
 
         .grade-tabs {
@@ -1885,6 +1923,10 @@
                         minute: '2-digit' 
                     }) : '';
                     
+                    const deptClass = event.department ? 
+                        `dept-${event.department.toLowerCase().replace(/[\/\s]+/g, '-')}` : 
+                        'dept-none';
+                    
                     content += `
                         <div class="event-card">
                             <div class="event-info">
@@ -1894,7 +1936,7 @@
                                     ${event.description ? ' • ' + event.description : ''}
                                 </div>
                             </div>
-                            ${event.department ? `<div class="event-badge">${event.department}</div>` : ''}
+                            <div class="event-badge ${deptClass}">${event.department || 'General'}</div>
                         </div>
                     `;
                 });
