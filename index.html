@@ -2376,20 +2376,19 @@
             try {
                 const today = new Date().toISOString().split('T')[0];
                 
+                // Fetch day schedules and day types first
+                const schedules = await apiCall('/day-schedules');
+                const todaySchedule = schedules.find(s => s.date === today);
+                
+                const dayTypes = await apiCall('/day-types');
+                const todayType = dayTypes.find(t => t.date === today);
+                
                 // Fetch for both schools
                 for (const school of ['wlhs', 'wvhs']) {
                     try {
                         // Get events
                         const events = await apiCall(`/events?school=${school}`);
                         const todayEvents = events.filter(e => e.date === today);
-                        
-                        // Get day schedules
-                        const schedules = await apiCall('/day-schedules');
-                        const todaySchedule = schedules.find(s => s.date === today);
-                        
-                        // Get day types
-                        const dayTypes = await apiCall('/day-types');
-                        const todayType = dayTypes.find(t => t.date === today);
                         
                         // Update UI
                         document.getElementById(`${school}-events-count`).textContent = todayEvents.length || '0';
@@ -2398,12 +2397,18 @@
                     } catch (error) {
                         // If data fetch fails for a school, show defaults
                         document.getElementById(`${school}-events-count`).textContent = '0';
-                        document.getElementById(`${school}-schedule`).textContent = 'N/A';
-                        document.getElementById(`${school}-day-type`).textContent = 'N/A';
+                        document.getElementById(`${school}-schedule`).textContent = todaySchedule?.schedule || 'Regular';
+                        document.getElementById(`${school}-day-type`).textContent = todayType?.type || 'Regular Day';
                     }
                 }
             } catch (error) {
                 console.error('Failed to fetch today stats:', error);
+                // Show defaults for both schools
+                for (const school of ['wlhs', 'wvhs']) {
+                    document.getElementById(`${school}-events-count`).textContent = '0';
+                    document.getElementById(`${school}-schedule`).textContent = 'N/A';
+                    document.getElementById(`${school}-day-type`).textContent = 'N/A';
+                }
             }
         }
 
