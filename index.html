@@ -553,17 +553,342 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
+            max-width: 900px;
             width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-height: 85vh;
+            overflow: hidden;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal.show .modal-content {
             transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-header.school-wlhs {
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
+        }
+
+        .modal-header.school-wvhs {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-section {
+            margin-bottom: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* User Modal Specific Styles */
+        .ab-badge {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .ab-badge.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .event-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .event-card:last-child {
+            border-bottom: none;
+        }
+
+        .event-card:hover {
+            background: #f8fafc;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .event-details {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .event-badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .grade-tabs {
+            display: flex;
+            gap: 6px;
+            margin: 15px 20px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .grade-tab {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+        }
+
+        .grade-tab.active {
+            background: #c41e3a;
+            color: white;
+            box-shadow: 0 2px 6px rgba(196, 30, 58, 0.3);
+        }
+
+        .grade-tab:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .material-card {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .material-card:hover {
+            background: #f8fafc;
+        }
+
+        .material-card:last-child {
+            border-bottom: none;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .material-description {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .access-button {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .access-button:hover {
+            background: #2563eb;
+        }
+
+        .access-button.protected {
+            background: #f59e0b;
+        }
+
+        .access-button.protected:hover {
+            background: #d97706;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        /* Admin Modal Specific Styles */
+        .existing-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .admin-item-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-item-info {
+            flex: 1;
+        }
+
+        .admin-item-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .admin-item-details {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .admin-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .add-form {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.full-width {
+            flex: 1 1 100%;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #059669;
         }
 
         .connection-status {
@@ -800,6 +1125,22 @@
 
     <!-- Notification -->
     <div class="notification" id="notification"></div>
+
+    <!-- Day Modal -->
+    <div class="modal" id="dayModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">
+                <div class="modal-title">
+                    <span id="modalDate">Loading...</span>
+                    <div class="ab-badge" id="modalABSchedule" style="display: none;"></div>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
 
     <script>
         // Global application state
@@ -1074,11 +1415,215 @@
             });
             
             if (app.state.adminMode) {
-                showNotification(`Admin modal for ${formattedDate} - Coming in Phase 3!`);
+                openAdminModal(dateStr, formattedDate);
             } else {
-                showNotification(`View details for ${formattedDate} - Coming in Phase 3!`);
+                openUserModal(dateStr, formattedDate);
             }
         }
+
+        // Open user modal (read-only view)
+        function openUserModal(dateStr, formattedDate) {
+            const modal = document.getElementById('dayModal');
+            const modalDate = document.getElementById('modalDate');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalBody = document.getElementById('modalBody');
+            const modalABSchedule = document.getElementById('modalABSchedule');
+            
+            // Set header
+            modalDate.textContent = formattedDate;
+            modalHeader.className = `modal-header school-${app.state.selectedSchool}`;
+            
+            // Show A/B schedule if exists
+            const schedule = calendarCache.schedules[dateStr];
+            if (schedule) {
+                modalABSchedule.textContent = schedule.schedule;
+                modalABSchedule.className = `ab-badge schedule-${schedule.schedule.toLowerCase()}`;
+                modalABSchedule.style.display = 'block';
+            } else {
+                modalABSchedule.style.display = 'none';
+            }
+            
+            // Build modal content
+            const school = app.state.selectedSchool;
+            const events = calendarCache.events[school]?.[dateStr] || [];
+            const materials = calendarCache.materials[school]?.[dateStr] || [];
+            const dayType = calendarCache.dayTypes[dateStr];
+            
+            let content = '';
+            
+            // Day type notification
+            if (dayType) {
+                content += `
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 20px; color: #92400e;">
+                        <strong>Special Schedule:</strong> ${dayType.type}
+                    </div>
+                `;
+            }
+            
+            // Events section
+            content += `
+                <div class="modal-section">
+                    <div class="section-header">
+                        📅 Today's Events
+                    </div>
+                    <div class="section-content" style="padding: 0;">
+            `;
+            
+            if (events.length > 0) {
+                events.forEach(event => {
+                    const timeStr = event.time ? new Date('2000-01-01T' + event.time).toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit' 
+                    }) : '';
+                    
+                    content += `
+                        <div class="event-card">
+                            <div class="event-info">
+                                <div class="event-title">${event.title}</div>
+                                <div class="event-details">
+                                    ${timeStr}
+                                    ${event.description ? ' • ' + event.description : ''}
+                                </div>
+                            </div>
+                            ${event.department ? `<div class="event-badge">${event.department}</div>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                content += `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>No events scheduled</div>
+                    </div>
+                `;
+            }
+            
+            content += `
+                    </div>
+                </div>
+            `;
+            
+            // Materials section
+            content += `
+                <div class="modal-section">
+                    <div class="section-header">
+                        📚 Materials & Resources
+                    </div>
+            `;
+            
+            // Grade tabs
+            content += `
+                <div class="grade-tabs">
+                    <button class="grade-tab active" onclick="showGrade(9, this)">Grade 9</button>
+                    <button class="grade-tab" onclick="showGrade(10, this)">Grade 10</button>
+                    <button class="grade-tab" onclick="showGrade(11, this)">Grade 11</button>
+                    <button class="grade-tab" onclick="showGrade(12, this)">Grade 12</button>
+                </div>
+            `;
+            
+            // Materials by grade
+            content += '<div class="section-content" style="padding: 0;">';
+            
+            for (let grade = 9; grade <= 12; grade++) {
+                const gradeMaterials = materials.filter(m => m.grade_level === grade);
+                const display = grade === 9 ? 'block' : 'none';
+                
+                content += `<div id="grade-${grade}-materials" style="display: ${display};">`;
+                
+                if (gradeMaterials.length > 0) {
+                    gradeMaterials.forEach(material => {
+                        const isProtected = material.password && material.password.length > 0;
+                        content += `
+                            <div class="material-card">
+                                <div class="material-info">
+                                    <div class="material-title">${material.title}</div>
+                                    ${material.description ? `<div class="material-description">${material.description}</div>` : ''}
+                                </div>
+                                <button class="access-button ${isProtected ? 'protected' : ''}" 
+                                        onclick="accessMaterial('${material.link}', ${isProtected ? `'${material.password}'` : 'null'})">
+                                    ${isProtected ? '🔒 Access' : '📖 Open'}
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    content += `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📚</div>
+                            <div>No materials for Grade ${grade}</div>
+                        </div>
+                    `;
+                }
+                
+                content += '</div>';
+            }
+            
+            content += `
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = content;
+            modal.classList.add('show');
+        }
+
+        // Open admin modal (CRUD operations)
+        function openAdminModal(dateStr, formattedDate) {
+            // For now, show a coming soon message
+            showNotification('Admin modal coming soon! For now, you can see the user view.');
+            openUserModal(dateStr, formattedDate);
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('dayModal');
+            modal.classList.remove('show');
+        }
+
+        // Show specific grade materials
+        function showGrade(grade, button) {
+            // Update active tab
+            document.querySelectorAll('.grade-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Show/hide grade content
+            for (let g = 9; g <= 12; g++) {
+                const element = document.getElementById(`grade-${g}-materials`);
+                if (element) {
+                    element.style.display = g === grade ? 'block' : 'none';
+                }
+            }
+        }
+
+        // Access material
+        function accessMaterial(link, password) {
+            if (password) {
+                const userPassword = prompt('This material is password protected. Please enter the password:');
+                if (userPassword === password) {
+                    window.open(link, '_blank');
+                } else if (userPassword !== null) {
+                    showNotification('Incorrect password', true);
+                }
+            } else {
+                window.open(link, '_blank');
+            }
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('dayModal').addEventListener('click', (e) => {
+            if (e.target.id === 'dayModal') {
+                closeModal();
+            }
+        });
 
         // Fetch Today's Stats for Home Page
         async function fetchTodayStats() {
