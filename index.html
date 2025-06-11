@@ -1606,6 +1606,21 @@
                         const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
                         typeDisplay.className = `day-type-display type-${typeClass}`;
                         typeDisplay.textContent = dayType.type;
+                        // Force background color
+                        const colorMap = {
+                            'access': '#3b82f6',
+                            'grading': '#8b5cf6',
+                            'finals': '#10b981',
+                            'holiday': '#ef4444',
+                            'furlough': '#f59e0b',
+                            'staff-development': '#06b6d4',
+                            'early-release': '#f59e0b',
+                            'snow-day': '#60a5fa'
+                        };
+                        if (colorMap[typeClass]) {
+                            typeDisplay.style.backgroundColor = colorMap[typeClass];
+                            typeDisplay.style.color = 'white';
+                        }
                     } else {
                         typeDisplay.className = 'day-type-display';
                         typeDisplay.style.background = '#e5e7eb';
@@ -1644,6 +1659,21 @@
                         const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
                         typeDisplay.className = `day-type-display type-${typeClass}`;
                         typeDisplay.textContent = dayType.type;
+                        // Force background color for user mode too
+                        const colorMap = {
+                            'access': '#3b82f6',
+                            'grading': '#8b5cf6',
+                            'finals': '#10b981',
+                            'holiday': '#ef4444',
+                            'furlough': '#f59e0b',
+                            'staff-development': '#06b6d4',
+                            'early-release': '#f59e0b',
+                            'snow-day': '#60a5fa'
+                        };
+                        if (colorMap[typeClass]) {
+                            typeDisplay.style.backgroundColor = colorMap[typeClass];
+                            typeDisplay.style.color = 'white';
+                        }
                         dayElement.appendChild(typeDisplay);
                     }
                 }
