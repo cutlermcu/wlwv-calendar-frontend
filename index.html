@@ -402,52 +402,110 @@
         /* Additional styles for calendar elements */
         .event-title-indicator {
             position: absolute;
-            top: 20px;
+            top: 35px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(196, 30, 58, 0.9);
             color: white;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
             font-weight: 600;
             white-space: nowrap;
             pointer-events: none;
-            max-width: 80px;
+            max-width: 90%;
             text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .ab-schedule-display {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(99, 102, 241, 0.9);
             color: white;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            min-width: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 24px;
             text-align: center;
             pointer-events: none;
+        }
+
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
         }
 
         .day-type-display {
             position: absolute;
             bottom: 8px;
-            left: 8px;
-            background: rgba(168, 85, 247, 0.9);
+            left: 50%;
+            transform: translateX(-50%);
             color: white;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
-            max-width: 80px;
+            max-width: 90%;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             pointer-events: none;
+        }
+
+        /* Day type color coding */
+        .day-type-display.type-no-school {
+            background: #ef4444;
+        }
+
+        .day-type-display.type-early-release {
+            background: #f59e0b;
+        }
+
+        .day-type-display.type-late-start {
+            background: #10b981;
+        }
+
+        .day-type-display.type-half-day {
+            background: #8b5cf6;
+        }
+
+        .day-type-display.type-access {
+            background: #3b82f6;
+        }
+
+        .day-type-display.type-grading {
+            background: #8b5cf6;
+        }
+
+        .day-type-display.type-staff-development {
+            background: #06b6d4;
+        }
+
+        .day-type-display.type-holiday {
+            background: #ef4444;
+        }
+
+        .day-type-display.type-furlough {
+            background: #f59e0b;
+        }
+
+        .day-type-display.type-finals {
+            background: #10b981;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.other-month .day-number {
+            color: #9ca3af;
         }
 
         .notification {
@@ -812,6 +870,213 @@
             }
         }
 
+        // Cache for calendar data
+        const calendarCache = {
+            events: {},
+            schedules: {},
+            dayTypes: {},
+            materials: {},
+            lastFetch: {}
+        };
+
+        // Helper to check if cache is stale (older than 5 minutes)
+        function isCacheStale(cacheKey) {
+            const lastFetch = calendarCache.lastFetch[cacheKey];
+            if (!lastFetch) return true;
+            const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+            return lastFetch < fiveMinutesAgo;
+        }
+
+        // Fetch all calendar data for current view
+        async function fetchCalendarData(forceRefresh = false) {
+            if (!app.state.connected) return false;
+            
+            const school = app.state.selectedSchool;
+            const cacheKey = `${school}-${app.state.currentDate.getFullYear()}-${app.state.currentDate.getMonth()}`;
+            
+            // Use cache if available and not stale
+            if (!forceRefresh && !isCacheStale(cacheKey)) {
+                console.log('Using cached calendar data');
+                return true;
+            }
+            
+            try {
+                setLoading(true);
+                showNotification('Loading calendar data...');
+                
+                // Fetch all data types in parallel
+                const [events, schedules, dayTypes, materials] = await Promise.all([
+                    apiCall(`/events?school=${school}`),
+                    apiCall('/day-schedules'),
+                    apiCall('/day-types'),
+                    apiCall(`/materials?school=${school}`)
+                ]);
+                
+                // Store in cache organized by date
+                calendarCache.events[school] = groupByDate(events);
+                calendarCache.schedules = arrayToDateMap(schedules);
+                calendarCache.dayTypes = arrayToDateMap(dayTypes);
+                calendarCache.materials[school] = groupByDate(materials);
+                calendarCache.lastFetch[cacheKey] = Date.now();
+                
+                showNotification('Calendar data loaded!');
+                return true;
+            } catch (error) {
+                console.error('Failed to fetch calendar data:', error);
+                showNotification('Failed to load calendar data', true);
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Helper to group items by date
+        function groupByDate(items) {
+            return items.reduce((acc, item) => {
+                const date = item.date;
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(item);
+                return acc;
+            }, {});
+        }
+
+        // Helper to convert array to date-keyed map
+        function arrayToDateMap(items) {
+            return items.reduce((acc, item) => {
+                acc[item.date] = item;
+                return acc;
+            }, {});
+        }
+
+        // Create a day element with all data
+        function createDayElement(date, dateStr, school) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.dataset.date = dateStr;
+
+            // Check if this day is in the current month
+            const isCurrentMonth = date.getMonth() === app.state.currentDate.getMonth();
+            if (!isCurrentMonth) {
+                dayElement.classList.add('other-month');
+            }
+
+            // Check if today
+            const isToday = date.toDateString() === new Date().toDateString();
+            if (isToday) dayElement.classList.add('today');
+
+            // Add day number
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = date.getDate();
+            dayElement.appendChild(dayNumber);
+
+            // Only add data elements if it's the current month
+            if (isCurrentMonth) {
+                // Add A/B schedule if exists
+                const schedule = calendarCache.schedules[dateStr];
+                if (schedule) {
+                    const abDisplay = document.createElement('div');
+                    abDisplay.className = `ab-schedule-display schedule-${schedule.schedule.toLowerCase()}`;
+                    abDisplay.textContent = schedule.schedule;
+                    dayElement.appendChild(abDisplay);
+                }
+
+                // Add day type if exists
+                const dayType = calendarCache.dayTypes[dateStr];
+                if (dayType) {
+                    const typeDisplay = document.createElement('div');
+                    const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
+                    typeDisplay.className = `day-type-display type-${typeClass}`;
+                    typeDisplay.textContent = dayType.type;
+                    dayElement.appendChild(typeDisplay);
+                }
+
+                // Add event indicator if events exist
+                const events = calendarCache.events[school]?.[dateStr];
+                if (events && events.length > 0) {
+                    const eventIndicator = document.createElement('div');
+                    eventIndicator.className = 'event-title-indicator';
+                    eventIndicator.textContent = events[0].title;
+                    if (events.length > 1) {
+                        eventIndicator.textContent += ` +${events.length - 1}`;
+                    }
+                    dayElement.appendChild(eventIndicator);
+                }
+            }
+
+            // Add click handler
+            dayElement.addEventListener('click', () => handleDayClick(dateStr));
+
+            return dayElement;
+        }
+
+        // Enhanced calendar rendering with data
+        async function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+
+            // Fetch data if connected
+            if (app.state.connected) {
+                await fetchCalendarData();
+            }
+
+            const year = app.state.currentDate.getFullYear();
+            const month = app.state.currentDate.getMonth();
+            const school = app.state.selectedSchool;
+
+            // Update month display
+            const monthDisplay = document.getElementById('currentMonth');
+            if (monthDisplay) {
+                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                }).format(app.state.currentDate);
+            }
+
+            grid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Calculate calendar days
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            // Create calendar days
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                const dateStr = currentDate.toISOString().split('T')[0];
+
+                const dayElement = createDayElement(currentDate, dateStr, school);
+                grid.appendChild(dayElement);
+            }
+        }
+
+        // Handle day click
+        function handleDayClick(dateStr) {
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            if (app.state.adminMode) {
+                showNotification(`Admin modal for ${formattedDate} - Coming in Phase 3!`);
+            } else {
+                showNotification(`View details for ${formattedDate} - Coming in Phase 3!`);
+            }
+        }
+
         // Fetch Today's Stats for Home Page
         async function fetchTodayStats() {
             try {
@@ -1031,62 +1296,6 @@
 
             showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
             renderCalendar();
-        }
-
-        function renderCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            if (!grid) return;
-
-            const year = app.state.currentDate.getFullYear();
-            const month = app.state.currentDate.getMonth();
-
-            const monthDisplay = document.getElementById('currentMonth');
-            if (monthDisplay) {
-                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
-                    month: 'long', 
-                    year: 'numeric' 
-                }).format(app.state.currentDate);
-            }
-
-            grid.innerHTML = '';
-
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = day;
-                grid.appendChild(header);
-            });
-
-            const firstDay = new Date(year, month, 1);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-            for (let i = 0; i < 42; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.dataset.date = currentDate.toISOString().split('T')[0];
-
-                const isToday = currentDate.toDateString() === new Date().toDateString();
-                if (isToday) dayElement.classList.add('today');
-
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'day-number';
-                dayNumber.textContent = currentDate.getDate();
-
-                dayElement.appendChild(dayNumber);
-                
-                // Add click handler placeholder
-                dayElement.addEventListener('click', () => {
-                    const dateStr = dayElement.dataset.date;
-                    showNotification(`Clicked on ${dateStr} - Modal coming in Phase 3!`);
-                });
-                
-                grid.appendChild(dayElement);
-            }
         }
 
         // Initialize Application
