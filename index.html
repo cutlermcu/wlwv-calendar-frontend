@@ -359,6 +359,19 @@
             overflow: visible; /* Changed from hidden */
         }
 
+        /* Ensure calendar days in last row have space for dropdowns */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            margin: 1px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 200px; /* Add space for dropdowns */
+        }
+
         .calendar-day:hover {
             background: #f1f5f9;
         }
@@ -431,7 +444,7 @@
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 700;
-            max-width: 16px;
+            min-width: 24px;
             text-align: center;
             pointer-events: none;
         }
@@ -598,6 +611,8 @@
             display: none;
             z-index: 1000;
             min-width: 180px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .day-type-dropdown.show {
@@ -609,27 +624,61 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8rem;
-            font-weight: 500;
-            transition: background 0.1s ease;
+            font-weight: 600;
+            transition: all 0.1s ease;
             white-space: nowrap;
-            color: #374151; /* Dark text color */
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        /* Color coding for day type options in dropdown */
+        .day-type-option[data-type="ACCESS"] {
+            background: #3b82f6;
+        }
+
+        .day-type-option[data-type="GRADING"] {
+            background: #8b5cf6;
+        }
+
+        .day-type-option[data-type="FINALS"] {
+            background: #10b981;
+        }
+
+        .day-type-option[data-type="HOLIDAY"] {
+            background: #ef4444;
+        }
+
+        .day-type-option[data-type="FURLOUGH"] {
+            background: #f59e0b;
+        }
+
+        .day-type-option[data-type="STAFF DEVELOPMENT"] {
+            background: #06b6d4;
+        }
+
+        .day-type-option[data-type="EARLY RELEASE"] {
+            background: #f59e0b;
+        }
+
+        .day-type-option[data-type="SNOW DAY"] {
+            background: #60a5fa;
         }
 
         .day-type-option:hover {
-            background: #f3f4f6;
-            color: #111827;
+            transform: scale(1.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .day-type-option.clear {
+            background: #6b7280;
             border-top: 1px solid #e5e7eb;
             margin-top: 4px;
             padding-top: 12px;
-            color: #6b7280;
+            color: white;
         }
 
         .day-type-option.clear:hover {
-            background: #f3f4f6;
-            color: #374151;
+            background: #4b5563;
         }
 
         /* Department color coding */
