@@ -1213,14 +1213,14 @@
 
                 <form class="setup-form" onsubmit="handleSetup(event)">
                     <div class="form-group">
-                        <label class="form-label">Database URL (Optional)</label>
+                        <label class="form-label" for="dbUrl">Database URL (Optional)</label>
                         <input type="text" class="form-input" id="dbUrl" 
                                placeholder="Leave empty to use environment variable">
                         <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">API Base URL</label>
+                        <label class="form-label" for="apiUrl">API Base URL</label>
                         <input type="text" class="form-input" id="apiUrl" 
                                value="" required readonly style="background: #f3f4f6; color: #6b7280;">
                         <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
@@ -1959,18 +1959,18 @@
                             <form onsubmit="addEvent(event, '${dateStr}'); return false;">
                                 <div class="form-row">
                                     <div class="form-group" style="flex: 2;">
-                                        <label class="form-label">Event Title</label>
-                                        <input type="text" class="form-input" name="title" required>
+                                        <label class="form-label" for="event-title-${dateStr}">Event Title</label>
+                                        <input type="text" class="form-input" id="event-title-${dateStr}" name="title" required>
                                     </div>
                                     <div class="form-group" style="flex: 0 0 120px;">
-                                        <label class="form-label">Time</label>
-                                        <input type="time" class="form-input" name="time">
+                                        <label class="form-label" for="event-time-${dateStr}">Time</label>
+                                        <input type="time" class="form-input" id="event-time-${dateStr}" name="time">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group" style="flex: 0 0 160px;">
-                                        <label class="form-label">Department</label>
-                                        <select class="form-input" name="department">
+                                        <label class="form-label" for="event-dept-${dateStr}">Department</label>
+                                        <select class="form-input" id="event-dept-${dateStr}" name="department">
                                             <option value="">None</option>
                                             <option value="ASB">ASB</option>
                                             <option value="Life">Life</option>
@@ -1982,8 +1982,8 @@
                                         </select>
                                     </div>
                                     <div class="form-group" style="flex: 1;">
-                                        <label class="form-label">Description (Optional)</label>
-                                        <input type="text" class="form-input" name="description">
+                                        <label class="form-label" for="event-desc-${dateStr}">Description (Optional)</label>
+                                        <input type="text" class="form-input" id="event-desc-${dateStr}" name="description">
                                     </div>
                                     <div class="form-group" style="flex: 0 0 100px; align-self: flex-end;">
                                         <button type="submit" class="btn btn-add" style="width: 100%;">Add Event</button>
@@ -2045,22 +2045,22 @@
                         <form onsubmit="addMaterial(event, '${dateStr}', ${grade}); return false;">
                             <div class="form-row">
                                 <div class="form-group" style="flex: 1;">
-                                    <label class="form-label">Material Title</label>
-                                    <input type="text" class="form-input" name="title" required>
+                                    <label class="form-label" for="material-title-${dateStr}-${grade}">Material Title</label>
+                                    <input type="text" class="form-input" id="material-title-${dateStr}-${grade}" name="title" required>
                                 </div>
                                 <div class="form-group" style="flex: 1;">
-                                    <label class="form-label">Link/URL</label>
-                                    <input type="url" class="form-input" name="link" required>
+                                    <label class="form-label" for="material-link-${dateStr}-${grade}">Link/URL</label>
+                                    <input type="url" class="form-input" id="material-link-${dateStr}-${grade}" name="link" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group" style="flex: 2;">
-                                    <label class="form-label">Description (Optional)</label>
-                                    <input type="text" class="form-input" name="description">
+                                    <label class="form-label" for="material-desc-${dateStr}-${grade}">Description (Optional)</label>
+                                    <input type="text" class="form-input" id="material-desc-${dateStr}-${grade}" name="description">
                                 </div>
                                 <div class="form-group" style="flex: 1;">
-                                    <label class="form-label">Password (Optional)</label>
-                                    <input type="text" class="form-input" name="password" placeholder="Leave empty for public">
+                                    <label class="form-label" for="material-pass-${dateStr}-${grade}">Password (Optional)</label>
+                                    <input type="text" class="form-input" id="material-pass-${dateStr}-${grade}" name="password" placeholder="Leave empty for public">
                                 </div>
                                 <div class="form-group" style="flex: 0 0 120px; align-self: flex-end;">
                                     <button type="submit" class="btn btn-add" style="width: 100%;">Add Material</button>
@@ -2582,6 +2582,55 @@
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Add hover functionality for admin dropdowns
+        document.addEventListener('mouseover', function(e) {
+            // Handle A/B schedule hover
+            if (e.target.closest('.ab-schedule-admin')) {
+                const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
+                if (dropdown) {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.visibility = 'visible';
+                    dropdown.style.pointerEvents = 'auto';
+                    dropdown.style.transform = 'translateY(0)';
+                }
+            }
+            
+            // Handle day type hover
+            if (e.target.closest('.day-type-admin')) {
+                const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
+                if (dropdown) {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.visibility = 'visible';
+                    dropdown.style.pointerEvents = 'auto';
+                    dropdown.style.transform = 'translateX(-50%) translateY(0)';
+                }
+            }
+        });
+
+        document.addEventListener('mouseout', function(e) {
+            // Handle A/B schedule hover out
+            if (e.target.closest('.ab-schedule-admin') && !e.relatedTarget?.closest('.ab-schedule-admin')) {
+                const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
+                if (dropdown) {
+                    dropdown.style.opacity = '0';
+                    dropdown.style.visibility = 'hidden';
+                    dropdown.style.pointerEvents = 'none';
+                    dropdown.style.transform = 'translateY(-10px)';
+                }
+            }
+            
+            // Handle day type hover out
+            if (e.target.closest('.day-type-admin') && !e.relatedTarget?.closest('.day-type-admin')) {
+                const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
+                if (dropdown) {
+                    dropdown.style.opacity = '0';
+                    dropdown.style.visibility = 'hidden';
+                    dropdown.style.pointerEvents = 'none';
+                    dropdown.style.transform = 'translateX(-50%) translateY(10px)';
+                }
+            }
+        });
     </script>
 </body>
 </html>
