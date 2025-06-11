@@ -399,55 +399,209 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
         }
 
-        /* Additional styles for calendar elements */
-        .event-title-indicator {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(196, 30, 58, 0.9);
-            color: white;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            white-space: nowrap;
-            pointer-events: none;
-            max-width: 80px;
-            text-align: center;
-        }
-
+        /* A/B Schedule Badge Styles */
         .ab-schedule-display {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(99, 102, 241, 0.9);
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            min-width: 20px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            min-width: 24px;
             text-align: center;
-            pointer-events: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
         }
 
+        .ab-schedule-display.schedule-a {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .ab-schedule-display.schedule-b {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .ab-schedule-display:hover {
+            transform: scale(1.1);
+        }
+
+        /* Day Type Label Styles */
         .day-type-display {
             position: absolute;
             bottom: 8px;
-            left: 8px;
-            background: rgba(168, 85, 247, 0.9);
-            color: white;
-            padding: 2px 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 3px 8px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
-            max-width: 80px;
             text-align: center;
             white-space: nowrap;
+            max-width: 90%;
             overflow: hidden;
             text-overflow: ellipsis;
-            pointer-events: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .day-type-display.no-school { background: #ef4444; }
+        .day-type-display.early-release { background: #f59e0b; }
+        .day-type-display.late-start { background: #10b981; }
+        .day-type-display.half-day { background: #8b5cf6; }
+        .day-type-display.access { background: #3b82f6; }
+        .day-type-display.grading { background: #8b5cf6; }
+        .day-type-display.staff-development { background: #06b6d4; }
+        .day-type-display.holiday { background: #ef4444; }
+        .day-type-display.furlough { background: #f59e0b; }
+        .day-type-display.finals { background: #10b981; }
+
+        /* Admin Dropdown Menus */
+        .ab-schedule-menu {
+            position: absolute;
+            top: 35px;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 200;
+            min-width: 80px;
+        }
+
+        .ab-schedule-display:hover .ab-schedule-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .ab-menu-item {
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2px;
+            color: white;
+            transition: opacity 0.2s ease;
+        }
+
+        .ab-menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ab-menu-item.option-a {
+            background: #3b82f6;
+        }
+
+        .ab-menu-item.option-b {
+            background: #ef4444;
+        }
+
+        .ab-menu-item.option-clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .ab-menu-item:hover {
+            opacity: 0.8;
+        }
+
+        .day-type-menu {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 150px;
+        }
+
+        .day-type-display:hover .day-type-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .day-type-menu-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.1s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .day-type-menu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .day-type-menu-item.no-school { border-left-color: #ef4444; }
+        .day-type-menu-item.early-release { border-left-color: #f59e0b; }
+        .day-type-menu-item.late-start { border-left-color: #10b981; }
+        .day-type-menu-item.half-day { border-left-color: #8b5cf6; }
+        .day-type-menu-item.access { border-left-color: #3b82f6; }
+        .day-type-menu-item.grading { border-left-color: #8b5cf6; }
+        .day-type-menu-item.staff-development { border-left-color: #06b6d4; }
+        .day-type-menu-item.holiday { border-left-color: #ef4444; }
+        .day-type-menu-item.furlough { border-left-color: #f59e0b; }
+        .day-type-menu-item.finals { border-left-color: #10b981; }
+        .day-type-menu-item.clear { border-left-color: #6b7280; }
+
+        /* Admin Plus Button */
+        .admin-plus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            background: #c41e3a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+            z-index: 5;
+        }
+
+        .calendar-day:hover .admin-plus {
+            opacity: 1;
+        }
+
+        .admin-plus:hover {
+            background: #a01729;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* Hide admin elements when not in admin mode */
+        body:not(.admin-active) .ab-schedule-menu,
+        body:not(.admin-active) .day-type-menu,
+        body:not(.admin-active) .admin-plus {
+            display: none !important;
         }
 
         .notification {
@@ -471,7 +625,6 @@
             background: #ef4444;
         }
 
-        /* ===== MODAL SYSTEM STYLES ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -482,7 +635,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
+            z-index: 2000;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -496,793 +649,17 @@
         .modal-content {
             background: white;
             border-radius: 15px;
-            max-width: 1400px;
-            width: 98%;
-            max-height: 85vh;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
         }
 
         .modal.show .modal-content {
             transform: translateY(0);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-body {
-            padding: 30px;
-            max-height: calc(85vh - 80px);
-            overflow-y: auto;
-        }
-
-        .modal-loading {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-
-        .modal-loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e5e7eb;
-            border-top: 4px solid #c41e3a;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ===== EVENTS CRUD STYLES ===== */
-        .crud-section {
-            margin-bottom: 35px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .crud-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .crud-content {
-            padding: 20px;
-        }
-
-        .existing-items {
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .item-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .item-card:hover {
-            background: #f3f4f6;
-        }
-
-        /* Department color coding for events */
-        .item-card.dept-asb {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #f59e0b;
-        }
-
-        .item-card.dept-life {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            border-color: #10b981;
-        }
-
-        .item-card.dept-athletics {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-color: #3b82f6;
-        }
-
-        .item-card.dept-art-theater {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            border-color: #8b5cf6;
-        }
-
-        .item-card.dept-counseling {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            border-color: #06b6d4;
-        }
-
-        .item-card.dept-testing {
-            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
-            border-color: #ef4444;
-        }
-
-        .item-card.dept-staff {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border-color: #64748b;
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 2px;
-        }
-
-        .item-details {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-        }
-
-        .btn-edit {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background: #2563eb;
-        }
-
-        .btn-delete {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background: #dc2626;
-        }
-
-        .btn-add {
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            font-size: 0.9rem;
-        }
-
-        .btn-add:hover {
-            background: #059669;
-        }
-
-        .btn-cancel {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background: #4b5563;
-        }
-
-        .add-form {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .form-group.title-group {
-            flex: 2;
-            min-width: 250px;
-        }
-
-        .form-group.time-group {
-            flex: 0 0 140px;
-            min-width: 140px;
-        }
-
-        .form-group.department-group {
-            flex: 0 0 160px;
-            min-width: 160px;
-        }
-
-        .form-group.description-group {
-            flex: 1.5;
-            min-width: 200px;
-        }
-
-        .form-group.button-group {
-            flex: 0 0 auto;
-            min-width: 120px;
-        }
-
-        .form-label {
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .form-input {
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s ease;
-            width: 100%;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #c41e3a;
-            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
-        }
-
-        .form-select {
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            background: white;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: #c41e3a;
-            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
-        }
-
-        /* ===== MATERIALS CRUD STYLES ===== */
-        .grade-tabs {
-            display: flex;
-            gap: 8px;
-            margin: 15px 20px 20px 20px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 10px;
-        }
-
-        .grade-tab {
-            padding: 10px 16px;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #6b7280;
-            flex: 1;
-            text-align: center;
-        }
-
-        .grade-tab.active {
-            background: #c41e3a;
-            color: white;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-        }
-
-        .grade-tab:hover:not(.active) {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .material-item-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .material-item-card:hover {
-            background: #f3f4f6;
-        }
-
-        .material-item-card.protected {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #f59e0b;
-        }
-
-        .material-info {
-            flex: 1;
-        }
-
-        .material-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 2px;
-        }
-
-        .material-details {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-
-        .material-url {
-            font-size: 0.75rem;
-            color: #3b82f6;
-            text-decoration: none;
-            margin-top: 2px;
-            display: block;
-            word-break: break-all;
-        }
-
-        .material-url:hover {
-            text-decoration: underline;
-        }
-
-        .protected-badge {
-            background: #f59e0b;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .form-group.url-group {
-            flex: 2;
-            min-width: 250px;
-        }
-
-        .form-group.password-group {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .form-group.grade-group {
-            flex: 0 0 100px;
-        }
-
-        .url-validation-error {
-            color: #ef4444;
-            font-size: 0.75rem;
-            margin-top: 4px;
-        }
-
-        /* ===== USER VIEW MODAL STYLES ===== */
-        .user-section {
-            margin-bottom: 30px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .user-section-header {
-            background: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-event-card {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .user-event-card:hover {
-            background: #f8fafc;
-        }
-
-        .user-event-card:last-child {
-            border-bottom: none;
-        }
-
-        .user-event-info {
-            flex: 1;
-        }
-
-        .user-event-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .user-event-details {
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .user-event-badge {
-            background: #e5e7eb;
-            color: #374151;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        /* Department-specific badges */
-        .user-event-badge.dept-asb { background: #fde68a; color: #92400e; }
-        .user-event-badge.dept-life { background: #bbf7d0; color: #065f46; }
-        .user-event-badge.dept-athletics { background: #bfdbfe; color: #1e40af; }
-        .user-event-badge.dept-art-theater { background: #ddd6fe; color: #5b21b6; }
-        .user-event-badge.dept-counseling { background: #d1fae5; color: #0e7490; }
-        .user-event-badge.dept-testing { background: #fecaca; color: #991b1b; }
-        .user-event-badge.dept-staff { background: #e2e8f0; color: #334155; }
-
-        .user-grade-tabs {
-            display: flex;
-            gap: 6px;
-            margin: 15px 20px;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 8px;
-        }
-
-        .user-grade-tab {
-            padding: 8px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #6b7280;
-            flex: 1;
-            text-align: center;
-        }
-
-        .user-grade-tab.active {
-            background: #1e40af;
-            color: white;
-            box-shadow: 0 2px 6px rgba(30, 64, 175, 0.3);
-        }
-
-        .user-grade-tab:hover:not(.active) {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .user-material-card {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .user-material-card:hover {
-            background: #f8fafc;
-        }
-
-        .user-material-card:last-child {
-            border-bottom: none;
-        }
-
-        .user-material-info {
-            flex: 1;
-        }
-
-        .user-material-title {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .user-material-description {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .user-material-meta {
-            font-size: 0.75rem;
-            color: #9ca3af;
-        }
-
-        .user-access-button {
-            background: #3b82f6;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .user-access-button:hover {
-            background: #2563eb;
-        }
-
-        .user-access-button.protected {
-            background: #f59e0b;
-        }
-
-        .user-access-button.protected:hover {
-            background: #d97706;
-        }
-
-        .user-empty-state {
-            text-align: center;
-            color: #9ca3af;
-            font-style: italic;
-            padding: 30px 20px;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #6b7280;
-            font-style: italic;
-            padding: 20px;
-        }
-
-        .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-
-        .success-message {
-            background: #ecfdf5;
-            border: 1px solid #bbf7d0;
-            color: #065f46;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-
-        /* Plus button for admin mode */
-        .admin-plus {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 32px;
-            height: 32px;
-            background: #c41e3a;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            opacity: 0;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
-            z-index: 10;
-        }
-
-        .admin-plus:hover {
-            background: #a01729;
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-        /* Show plus button on hover in admin mode */
-        body.admin-active .calendar-day:hover .admin-plus {
-            opacity: 1;
-        }
-
-        /* User mode: make entire day clickable */
-        body:not(.admin-active) .calendar-day {
-            cursor: pointer;
-        }
-
-        body:not(.admin-active) .calendar-day:hover {
-            background: #f1f5f9;
-            border: 2px solid #c41e3a;
-        }
-
-        /* ===== A/B SCHEDULE DROPDOWN STYLES ===== */
-        .ab-schedule-display {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            min-width: 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 20;
-            display: none; /* Hidden by default, shown when schedule exists */
-        }
-
-        .ab-schedule-display.schedule-a {
-            background: rgba(59, 130, 246, 0.9);
-        }
-
-        .ab-schedule-display.schedule-b {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        .ab-schedule-display:hover {
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Interactive only in admin mode */
-        body:not(.admin-active) .ab-schedule-display {
-            cursor: default;
-        }
-
-        body:not(.admin-active) .ab-schedule-display .ab-schedule-menu {
-            display: none;
-        }
-
-        .ab-schedule-menu {
-            position: absolute;
-            top: 30px;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 8px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
-            z-index: 100;
-            min-width: 80px;
-        }
-
-        /* Only show dropdown in admin mode */
-        body.admin-active .ab-schedule-display:hover .ab-schedule-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .ab-menu-item {
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 4px;
-            color: white;
-            transition: all 0.2s ease;
-        }
-
-        .ab-menu-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .ab-menu-item.option-a {
-            background: #3b82f6;
-        }
-
-        .ab-menu-item.option-a:hover {
-            background: #2563eb;
-            transform: translateX(2px);
-        }
-
-        .ab-menu-item.option-b {
-            background: #ef4444;
-        }
-
-        .ab-menu-item.option-b:hover {
-            background: #dc2626;
-            transform: translateX(2px);
-        }
-
-        .ab-menu-item.option-clear {
-            background: #6b7280;
-            color: white;
-        }
-
-        .ab-menu-item.option-clear:hover {
-            background: #4b5563;
-            transform: translateX(2px);
         }
 
         .connection-status {
@@ -1494,25 +871,6 @@
         </div>
     </div>
 
-    <!-- Modal System -->
-    <div class="modal" id="dayModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">
-                    <span id="modalDate">Loading...</span>
-                    <span id="modalScheduleBadge" style="display: none;"></span>
-                </div>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="modal-loading">
-                    <div class="modal-loading-spinner"></div>
-                    <div>Loading day information...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -1523,28 +881,24 @@
                 currentDate: new Date(),
                 selectedSchool: 'wlhs',
                 adminMode: false,
-                connected: false,
-                selectedModalDate: null,
-                lastSelectedGradeTab: 9,
-                unsavedChanges: false
+                connected: false
             },
             config: {
                 apiUrl: ''
             },
-            cache: {
-                dateData: new Map() // Cache for modal data
+            data: {
+                daySchedules: new Map(), // date -> 'A' or 'B'
+                dayTypes: new Map(),     // date -> type string
+                events: new Map()        // date -> array of events
             }
         };
 
         function setApiUrl() {
-            // Detect environment
-            const hostname = window.location.hostname;
-            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost');
-            app.state.environment = isLocalhost ? 'development' : 'production';
+            app.state.environment = detectEnvironment();
             
-            // Point to your backend Vercel URL with HTTPS
+            // Fixed API URL logic
             if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app';
             } else {
                 app.config.apiUrl = window.location.origin + '/api';
             }
@@ -1556,6 +910,133 @@
             const apiUrlInput = document.getElementById('apiUrl');
             if (apiUrlInput) {
                 apiUrlInput.value = app.config.apiUrl;
+            }
+        }
+
+        function detectEnvironment() {
+            const hostname = window.location.hostname;
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'development';
+            }
+            return 'production';
+        }
+
+        // Data fetching functions
+        async function fetchDaySchedules() {
+            try {
+                const response = await fetch(app.config.apiUrl + '/api/day-schedules');
+                if (response.ok) {
+                    const schedules = await response.json();
+                    app.data.daySchedules.clear();
+                    schedules.forEach(item => {
+                        app.data.daySchedules.set(item.date, item.schedule);
+                    });
+                    console.log('Day schedules loaded:', app.data.daySchedules.size, 'entries');
+                } else {
+                    console.warn('Failed to fetch day schedules:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching day schedules:', error);
+            }
+        }
+
+        async function fetchDayTypes() {
+            try {
+                const response = await fetch(app.config.apiUrl + '/api/day-types');
+                if (response.ok) {
+                    const types = await response.json();
+                    app.data.dayTypes.clear();
+                    types.forEach(item => {
+                        app.data.dayTypes.set(item.date, item.type);
+                    });
+                    console.log('Day types loaded:', app.data.dayTypes.size, 'entries');
+                } else {
+                    console.warn('Failed to fetch day types:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching day types:', error);
+            }
+        }
+
+        async function fetchEvents() {
+            try {
+                const response = await fetch(app.config.apiUrl + '/api/events?school=' + app.state.selectedSchool);
+                if (response.ok) {
+                    const events = await response.json();
+                    app.data.events.clear();
+                    events.forEach(event => {
+                        if (!app.data.events.has(event.date)) {
+                            app.data.events.set(event.date, []);
+                        }
+                        app.data.events.get(event.date).push(event);
+                    });
+                    console.log('Events loaded:', events.length, 'events for', app.state.selectedSchool);
+                } else {
+                    console.warn('Failed to fetch events:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        }
+
+        // Load all calendar data
+        async function loadCalendarData() {
+            await Promise.all([
+                fetchDaySchedules(),
+                fetchDayTypes(),
+                fetchEvents()
+            ]);
+            renderCalendar();
+        }
+
+        // Admin functions for updating data
+        async function updateDaySchedule(date, schedule) {
+            try {
+                const response = await fetch(app.config.apiUrl + '/api/day-schedules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, schedule })
+                });
+
+                if (response.ok) {
+                    if (schedule) {
+                        app.data.daySchedules.set(date, schedule);
+                    } else {
+                        app.data.daySchedules.delete(date);
+                    }
+                    renderCalendar();
+                    showNotification(`A/B schedule updated for ${date}`);
+                } else {
+                    throw new Error('Failed to update schedule');
+                }
+            } catch (error) {
+                console.error('Error updating day schedule:', error);
+                showNotification('Failed to update A/B schedule', true);
+            }
+        }
+
+        async function updateDayType(date, type) {
+            try {
+                const response = await fetch(app.config.apiUrl + '/api/day-types', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, type })
+                });
+
+                if (response.ok) {
+                    if (type) {
+                        app.data.dayTypes.set(date, type);
+                    } else {
+                        app.data.dayTypes.delete(date);
+                    }
+                    renderCalendar();
+                    showNotification(`Day type updated for ${date}`);
+                } else {
+                    throw new Error('Failed to update day type');
+                }
+            } catch (error) {
+                console.error('Error updating day type:', error);
+                showNotification('Failed to update day type', true);
             }
         }
 
@@ -1600,14 +1081,23 @@
             document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
             document.body.classList.add(`school-${schoolCode}`);
             
+            // Update school select
+            const schoolSelect = document.getElementById('schoolSelect');
+            if (schoolSelect) {
+                schoolSelect.value = schoolCode;
+            }
+            
             showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
             showScreen('calendar');
+            
+            // Reload data for new school
+            loadCalendarData();
         }
 
         function testConnection() {
             showNotification('Testing connection...');
 
-            fetch(app.config.apiUrl + '/health')
+            fetch(app.config.apiUrl + '/api/health')
                 .then(response => {
                     if (response.ok) {
                         return response.json();
@@ -1634,7 +1124,7 @@
             const dbUrl = document.getElementById('dbUrl').value;
             const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
 
-            fetch(app.config.apiUrl + '/init', {
+            fetch(app.config.apiUrl + '/api/init', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -1710,12 +1200,23 @@
 
         function changeSchool() {
             const select = document.getElementById('schoolSelect');
-            app.state.selectedSchool = select.value;
+            const newSchool = select.value;
             
-            document.body.classList.remove('school-wlhs', 'school-wvhs');
-            document.body.classList.add(`school-${select.value}`);
+            if (newSchool !== app.state.selectedSchool) {
+                app.state.selectedSchool = newSchool;
+                
+                document.body.classList.remove('school-wlhs', 'school-wvhs');
+                document.body.classList.add(`school-${newSchool}`);
 
-            showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
+                showNotification(`Switched to ${newSchool === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
+                
+                // Reload data for new school
+                loadCalendarData();
+            }
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
         }
 
         function renderCalendar() {
@@ -1735,6 +1236,7 @@
 
             grid.innerHTML = '';
 
+            // Add day headers
             const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             dayHeaders.forEach(day => {
                 const header = document.createElement('div');
@@ -1743,60 +1245,205 @@
                 grid.appendChild(header);
             });
 
+            // Calculate start date for calendar grid
             const firstDay = new Date(year, month, 1);
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
 
+            // Generate 42 days (6 weeks)
             for (let i = 0; i < 42; i++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
+                const dateString = formatDate(currentDate);
 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
 
+                // Check if it's today
                 const isToday = currentDate.toDateString() === new Date().toDateString();
                 if (isToday) dayElement.classList.add('today');
 
+                // Day number
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = currentDate.getDate();
-
                 dayElement.appendChild(dayNumber);
-                
-                // Add A/B schedule display
-                const scheduleDisplay = document.createElement('div');
-                scheduleDisplay.className = 'ab-schedule-display';
-                scheduleDisplay.style.display = 'none'; // Hidden until we load data
-                scheduleDisplay.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
-                scheduleDisplay.innerHTML = `
-                    <span class="schedule-letter">?</span>
-                    <div class="ab-schedule-menu">
-                        <div class="ab-menu-item option-a" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'A', event)">A</div>
-                        <div class="ab-menu-item option-b" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', 'B', event)">B</div>
-                        <div class="ab-menu-item option-clear" onclick="setDaySchedule('${currentDate.toISOString().split('T')[0]}', null, event)">Clear</div>
-                    </div>
-                `;
-                dayElement.appendChild(scheduleDisplay);
-                
-                // Add plus button for admin mode
-                if (i < 42) { // Only add to actual calendar days
+
+                // A/B Schedule Badge
+                const schedule = app.data.daySchedules.get(dateString);
+                if (schedule) {
+                    const abBadge = document.createElement('div');
+                    abBadge.className = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
+                    abBadge.textContent = schedule;
+                    
+                    // Add admin dropdown for A/B schedule
+                    if (app.state.adminMode) {
+                        const abMenu = document.createElement('div');
+                        abMenu.className = 'ab-schedule-menu';
+                        
+                        const optionA = document.createElement('div');
+                        optionA.className = 'ab-menu-item option-a';
+                        optionA.textContent = 'A';
+                        optionA.onclick = (e) => {
+                            e.stopPropagation();
+                            updateDaySchedule(dateString, 'A');
+                        };
+                        
+                        const optionB = document.createElement('div');
+                        optionB.className = 'ab-menu-item option-b';
+                        optionB.textContent = 'B';
+                        optionB.onclick = (e) => {
+                            e.stopPropagation();
+                            updateDaySchedule(dateString, 'B');
+                        };
+                        
+                        const optionClear = document.createElement('div');
+                        optionClear.className = 'ab-menu-item option-clear';
+                        optionClear.textContent = 'Clear';
+                        optionClear.onclick = (e) => {
+                            e.stopPropagation();
+                            updateDaySchedule(dateString, null);
+                        };
+                        
+                        abMenu.appendChild(optionA);
+                        abMenu.appendChild(optionB);
+                        abMenu.appendChild(optionClear);
+                        abBadge.appendChild(abMenu);
+                    }
+                    
+                    dayElement.appendChild(abBadge);
+                } else if (app.state.adminMode) {
+                    // Show invisible A/B badge for admin to add schedule
+                    const abBadge = document.createElement('div');
+                    abBadge.className = 'ab-schedule-display';
+                    abBadge.style.opacity = '0.3';
+                    abBadge.textContent = '+';
+                    
+                    const abMenu = document.createElement('div');
+                    abMenu.className = 'ab-schedule-menu';
+                    
+                    const optionA = document.createElement('div');
+                    optionA.className = 'ab-menu-item option-a';
+                    optionA.textContent = 'A';
+                    optionA.onclick = (e) => {
+                        e.stopPropagation();
+                        updateDaySchedule(dateString, 'A');
+                    };
+                    
+                    const optionB = document.createElement('div');
+                    optionB.className = 'ab-menu-item option-b';
+                    optionB.textContent = 'B';
+                    optionB.onclick = (e) => {
+                        e.stopPropagation();
+                        updateDaySchedule(dateString, 'B');
+                    };
+                    
+                    abMenu.appendChild(optionA);
+                    abMenu.appendChild(optionB);
+                    abBadge.appendChild(abMenu);
+                    dayElement.appendChild(abBadge);
+                }
+
+                // Day Type Label
+                const dayType = app.data.dayTypes.get(dateString);
+                if (dayType) {
+                    const typeLabel = document.createElement('div');
+                    typeLabel.className = `day-type-display ${dayType.toLowerCase().replace(/[^a-z]/g, '-')}`;
+                    typeLabel.textContent = dayType;
+                    
+                    // Add admin dropdown for day type
+                    if (app.state.adminMode) {
+                        const typeMenu = document.createElement('div');
+                        typeMenu.className = 'day-type-menu';
+                        
+                        const dayTypeOptions = [
+                            'No School',
+                            'Early Release',
+                            'Late Start',
+                            'Half Day',
+                            'Access',
+                            'Grading',
+                            'Staff Development',
+                            'Holiday',
+                            'Furlough',
+                            'Finals'
+                        ];
+                        
+                        dayTypeOptions.forEach(option => {
+                            const menuItem = document.createElement('div');
+                            menuItem.className = `day-type-menu-item ${option.toLowerCase().replace(/[^a-z]/g, '-')}`;
+                            menuItem.textContent = option;
+                            menuItem.onclick = (e) => {
+                                e.stopPropagation();
+                                updateDayType(dateString, option);
+                            };
+                            typeMenu.appendChild(menuItem);
+                        });
+                        
+                        const clearItem = document.createElement('div');
+                        clearItem.className = 'day-type-menu-item clear';
+                        clearItem.textContent = 'Clear';
+                        clearItem.onclick = (e) => {
+                            e.stopPropagation();
+                            updateDayType(dateString, null);
+                        };
+                        typeMenu.appendChild(clearItem);
+                        
+                        typeLabel.appendChild(typeMenu);
+                    }
+                    
+                    dayElement.appendChild(typeLabel);
+                } else if (app.state.adminMode) {
+                    // Show invisible type label for admin to add day type
+                    const typeLabel = document.createElement('div');
+                    typeLabel.className = 'day-type-display';
+                    typeLabel.style.opacity = '0.3';
+                    typeLabel.style.background = '#6b7280';
+                    typeLabel.textContent = '+';
+                    
+                    const typeMenu = document.createElement('div');
+                    typeMenu.className = 'day-type-menu';
+                    
+                    const dayTypeOptions = [
+                        'No School',
+                        'Early Release', 
+                        'Late Start',
+                        'Half Day',
+                        'Access',
+                        'Grading',
+                        'Staff Development',
+                        'Holiday',
+                        'Furlough',
+                        'Finals'
+                    ];
+                    
+                    dayTypeOptions.forEach(option => {
+                        const menuItem = document.createElement('div');
+                        menuItem.className = `day-type-menu-item ${option.toLowerCase().replace(/[^a-z]/g, '-')}`;
+                        menuItem.textContent = option;
+                        menuItem.onclick = (e) => {
+                            e.stopPropagation();
+                            updateDayType(dateString, option);
+                        };
+                        typeMenu.appendChild(menuItem);
+                    });
+                    
+                    typeLabel.appendChild(typeMenu);
+                    dayElement.appendChild(typeLabel);
+                }
+
+                // Admin plus button
+                if (app.state.adminMode) {
                     const plusButton = document.createElement('button');
                     plusButton.className = 'admin-plus';
                     plusButton.textContent = '+';
                     plusButton.onclick = (e) => {
                         e.stopPropagation();
-                        openModal(currentDate, true); // true = admin mode
+                        // Future: Open modal for adding events/materials
+                        showNotification(`Add events/materials for ${dateString} (coming soon)`);
                     };
                     dayElement.appendChild(plusButton);
                 }
-                
-                // Add click handler for user mode (entire day cell)
-                dayElement.addEventListener('click', (e) => {
-                    // Only open modal if we're not in admin mode and no plus button was clicked
-                    if (!app.state.adminMode && !e.target.classList.contains('admin-plus') && !e.target.closest('.ab-schedule-display')) {
-                        openModal(currentDate, false); // false = user mode
-                    }
-                });
 
                 grid.appendChild(dayElement);
             }
@@ -1810,1129 +1457,13 @@
             document.body.classList.add('district-theme');
             
             renderCalendar();
-            loadCalendarSchedules();
+            
+            // Load calendar data if connected
+            if (app.config.apiUrl) {
+                loadCalendarData();
+            }
+            
             showNotification('Calendar loaded successfully!');
-        });
-
-        // ===== A/B SCHEDULE FUNCTIONS =====
-
-        async function loadCalendarSchedules() {
-            try {
-                console.log('Attempting to load schedules...');
-                const response = await fetch(`${app.config.apiUrl}/date-configs`);
-                
-                if (!response.ok) {
-                    console.warn('Date configs not available, status:', response.status);
-                    return;
-                }
-                
-                const configs = await response.json();
-                console.log('Raw API response:', configs);
-                console.log('Number of configs loaded:', configs.length);
-                
-                // Process each config
-                configs.forEach((config, index) => {
-                    console.log(`Processing config ${index}:`, config);
-                    if (config.day_type) {
-                        console.log(`Updating schedule for ${config.date_key} to ${config.day_type}`);
-                        updateCalendarDaySchedule(config.date_key, config.day_type);
-                    } else {
-                        console.log(`Config ${index} has no day_type:`, config);
-                    }
-                });
-                
-                const scheduleCount = configs.filter(c => c.day_type).length;
-                if (scheduleCount > 0) {
-                    showNotification(`✅ Loaded ${scheduleCount} A/B schedules`);
-                }
-                
-            } catch (error) {
-                console.error('Error loading schedules:', error);
-            }
-        }
-
-        function updateCalendarDaySchedule(dateString, schedule) {
-            console.log('🔧 TRYING TO UPDATE:', dateString, 'with schedule:', schedule);
-            
-            const scheduleDisplays = document.querySelectorAll(`[data-date="${dateString}"]`);
-            console.log('📍 Found', scheduleDisplays.length, 'elements with data-date:', dateString);
-            
-            if (scheduleDisplays.length === 0) {
-                console.log('❌ NO ELEMENTS FOUND for date:', dateString);
-                // Try to find ANY schedule displays
-                const allDisplays = document.querySelectorAll('.ab-schedule-display');
-                console.log('📋 All schedule displays on page:', allDisplays.length);
-                if (allDisplays.length > 0) {
-                    console.log('📋 First few data-dates:', Array.from(allDisplays).slice(0, 3).map(el => el.getAttribute('data-date')));
-                }
-                return;
-            }
-            
-            scheduleDisplays.forEach((scheduleDisplay, index) => {
-                console.log(`🔄 Processing display ${index} for ${dateString}`);
-                const scheduleLetter = scheduleDisplay.querySelector('.schedule-letter');
-                console.log('🔤 Found schedule letter element:', !!scheduleLetter);
-                
-                if (schedule) {
-                    console.log('✅ Setting visible with schedule:', schedule);
-                    scheduleDisplay.style.display = 'block';
-                    scheduleDisplay.style.visibility = 'visible';
-                    scheduleDisplay.style.opacity = '1';
-                    
-                    if (scheduleLetter) {
-                        scheduleLetter.textContent = schedule;
-                        console.log('📝 Set letter to:', schedule);
-                    }
-                    
-                    const newClassName = `ab-schedule-display schedule-${schedule.toLowerCase()}`;
-                    scheduleDisplay.className = newClassName;
-                    console.log('🎨 Set className to:', newClassName);
-                    
-                    // Force style update
-                    scheduleDisplay.style.background = schedule === 'A' ? '#3b82f6' : '#ef4444';
-                    scheduleDisplay.style.color = 'white';
-                    scheduleDisplay.style.padding = '4px 8px';
-                    scheduleDisplay.style.borderRadius = '4px';
-                    scheduleDisplay.style.position = 'absolute';
-                    scheduleDisplay.style.top = '8px';
-                    scheduleDisplay.style.right = '8px';
-                    scheduleDisplay.style.zIndex = '50';
-                    
-                    console.log('🎯 FORCED STYLES APPLIED');
-                } else {
-                    scheduleDisplay.style.display = 'none';
-                    console.log('👻 Hidden (no schedule)');
-                }
-            });
-        }
-
-        async function setDaySchedule(dateString, schedule, event) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            try {
-                // Try date-configs first, fallback to day-schedules
-                let response = await fetch(`${app.config.apiUrl}/date-configs`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date_key: dateString,
-                        day_type: schedule
-                    })
-                });
-
-                if (!response.ok) {
-                    // Fallback to day-schedules format
-                    response = await fetch(`${app.config.apiUrl}/day-schedules`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            date: dateString,
-                            schedule: schedule
-                        })
-                    });
-                }
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                // Update the visual display
-                updateCalendarDaySchedule(dateString, schedule);
-                
-                // Clear cache for this date so it reloads fresh data
-                app.cache.dateData.delete(dateString);
-                
-                const scheduleText = schedule ? `${schedule} Day` : 'cleared';
-                showNotification(`✅ Schedule set to ${scheduleText} for ${new Date(dateString).toLocaleDateString()}`);
-
-            } catch (error) {
-                console.error('Error setting day schedule:', error);
-                showNotification('❌ Failed to update schedule: ' + error.message, true);
-            }
-        }
-
-        // ===== MODAL SYSTEM FUNCTIONS =====
-
-        function openModal(date, isAdminMode) {
-            app.state.selectedModalDate = date;
-            const modal = document.getElementById('dayModal');
-            const modalTitle = document.getElementById('modalDate');
-            const modalBody = document.getElementById('modalBody');
-            
-            // Format date for display
-            const formattedDate = new Intl.DateTimeFormat('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            }).format(date);
-            
-            modalTitle.textContent = formattedDate;
-            
-            // Show loading state
-            modalBody.innerHTML = `
-                <div class="modal-loading">
-                    <div class="modal-loading-spinner"></div>
-                    <div>Loading day information...</div>
-                </div>
-            `;
-            
-            // Show modal
-            modal.classList.add('show');
-            
-            // Load data on demand
-            loadModalData(date, isAdminMode);
-            
-            showNotification(`Opened ${isAdminMode ? 'admin' : 'user'} view for ${formattedDate}`);
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('dayModal');
-            
-            // Check for unsaved changes
-            if (app.state.unsavedChanges) {
-                if (!confirm('You have unsaved changes. Are you sure you want to close?')) {
-                    return;
-                }
-                app.state.unsavedChanges = false;
-            }
-            
-            modal.classList.remove('show');
-            app.state.selectedModalDate = null;
-        }
-
-        function loadModalData(date, isAdminMode) {
-            const dateKey = date.toISOString().split('T')[0];
-            const modalBody = document.getElementById('modalBody');
-            
-            // Check cache first
-            if (app.cache.dateData.has(dateKey)) {
-                const cachedData = app.cache.dateData.get(dateKey);
-                renderModalContent(cachedData, isAdminMode);
-                return;
-            }
-            
-            // Load real data from API
-            Promise.all([
-                loadEventsData(dateKey),
-                loadMaterialsData(dateKey),
-                loadScheduleData(dateKey)
-            ])
-            .then(([events, materials, scheduleData]) => {
-                const data = {
-                    events: events,
-                    materials: materials,
-                    schedule: scheduleData.schedule,
-                    dayType: scheduleData.dayType
-                };
-                
-                // Cache the data
-                app.cache.dateData.set(dateKey, data);
-                renderModalContent(data, isAdminMode);
-            })
-            .catch(error => {
-                console.error('Error loading modal data:', error);
-                modalBody.innerHTML = `
-                    <div class="error-message">
-                        <strong>Error loading data:</strong> ${error.message}
-                        <br><button class="btn btn-sm" onclick="loadModalData(app.state.selectedModalDate, ${isAdminMode})" style="margin-top: 10px;">Retry</button>
-                    </div>
-                `;
-            });
-        }
-
-        async function loadEventsData(dateKey) {
-            if (!app.state.connected) {
-                return []; // Return empty if not connected
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/events?school=${app.state.selectedSchool}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to load events: ${response.statusText}`);
-                }
-                const events = await response.json();
-                return events.filter(event => event.date === dateKey);
-            } catch (error) {
-                console.warn('Events API not available, using empty data:', error);
-                return [];
-            }
-        }
-
-        async function loadMaterialsData(dateKey) {
-            if (!app.state.connected) {
-                return { 9: [], 10: [], 11: [], 12: [] };
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/materials?school=${app.state.selectedSchool}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to load materials: ${response.statusText}`);
-                }
-                const materials = await response.json();
-                const filteredMaterials = materials.filter(material => material.date === dateKey);
-                
-                // Group by grade level
-                const groupedMaterials = { 9: [], 10: [], 11: [], 12: [] };
-                filteredMaterials.forEach(material => {
-                    if (groupedMaterials[material.grade_level]) {
-                        groupedMaterials[material.grade_level].push(material);
-                    }
-                });
-                
-                return groupedMaterials;
-            } catch (error) {
-                console.warn('Materials API not available, using empty data:', error);
-                return { 9: [], 10: [], 11: [], 12: [] };
-            }
-        }
-
-        async function loadScheduleData(dateKey) {
-            // For now, return mock schedule data
-            // This will be replaced with real API calls when A/B schedule and day types are implemented
-            return {
-                schedule: Math.random() > 0.5 ? 'A' : 'B',
-                dayType: null
-            };
-        }
-
-        function renderModalContent(data, isAdminMode) {
-            const modalBody = document.getElementById('modalBody');
-            const scheduleBadge = document.getElementById('modalScheduleBadge');
-            
-            // Show A/B schedule badge if available
-            if (data.schedule) {
-                scheduleBadge.textContent = data.schedule;
-                scheduleBadge.style.display = 'inline-block';
-                scheduleBadge.style.background = data.schedule === 'A' ? '#3b82f6' : '#ef4444';
-                scheduleBadge.style.color = 'white';
-                scheduleBadge.style.padding = '4px 8px';
-                scheduleBadge.style.borderRadius = '6px';
-                scheduleBadge.style.fontSize = '0.9rem';
-                scheduleBadge.style.fontWeight = '600';
-            } else {
-                scheduleBadge.style.display = 'none';
-            }
-            
-            if (isAdminMode) {
-                renderAdminModalContent(modalBody, data);
-            } else {
-                renderUserModalContent(modalBody, data);
-            }
-        }
-
-        function renderAdminModalContent(container, data) {
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            
-            container.innerHTML = `
-                <!-- Events Section -->
-                <div class="crud-section">
-                    <div class="crud-header">
-                        📅 Events
-                    </div>
-                    <div class="crud-content">
-                        <div class="existing-items" id="eventsList">
-                            ${renderEventsList(data.events)}
-                        </div>
-                        
-                        <div class="add-form">
-                            <div id="eventError" style="display: none;"></div>
-                            <div class="form-row">
-                                <div class="form-group title-group">
-                                    <label class="form-label">Event Title</label>
-                                    <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" maxlength="255">
-                                </div>
-                                <div class="form-group time-group">
-                                    <label class="form-label">Time</label>
-                                    <input type="time" class="form-input" id="eventTime">
-                                </div>
-                                <div class="form-group department-group">
-                                    <label class="form-label">Department</label>
-                                    <select class="form-select" id="eventDepartment">
-                                        <option value="">Select department</option>
-                                        <option value="ASB">ASB</option>
-                                        <option value="Life">Life</option>
-                                        <option value="Athletics">Athletics</option>
-                                        <option value="Art/Theater">Art/Theater</option>
-                                        <option value="Counseling">Counseling</option>
-                                        <option value="Testing">Testing</option>
-                                        <option value="Staff">Staff</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group description-group">
-                                    <label class="form-label">Description (Optional)</label>
-                                    <input type="text" class="form-input" id="eventDescription" placeholder="Event description">
-                                </div>
-                                <div class="form-group button-group">
-                                    <button class="btn btn-add" onclick="addEvent('${dateKey}')">Add Event</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Materials Section -->
-                <div class="crud-section">
-                    <div class="crud-header">
-                        📚 Materials
-                    </div>
-                    <div class="grade-tabs">
-                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 9 ? 'active' : ''}" onclick="switchGradeTab(9)">Grade 9</button>
-                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 10 ? 'active' : ''}" onclick="switchGradeTab(10)">Grade 10</button>
-                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 11 ? 'active' : ''}" onclick="switchGradeTab(11)">Grade 11</button>
-                        <button class="grade-tab ${app.state.lastSelectedGradeTab === 12 ? 'active' : ''}" onclick="switchGradeTab(12)">Grade 12</button>
-                    </div>
-                    <div class="crud-content">
-                        <div class="existing-items" id="materialsList">
-                            ${renderMaterialsList(data.materials[app.state.lastSelectedGradeTab] || [])}
-                        </div>
-                        
-                        <div class="add-form">
-                            <div id="materialError" style="display: none;"></div>
-                            <div class="form-row">
-                                <div class="form-group title-group">
-                                    <label class="form-label">Material Title</label>
-                                    <input type="text" class="form-input" id="materialTitle" placeholder="Enter material title" maxlength="255">
-                                </div>
-                                <div class="form-group url-group">
-                                    <label class="form-label">Link/URL</label>
-                                    <input type="url" class="form-input" id="materialLink" placeholder="https://example.com/document.pdf">
-                                    <div class="url-validation-error" id="urlError" style="display: none;"></div>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group description-group">
-                                    <label class="form-label">Description (Optional)</label>
-                                    <input type="text" class="form-input" id="materialDescription" placeholder="Brief description of the material">
-                                </div>
-                                <div class="form-group password-group">
-                                    <label class="form-label">Password (Optional)</label>
-                                    <input type="text" class="form-input" id="materialPassword" placeholder="Leave empty for public access">
-                                </div>
-                                <div class="form-group button-group">
-                                    <button class="btn btn-add" onclick="addMaterial('${dateKey}')">Add Material</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderEventsList(events) {
-            if (!events || events.length === 0) {
-                return '<div class="empty-state">No events scheduled for this day</div>';
-            }
-
-            return events.map(event => {
-                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
-                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
-                
-                return `
-                    <div class="item-card ${departmentClass}" id="event-${event.id}">
-                        <div class="item-info">
-                            <div class="item-title">${escapeHtml(event.title)}</div>
-                            <div class="item-details">
-                                ${timeDisplay ? `${timeDisplay} • ` : ''}${event.department || 'No Department'}
-                                ${event.description ? `<br><small>${escapeHtml(event.description)}</small>` : ''}
-                            </div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm btn-edit" onclick="editEvent(${event.id})">Edit</button>
-                            <button class="btn btn-sm btn-delete" onclick="deleteEvent(${event.id})">Delete</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ===== EVENT CRUD FUNCTIONS =====
-
-        async function addEvent(dateKey) {
-            const title = document.getElementById('eventTitle').value.trim();
-            const time = document.getElementById('eventTime').value;
-            const department = document.getElementById('eventDepartment').value;
-            const description = document.getElementById('eventDescription').value.trim();
-            const errorDiv = document.getElementById('eventError');
-
-            // Clear previous errors
-            errorDiv.style.display = 'none';
-
-            // Validation
-            if (!title) {
-                showEventError('Event title is required');
-                return;
-            }
-
-            if (!app.state.connected) {
-                showEventError('Database not connected. Please check your connection.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/events`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        school: app.state.selectedSchool,
-                        date: dateKey,
-                        title: title,
-                        time: time || null,
-                        department: department || null,
-                        description: description || ''
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                const newEvent = await response.json();
-                
-                // Clear form
-                document.getElementById('eventTitle').value = '';
-                document.getElementById('eventTime').value = '';
-                document.getElementById('eventDepartment').value = '';
-                document.getElementById('eventDescription').value = '';
-
-                // Update cache and UI
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    cachedData.events.push(newEvent);
-                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
-                }
-
-                app.state.unsavedChanges = false;
-                showNotification('✅ Event added successfully!');
-
-            } catch (error) {
-                console.error('Error adding event:', error);
-                showEventError('Failed to add event: ' + error.message);
-            }
-        }
-
-        async function deleteEvent(eventId) {
-            if (!confirm('Are you sure you want to delete this event?')) {
-                return;
-            }
-
-            if (!app.state.connected) {
-                showEventError('Database not connected. Please check your connection.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                // Update cache and UI
-                const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    cachedData.events = cachedData.events.filter(event => event.id !== eventId);
-                    document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
-                }
-
-                showNotification('✅ Event deleted successfully!');
-
-            } catch (error) {
-                console.error('Error deleting event:', error);
-                showEventError('Failed to delete event: ' + error.message);
-            }
-        }
-
-        function editEvent(eventId) {
-            // Simple edit implementation - populate form with event data
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            const cachedData = app.cache.dateData.get(dateKey);
-            const event = cachedData.events.find(e => e.id === eventId);
-            
-            if (event) {
-                document.getElementById('eventTitle').value = event.title;
-                document.getElementById('eventTime').value = event.time || '';
-                document.getElementById('eventDepartment').value = event.department || '';
-                document.getElementById('eventDescription').value = event.description || '';
-                
-                // Change add button to update button
-                const addButton = document.querySelector('.btn-add');
-                addButton.textContent = 'Update Event';
-                addButton.onclick = () => updateEvent(eventId, dateKey);
-                
-                // Add cancel button
-                addButton.insertAdjacentHTML('afterend', `
-                    <button class="btn btn-cancel" onclick="cancelEditEvent('${dateKey}')" style="margin-left: 10px;">Cancel</button>
-                `);
-                
-                app.state.unsavedChanges = true;
-                showNotification('Editing event - make changes and click Update');
-            }
-        }
-
-        async function updateEvent(eventId, dateKey) {
-            const title = document.getElementById('eventTitle').value.trim();
-            const time = document.getElementById('eventTime').value;
-            const department = document.getElementById('eventDepartment').value;
-            const description = document.getElementById('eventDescription').value.trim();
-
-            if (!title) {
-                showEventError('Event title is required');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        time: time || null,
-                        department: department || null,
-                        description: description || ''
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                const updatedEvent = await response.json();
-                
-                // Update cache and UI
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    const index = cachedData.events.findIndex(e => e.id === eventId);
-                    if (index !== -1) {
-                        cachedData.events[index] = updatedEvent;
-                        document.getElementById('eventsList').innerHTML = renderEventsList(cachedData.events);
-                    }
-                }
-
-                cancelEditEvent(dateKey);
-                app.state.unsavedChanges = false;
-                showNotification('✅ Event updated successfully!');
-
-            } catch (error) {
-                console.error('Error updating event:', error);
-                showEventError('Failed to update event: ' + error.message);
-            }
-        }
-
-        function cancelEditEvent(dateKey) {
-            // Clear form
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventTime').value = '';
-            document.getElementById('eventDepartment').value = '';
-            document.getElementById('eventDescription').value = '';
-            
-            // Reset add button
-            const addButton = document.querySelector('.btn-add');
-            addButton.textContent = 'Add Event';
-            addButton.onclick = () => addEvent(dateKey);
-            
-            // Remove cancel button
-            const cancelButton = document.querySelector('.btn-cancel');
-            if (cancelButton) {
-                cancelButton.remove();
-            }
-            
-            app.state.unsavedChanges = false;
-        }
-
-        function showEventError(message) {
-            const errorDiv = document.getElementById('eventError');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
-        // ===== UTILITY FUNCTIONS =====
-
-        function formatTime12Hour(time24) {
-            if (!time24) return '';
-            const [hours, minutes] = time24.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const hour12 = hour % 12 || 12;
-            return `${hour12}:${minutes} ${ampm}`;
-        }
-
-        function renderMaterialsList(materials) {
-            if (!materials || materials.length === 0) {
-                return '<div class="empty-state">No materials for this grade level</div>';
-            }
-
-            return materials.map(material => {
-                const isProtected = material.password && material.password.trim() !== '';
-                const protectedClass = isProtected ? 'protected' : '';
-                
-                return `
-                    <div class="material-item-card ${protectedClass}" id="material-${material.id}">
-                        <div class="material-info">
-                            <div class="material-title">
-                                ${escapeHtml(material.title)}
-                                ${isProtected ? '<span class="protected-badge">🔒 Protected</span>' : ''}
-                            </div>
-                            <div class="material-details">
-                                Grade ${material.grade_level}
-                                ${material.description ? ` • ${escapeHtml(material.description)}` : ''}
-                            </div>
-                            <a href="${escapeHtml(material.link)}" target="_blank" class="material-url">${escapeHtml(material.link)}</a>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn btn-sm btn-edit" onclick="editMaterial(${material.id})">Edit</button>
-                            <button class="btn btn-sm btn-delete" onclick="deleteMaterial(${material.id})">Delete</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ===== MATERIALS CRUD FUNCTIONS =====
-
-        function switchGradeTab(grade) {
-            app.state.lastSelectedGradeTab = grade;
-            
-            // Update tab appearance
-            document.querySelectorAll('.grade-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update materials list
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            const cachedData = app.cache.dateData.get(dateKey);
-            if (cachedData) {
-                document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[grade] || []);
-            }
-            
-            // Clear any editing state
-            cancelEditMaterial(dateKey);
-        }
-
-        async function addMaterial(dateKey) {
-            const title = document.getElementById('materialTitle').value.trim();
-            const link = document.getElementById('materialLink').value.trim();
-            const description = document.getElementById('materialDescription').value.trim();
-            const password = document.getElementById('materialPassword').value.trim();
-            const errorDiv = document.getElementById('materialError');
-            const urlErrorDiv = document.getElementById('urlError');
-
-            // Clear previous errors
-            errorDiv.style.display = 'none';
-            urlErrorDiv.style.display = 'none';
-
-            // Validation
-            if (!title) {
-                showMaterialError('Material title is required');
-                return;
-            }
-
-            if (!link) {
-                showMaterialError('Link/URL is required');
-                return;
-            }
-
-            // URL validation
-            if (!isValidUrl(link)) {
-                urlErrorDiv.textContent = 'Please enter a valid URL (must start with http:// or https://)';
-                urlErrorDiv.style.display = 'block';
-                return;
-            }
-
-            if (!app.state.connected) {
-                showMaterialError('Database not connected. Please check your connection.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/materials`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        school: app.state.selectedSchool,
-                        date: dateKey,
-                        grade_level: app.state.lastSelectedGradeTab,
-                        title: title,
-                        link: link,
-                        description: description || '',
-                        password: password || ''
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                const newMaterial = await response.json();
-                
-                // Clear form
-                document.getElementById('materialTitle').value = '';
-                document.getElementById('materialLink').value = '';
-                document.getElementById('materialDescription').value = '';
-                document.getElementById('materialPassword').value = '';
-
-                // Update cache and UI
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    if (!cachedData.materials[app.state.lastSelectedGradeTab]) {
-                        cachedData.materials[app.state.lastSelectedGradeTab] = [];
-                    }
-                    cachedData.materials[app.state.lastSelectedGradeTab].push(newMaterial);
-                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
-                }
-
-                app.state.unsavedChanges = false;
-                showNotification('✅ Material added successfully!');
-
-            } catch (error) {
-                console.error('Error adding material:', error);
-                showMaterialError('Failed to add material: ' + error.message);
-            }
-        }
-
-        async function deleteMaterial(materialId) {
-            if (!confirm('Are you sure you want to delete this material?')) {
-                return;
-            }
-
-            if (!app.state.connected) {
-                showMaterialError('Database not connected. Please check your connection.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                // Update cache and UI
-                const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    Object.keys(cachedData.materials).forEach(grade => {
-                        cachedData.materials[grade] = cachedData.materials[grade].filter(material => material.id !== materialId);
-                    });
-                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
-                }
-
-                showNotification('✅ Material deleted successfully!');
-
-            } catch (error) {
-                console.error('Error deleting material:', error);
-                showMaterialError('Failed to delete material: ' + error.message);
-            }
-        }
-
-        function editMaterial(materialId) {
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            const cachedData = app.cache.dateData.get(dateKey);
-            
-            // Find material across all grades
-            let material = null;
-            Object.values(cachedData.materials).forEach(gradeMaterials => {
-                const found = gradeMaterials.find(m => m.id === materialId);
-                if (found) material = found;
-            });
-            
-            if (material) {
-                document.getElementById('materialTitle').value = material.title;
-                document.getElementById('materialLink').value = material.link;
-                document.getElementById('materialDescription').value = material.description || '';
-                document.getElementById('materialPassword').value = material.password || '';
-                
-                // Change add button to update button
-                const addButton = document.querySelector('.btn-add');
-                addButton.textContent = 'Update Material';
-                addButton.onclick = () => updateMaterial(materialId, dateKey);
-                
-                // Add cancel button
-                addButton.insertAdjacentHTML('afterend', `
-                    <button class="btn btn-cancel" onclick="cancelEditMaterial('${dateKey}')" style="margin-left: 10px;">Cancel</button>
-                `);
-                
-                app.state.unsavedChanges = true;
-                showNotification('Editing material - make changes and click Update');
-            }
-        }
-
-        async function updateMaterial(materialId, dateKey) {
-            const title = document.getElementById('materialTitle').value.trim();
-            const link = document.getElementById('materialLink').value.trim();
-            const description = document.getElementById('materialDescription').value.trim();
-            const password = document.getElementById('materialPassword').value.trim();
-
-            if (!title || !link) {
-                showMaterialError('Title and link are required');
-                return;
-            }
-
-            if (!isValidUrl(link)) {
-                document.getElementById('urlError').textContent = 'Please enter a valid URL';
-                document.getElementById('urlError').style.display = 'block';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        link: link,
-                        description: description || '',
-                        password: password || ''
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || `HTTP ${response.status}`);
-                }
-
-                const updatedMaterial = await response.json();
-                
-                // Update cache and UI
-                const cachedData = app.cache.dateData.get(dateKey);
-                if (cachedData) {
-                    Object.keys(cachedData.materials).forEach(grade => {
-                        const index = cachedData.materials[grade].findIndex(m => m.id === materialId);
-                        if (index !== -1) {
-                            cachedData.materials[grade][index] = updatedMaterial;
-                        }
-                    });
-                    document.getElementById('materialsList').innerHTML = renderMaterialsList(cachedData.materials[app.state.lastSelectedGradeTab]);
-                }
-
-                cancelEditMaterial(dateKey);
-                app.state.unsavedChanges = false;
-                showNotification('✅ Material updated successfully!');
-
-            } catch (error) {
-                console.error('Error updating material:', error);
-                showMaterialError('Failed to update material: ' + error.message);
-            }
-        }
-
-        function cancelEditMaterial(dateKey) {
-            // Clear form
-            document.getElementById('materialTitle').value = '';
-            document.getElementById('materialLink').value = '';
-            document.getElementById('materialDescription').value = '';
-            document.getElementById('materialPassword').value = '';
-            
-            // Reset add button
-            const addButton = document.querySelector('.btn-add');
-            addButton.textContent = 'Add Material';
-            addButton.onclick = () => addMaterial(dateKey);
-            
-            // Remove cancel button
-            const cancelButton = document.querySelector('.btn-cancel');
-            if (cancelButton) {
-                cancelButton.remove();
-            }
-            
-            // Clear errors
-            document.getElementById('materialError').style.display = 'none';
-            document.getElementById('urlError').style.display = 'none';
-            
-            app.state.unsavedChanges = false;
-        }
-
-        function showMaterialError(message) {
-            const errorDiv = document.getElementById('materialError');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function isValidUrl(string) {
-            try {
-                const url = new URL(string);
-                return url.protocol === 'http:' || url.protocol === 'https:';
-            } catch (_) {
-                return false;
-            }
-        }
-
-        function renderUserModalContent(container, data) {
-            const currentGrade = app.state.lastSelectedGradeTab;
-            const currentMaterials = data.materials[currentGrade] || [];
-            
-            container.innerHTML = `
-                <!-- Events Section -->
-                <div class="user-section">
-                    <div class="user-section-header">
-                        📅 Today's Events
-                    </div>
-                    ${renderUserEvents(data.events)}
-                </div>
-
-                <!-- Materials Section -->
-                <div class="user-section">
-                    <div class="user-section-header">
-                        📚 Materials & Resources
-                    </div>
-                    <div class="user-grade-tabs">
-                        <button class="user-grade-tab ${currentGrade === 9 ? 'active' : ''}" onclick="switchUserGradeTab(9)">Grade 9</button>
-                        <button class="user-grade-tab ${currentGrade === 10 ? 'active' : ''}" onclick="switchUserGradeTab(10)">Grade 10</button>
-                        <button class="user-grade-tab ${currentGrade === 11 ? 'active' : ''}" onclick="switchUserGradeTab(11)">Grade 11</button>
-                        <button class="user-grade-tab ${currentGrade === 12 ? 'active' : ''}" onclick="switchUserGradeTab(12)">Grade 12</button>
-                    </div>
-                    <div id="userMaterialsList">
-                        ${renderUserMaterials(currentMaterials)}
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderUserEvents(events) {
-            if (!events || events.length === 0) {
-                return '<div class="user-empty-state">No events scheduled for today</div>';
-            }
-
-            return events.map(event => {
-                const timeDisplay = event.time ? formatTime12Hour(event.time) : '';
-                const departmentClass = event.department ? `dept-${event.department.toLowerCase().replace('/', '-')}` : '';
-                
-                return `
-                    <div class="user-event-card">
-                        <div class="user-event-info">
-                            <div class="user-event-title">${escapeHtml(event.title)}</div>
-                            <div class="user-event-details">
-                                ${timeDisplay ? `${timeDisplay}` : 'All Day'}
-                                ${event.description ? ` • ${escapeHtml(event.description)}` : ''}
-                            </div>
-                        </div>
-                        <div class="user-event-badge ${departmentClass}">
-                            ${event.department || 'General'}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderUserMaterials(materials) {
-            if (!materials || materials.length === 0) {
-                return '<div class="user-empty-state">No materials available for this grade level</div>';
-            }
-
-            return materials.map(material => {
-                const isProtected = material.password && material.password.trim() !== '';
-                
-                return `
-                    <div class="user-material-card">
-                        <div class="user-material-info">
-                            <div class="user-material-title">${escapeHtml(material.title)}</div>
-                            ${material.description ? `<div class="user-material-description">${escapeHtml(material.description)}</div>` : ''}
-                            <div class="user-material-meta">Grade ${material.grade_level}</div>
-                        </div>
-                        ${isProtected ? 
-                            `<button class="user-access-button protected" onclick="accessProtectedMaterial(${material.id}, '${escapeHtml(material.link)}')">
-                                🔒 Access
-                            </button>` :
-                            `<a href="${escapeHtml(material.link)}" target="_blank" class="user-access-button">
-                                📖 Open
-                            </a>`
-                        }
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ===== USER VIEW FUNCTIONS =====
-
-        function switchUserGradeTab(grade) {
-            app.state.lastSelectedGradeTab = grade;
-            
-            // Update tab appearance
-            document.querySelectorAll('.user-grade-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update materials list
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            const cachedData = app.cache.dateData.get(dateKey);
-            if (cachedData) {
-                document.getElementById('userMaterialsList').innerHTML = renderUserMaterials(cachedData.materials[grade] || []);
-            }
-        }
-
-        function accessProtectedMaterial(materialId, materialLink) {
-            const password = prompt('This material is password protected. Please enter the password:');
-            
-            if (password === null) {
-                return; // User cancelled
-            }
-            
-            if (password === '') {
-                alert('Please enter a password to access this material.');
-                return;
-            }
-            
-            // Find the material to check password
-            const dateKey = app.state.selectedModalDate.toISOString().split('T')[0];
-            const cachedData = app.cache.dateData.get(dateKey);
-            
-            let material = null;
-            if (cachedData) {
-                Object.values(cachedData.materials).forEach(gradeMaterials => {
-                    const found = gradeMaterials.find(m => m.id === materialId);
-                    if (found) material = found;
-                });
-            }
-            
-            if (material && material.password === password) {
-                // Correct password - open the material
-                window.open(materialLink, '_blank');
-                showNotification('✅ Access granted! Opening material...');
-            } else {
-                // Incorrect password
-                alert('Incorrect password. Please try again.');
-                showNotification('❌ Access denied - incorrect password', true);
-            }
-        }
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('dayModal');
-                if (modal.classList.contains('show')) {
-                    closeModal();
-                }
-            }
         });
     </script>
 </body>
