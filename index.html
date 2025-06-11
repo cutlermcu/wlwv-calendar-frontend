@@ -1128,11 +1128,11 @@
         function setApiUrl() {
             app.state.environment = detectEnvironment();
             
-            if (app.state.environment === 'production') {
-                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
-            } else {
-                app.config.apiUrl = window.location.origin + '/api';
-            }
+        if (app.state.environment === 'production') {
+            app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+      } else {
+            app.config.apiUrl = window.location.origin + '/api';
+        }
             
             console.log('Environment detected:', app.state.environment);
             console.log('API URL set to:', app.config.apiUrl);
