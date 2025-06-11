@@ -1,793 +1,1121 @@
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
-const path = require('path');
-require('dotenv').config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Production-ready middleware with FIXED CORS configuration
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? [
-        'https://wlwv-calendar.vercel.app',
-        'https://wlwvlife.org',
-        'https://www.wlwvlife.org',
-        /\.vercel\.app$/
-    ] : true,
-    credentials: true
-}));
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Global database connection
-let pool = null;
-
-// Initialize database connection pool
-function initializePool(dbUrl = null) {
-    const connectionString = dbUrl || process.env.DATABASE_URL;
-    
-    if (!connectionString) {
-        console.error('No database URL provided');
-        return null;
-    }
-
-    return new Pool({
-        connectionString,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-        connectionTimeoutMillis: 10000,
-        idleTimeoutMillis: 30000,
-        max: 20,
-        min: 5
-    });
-}
-
-// Helper function to ensure pool exists and is valid
-function ensurePoolExists() {
-    if (!pool || pool.ended) {
-        if (process.env.DATABASE_URL) {
-            pool = initializePool();
-            console.log('Database pool (re)created');
-        } else {
-            throw new Error('No database URL available');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WLWV Life Calendar</title>
+    <meta name="description" content="West Linn-Wilsonville School District Calendar System - View schedules, events, and curriculum materials for WLHS and WVHS">
+    <meta name="keywords" content="WLWV, West Linn, Wilsonville, school calendar, events, curriculum, materials">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }
-    return pool;
-}
 
-// Auto-initialize pool if DATABASE_URL is available
-if (process.env.DATABASE_URL) {
-    pool = initializePool();
-    console.log('Database pool initialized from environment variable');
-}
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
 
-// Helper function to format dates consistently
-function formatDate(dateInput) {
-    if (!dateInput) return null;
+        /* Default district theme (red) for home page */
+        body.district-theme {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+        }
 
-    if (dateInput instanceof Date) {
-        return dateInput.toISOString().split('T')[0];
-    }
+        /* School-specific themes only apply when viewing school calendar */
+        body.school-wlhs {
+            background: linear-gradient(135deg, #0f4a2b 0%, #1f6b47 100%);
+        }
 
-    const date = new Date(dateInput);
-    if (isNaN(date.getTime())) {
-        throw new Error('Invalid date format');
-    }
+        body.school-wvhs {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
 
-    return date.toISOString().split('T')[0];
-}
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-// Root route - API info
-app.get('/', (req, res) => {
-    res.json({
-        name: 'WLWV Life Calendar API',
-        version: '2.4.0',
-        status: 'running',
-        environment: process.env.NODE_ENV || 'development',
-        endpoints: {
-            health: '/api/health',
-            init: 'POST /api/init',
-            daySchedules: '/api/day-schedules',
-            dayTypes: '/api/day-types',
-            events: '/api/events',
-            materials: '/api/materials'
-        },
-        features: [
-            'Password-protected materials',
-            'Multi-school support',
-            'A/B day scheduling',
-            'Event management',
-            'Grade-level materials',
-            'Auto-reconnecting database pool'
-        ]
-    });
-});
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
 
-// Serve the main application
-app.get('/app', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-// Health check endpoint with pool recovery
-app.get('/api/health', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const client = await activePool.connect();
-        const result = await client.query('SELECT NOW() as timestamp, version() as db_version');
-        client.release();
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
 
-        res.json({ 
-            status: 'healthy', 
-            message: 'Database connected',
-            connected: true,
-            timestamp: result.rows[0].timestamp,
-            database: 'PostgreSQL',
-            environment: process.env.NODE_ENV || 'development'
-        });
-    } catch (error) {
-        console.error('Health check failed:', error);
-        res.status(500).json({ 
-            error: 'Database connection failed',
-            connected: false,
-            details: error.message,
-            environment: process.env.NODE_ENV || 'development'
-        });
-    }
-});
+        /* ADMIN VISIBILITY CONTROLS */
+        .tabs {
+            display: none; /* Hidden by default */
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-// Initialize database with better pool management
-app.post('/api/init', async (req, res) => {
-    try {
-        const dbUrl = process.env.DATABASE_URL || req.body.dbUrl;
+        /* Show tabs only when admin mode is active */
+        body.admin-active .tabs {
+            display: flex;
+        }
 
-        if (!dbUrl) {
-            return res.status(400).json({ 
-                error: 'Database URL is required. Set DATABASE_URL environment variable or provide in request.',
-                hasEnvVar: !!process.env.DATABASE_URL
+        #schoolSelect {
+            display: none; /* Hidden by default */
+        }
+
+        /* Show school select only when admin mode is active */
+        body.admin-active #schoolSelect {
+            display: inline-block;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #c41e3a;
+        }
+
+        .screen {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #a01729;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .home-page {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .home-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin: 50px auto;
+            max-width: 800px;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .school-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border-color: #c41e3a;
+        }
+
+        .school-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .school-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .school-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .admin-access {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 30px;
+        }
+
+        .setup-screen {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
+        .setup-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .calendar-page {
+            padding: 0;
+            height: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1a2b 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .current-month {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .admin-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .admin-toggle.active {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            margin: 1px;
+            flex: 1;
+        }
+
+        .day-header {
+            background: #334155;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 8px;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day:hover {
+            background: #f1f5f9;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        /* School-specific color palettes */
+        .school-wlhs {
+            --primary-color: #0f4a2b;
+            --secondary-color: #d4af37;
+            --accent-color: #1f6b47;
+            --light-bg: #f0f8f3;
+            --gradient-start: #0f4a2b;
+            --gradient-end: #1f6b47;
+        }
+
+        .school-wvhs {
+            --primary-color: #1e3a8a;
+            --secondary-color: #c0c0c0;
+            --accent-color: #3b82f6;
+            --light-bg: #f1f5f9;
+            --gradient-start: #1e3a8a;
+            --gradient-end: #3b82f6;
+        }
+
+        /* Dynamic background based on school */
+        body.school-wlhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        body.school-wvhs .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        }
+
+        /* Additional styles for calendar elements */
+        .event-title-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(196, 30, 58, 0.9);
+            color: white;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            max-width: 80px;
+            text-align: center;
+        }
+
+        .ab-schedule-display {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .day-type-display {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(168, 85, 247, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            max-width: 80px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .connection-status.connected {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #bbf7d0;
+        }
+
+        .connection-status.disconnected {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .schools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 30px auto;
+            }
+
+            .calendar-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 WLWV Life Calendar</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showScreen('home')">🏠 Home</button>
+            <button class="tab" onclick="showScreen('setup')">🔧 Setup</button>
+            <button class="tab" onclick="showScreen('calendar')">📅 Calendar</button>
+            <button class="tab" onclick="showScreen('admin')">⚙️ Admin</button>
+        </div>
+
+        <!-- Home Screen -->
+        <div class="screen active" id="home">
+            <div class="home-page">
+                <div class="home-header">
+                    <h1>WLWV Life Calendar</h1>
+                    <p>West Linn-Wilsonville School District Calendar System</p>
+                </div>
+
+                <div class="schools-grid">
+                    <div class="school-card" onclick="goToSchool('wlhs')">
+                        <div class="school-logo">🦁</div>
+                        <h2>West Linn High School</h2>
+                        <p>Access WLHS calendar, events, and curriculum materials</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-events-count">-</div>
+                                <div class="stat-label">Today's Events</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-schedule">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wlhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="school-card" onclick="goToSchool('wvhs')">
+                        <div class="school-logo">🐱</div>
+                        <h2>Wilsonville High School</h2>
+                        <p>Access WHS calendar, events, and curriculum materials</p>
+                        <div class="school-stats">
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-events-count">-</div>
+                                <div class="stat-label">Today's Events</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-schedule">-</div>
+                                <div class="stat-label">Today's Schedule</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number" id="wvhs-day-type">-</div>
+                                <div class="stat-label">Day Type</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-access">
+                    <button class="btn btn-secondary" onclick="showScreen('setup')">
+                        🔧 Database Setup
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('admin')">
+                        ⚙️ Admin Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Screen -->
+        <div class="screen" id="setup">
+            <div class="setup-screen">
+                <h2>Database Setup</h2>
+                <p style="margin-bottom: 30px;">Configure your database connection</p>
+
+                <div id="connectionStatus" class="connection-status disconnected">
+                    <span>🔴</span>
+                    <span>Checking connection...</span>
+                </div>
+
+                <form class="setup-form" onsubmit="handleSetup(event)">
+                    <div class="form-group">
+                        <label class="form-label">Database URL (Optional)</label>
+                        <input type="text" class="form-input" id="dbUrl" 
+                               placeholder="Leave empty to use environment variable">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Only needed if DATABASE_URL environment variable is not set</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API Base URL</label>
+                        <input type="text" class="form-input" id="apiUrl" 
+                               value="" required readonly style="background: #f3f4f6; color: #6b7280;">
+                        <small style="color: #6b7280; font-size: 0.8rem;">Auto-detected from current URL</small>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button type="submit" class="btn btn-primary">
+                            Initialize Database
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="testConnection()">
+                            Test Connection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Calendar Screen -->
+        <div class="screen" id="calendar">
+            <div class="calendar-page">
+                <div class="calendar-header">
+                    <div>
+                        <button class="nav-btn" onclick="showScreen('home')">🏠 Home</button>
+                        <span style="margin-left: 20px; font-size: 1.5rem; font-weight: 700;">
+                            <span id="schoolIcon">🦁</span> <span id="schoolName">West Linn High School</span>
+                        </span>
+                    </div>
+                    <div class="calendar-controls">
+                        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                        <div class="current-month" id="currentMonth">June 2025</div>
+                        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                        <select id="schoolSelect" onchange="changeSchool()">
+                            <option value="wlhs">🦁 West Linn HS</option>
+                            <option value="wvhs">🐱 Wilsonville HS</option>
+                        </select>
+                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
+                            Admin Mode: OFF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Screen -->
+        <div class="screen" id="admin">
+            <div style="padding: 30px;">
+                <h2>Admin Panel</h2>
+                <p>Database administration and event management</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="initializeDatabase()">
+                        Initialize Database Tables
+                    </button>
+                    <button class="btn btn-secondary" onclick="testConnection()" style="margin-left: 10px;">
+                        Test Connection
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                    <h3>System Status</h3>
+                    <div id="dbStatus">Checking database connection...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Global application state
+        const app = {
+            state: {
+                currentDate: new Date(),
+                selectedSchool: 'wlhs',
+                adminMode: false,
+                connected: false,
+                environment: 'development',
+                loading: false
+            },
+            config: {
+                apiUrl: ''
+            }
+        };
+
+        // Environment Detection Function
+        function detectEnvironment() {
+            const hostname = window.location.hostname;
+            if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('replit')) {
+                return 'development';
+            }
+            return 'production';
+        }
+
+        // Fixed API URL Configuration
+        function setApiUrl() {
+            app.state.environment = detectEnvironment();
+            
+            if (app.state.environment === 'production') {
+                // Use your actual backend URL with https://
+                app.config.apiUrl = 'https://wlwv-calendar-api.vercel.app/api';
+            } else {
+                app.config.apiUrl = window.location.origin + '/api';
+            }
+            
+            console.log('Environment detected:', app.state.environment);
+            console.log('API URL set to:', app.config.apiUrl);
+            
+            // Update the form
+            const apiUrlInput = document.getElementById('apiUrl');
+            if (apiUrlInput) {
+                apiUrlInput.value = app.config.apiUrl;
+            }
+        }
+
+        // Enhanced API Call Helper with Error Handling
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const url = app.config.apiUrl + endpoint;
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...options.headers
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error || `HTTP ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error(`API call failed for ${endpoint}:`, error);
+                showNotification(`Error: ${error.message}`, true);
+                throw error;
+            }
+        }
+
+        // Fetch Today's Stats for Home Page
+        async function fetchTodayStats() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Fetch for both schools
+                for (const school of ['wlhs', 'wvhs']) {
+                    try {
+                        // Get events
+                        const events = await apiCall(`/events?school=${school}`);
+                        const todayEvents = events.filter(e => e.date === today);
+                        
+                        // Get day schedules
+                        const schedules = await apiCall('/day-schedules');
+                        const todaySchedule = schedules.find(s => s.date === today);
+                        
+                        // Get day types
+                        const dayTypes = await apiCall('/day-types');
+                        const todayType = dayTypes.find(t => t.date === today);
+                        
+                        // Update UI
+                        document.getElementById(`${school}-events-count`).textContent = todayEvents.length || '0';
+                        document.getElementById(`${school}-schedule`).textContent = todaySchedule?.schedule || 'Regular';
+                        document.getElementById(`${school}-day-type`).textContent = todayType?.type || 'Regular Day';
+                    } catch (error) {
+                        // If data fetch fails for a school, show defaults
+                        document.getElementById(`${school}-events-count`).textContent = '0';
+                        document.getElementById(`${school}-schedule`).textContent = 'N/A';
+                        document.getElementById(`${school}-day-type`).textContent = 'N/A';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch today stats:', error);
+            }
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.textContent = message;
+                notification.className = `notification ${isError ? 'error' : ''} show`;
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
             });
-        }
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
 
-        console.log('Initializing database connection...');
-        
-        // Create new pool only if needed
-        if (!pool) {
-            pool = initializePool(dbUrl);
-        } else if (pool.ended) {
-            pool = initializePool(dbUrl);
-        }
-
-        // Test connection
-        const client = await pool.connect();
-        console.log('Database connection successful!');
-
-        // Create tables
-        console.log('Creating/updating database schema...');
-
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS day_schedules (
-                date DATE PRIMARY KEY,
-                schedule VARCHAR(1) NOT NULL CHECK (schedule IN ('A', 'B')),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS day_types (
-                date DATE PRIMARY KEY,
-                type VARCHAR(50) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS events (
-                id SERIAL PRIMARY KEY,
-                school VARCHAR(10) NOT NULL CHECK (school IN ('wlhs', 'wvhs')),
-                date DATE NOT NULL,
-                title VARCHAR(255) NOT NULL,
-                department VARCHAR(50),
-                time TIME,
-                description TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS materials (
-                id SERIAL PRIMARY KEY,
-                school VARCHAR(10) NOT NULL CHECK (school IN ('wlhs', 'wvhs')),
-                date DATE NOT NULL,
-                grade_level INTEGER NOT NULL CHECK (grade_level BETWEEN 9 AND 12),
-                title VARCHAR(255) NOT NULL,
-                link TEXT NOT NULL,
-                description TEXT DEFAULT '',
-                password TEXT DEFAULT '',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        // Create indexes
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_events_school_date ON events(school, date)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_materials_school_date_grade ON materials(school, date, grade_level)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_events_date ON events(date)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_materials_date ON materials(date)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_day_schedules_date ON day_schedules(date)`);
-        await client.query(`CREATE INDEX IF NOT EXISTS idx_day_types_date ON day_types(date)`);
-
-        console.log('Database schema initialized successfully!');
-        client.release();
-
-        res.json({ 
-            message: 'Database initialized successfully',
-            tables: ['day_schedules', 'day_types', 'events', 'materials'],
-            features: ['password-protected materials', 'multi-school support', 'performance indexes'],
-            environment: process.env.NODE_ENV || 'development',
-            timestamp: new Date().toISOString()
-        });
-
-    } catch (error) {
-        console.error('Database initialization error:', error);
-        
-        let errorMessage = error.message;
-        let suggestions = [];
-        
-        if (error.code === 'ENOTFOUND') {
-            errorMessage = 'Database host not found. Check your connection string.';
-            suggestions.push('Verify DATABASE_URL is correct');
-        } else if (error.code === 'ECONNREFUSED') {
-            errorMessage = 'Connection refused. Database may not be running.';
-            suggestions.push('Check if database is active');
-        } else if (error.code === '28P01') {
-            errorMessage = 'Authentication failed. Check credentials.';
-            suggestions.push('Verify username and password in DATABASE_URL');
-        } else if (error.code === '3D000') {
-            errorMessage = 'Database does not exist.';
-            suggestions.push('Check database name in connection string');
-        }
-
-        res.status(500).json({ 
-            error: errorMessage,
-            code: error.code,
-            suggestions,
-            hasEnvVar: !!process.env.DATABASE_URL
-        });
-    }
-});
-
-// Day Schedules Routes
-app.get('/api/day-schedules', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const client = await activePool.connect();
-        const result = await client.query('SELECT date, schedule FROM day_schedules ORDER BY date');
-        client.release();
-
-        const schedules = result.rows.map(row => ({
-            date: formatDate(row.date),
-            schedule: row.schedule
-        }));
-
-        res.json(schedules);
-    } catch (error) {
-        console.error('Error fetching day schedules:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/day-schedules', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { date, schedule } = req.body;
-
-        if (!date) {
-            return res.status(400).json({ error: 'Date is required' });
-        }
-
-        const formattedDate = formatDate(date);
-        const client = await activePool.connect();
-
-        if (!schedule || schedule === null) {
-            await client.query('DELETE FROM day_schedules WHERE date = $1', [formattedDate]);
-        } else {
-            if (!['A', 'B'].includes(schedule)) {
-                client.release();
-                return res.status(400).json({ error: 'Schedule must be A or B' });
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
             }
 
-            await client.query(`
-                INSERT INTO day_schedules (date, schedule, updated_at) 
-                VALUES ($1, $2, CURRENT_TIMESTAMP)
-                ON CONFLICT (date) 
-                DO UPDATE SET schedule = $2, updated_at = CURRENT_TIMESTAMP
-            `, [formattedDate, schedule]);
+            document.querySelectorAll('.tab').forEach(tab => {
+                const tabText = tab.textContent.toLowerCase();
+                if (tabText.includes(screenId.toLowerCase())) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Initialize calendar if switching to calendar screen
+            if (screenId === 'calendar' && app.state.connected) {
+                renderCalendar();
+            }
         }
 
-        client.release();
-        res.json({ 
-            success: true, 
-            date: formattedDate, 
-            schedule: schedule 
-        });
-    } catch (error) {
-        console.error('Error updating day schedule:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Day Types Routes
-app.get('/api/day-types', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const client = await activePool.connect();
-        const result = await client.query('SELECT date, type FROM day_types ORDER BY date');
-        client.release();
-
-        const types = result.rows.map(row => ({
-            date: formatDate(row.date),
-            type: row.type
-        }));
-
-        res.json(types);
-    } catch (error) {
-        console.error('Error fetching day types:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/day-types', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { date, type } = req.body;
-
-        if (!date) {
-            return res.status(400).json({ error: 'Date is required' });
-        }
-
-        const formattedDate = formatDate(date);
-        const client = await activePool.connect();
-
-        if (!type || type === null) {
-            await client.query('DELETE FROM day_types WHERE date = $1', [formattedDate]);
-        } else {
-            await client.query(`
-                INSERT INTO day_types (date, type, updated_at) 
-                VALUES ($1, $2, CURRENT_TIMESTAMP)
-                ON CONFLICT (date) 
-                DO UPDATE SET type = $2, updated_at = CURRENT_TIMESTAMP
-            `, [formattedDate, type]);
-        }
-
-        client.release();
-        res.json({ 
-            success: true, 
-            date: formattedDate, 
-            type: type 
-        });
-    } catch (error) {
-        console.error('Error updating day type:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Events Routes
-app.get('/api/events', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { school } = req.query;
-
-        if (!school) {
-            return res.status(400).json({ error: 'School parameter is required' });
-        }
-
-        if (!['wlhs', 'wvhs'].includes(school)) {
-            return res.status(400).json({ error: 'School must be wlhs or wvhs' });
-        }
-
-        const client = await activePool.connect();
-        const result = await client.query(
-            'SELECT id, school, date, title, department, time, description, created_at, updated_at FROM events WHERE school = $1 ORDER BY date, time, id',
-            [school]
-        );
-        client.release();
-
-        const events = result.rows.map(row => ({
-            ...row,
-            date: formatDate(row.date)
-        }));
-
-        res.json(events);
-    } catch (error) {
-        console.error('Error fetching events:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/events', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { school, date, title, department, time, description } = req.body;
-
-        if (!school || !date || !title) {
-            return res.status(400).json({ error: 'School, date, and title are required' });
-        }
-
-        if (!['wlhs', 'wvhs'].includes(school)) {
-            return res.status(400).json({ error: 'School must be wlhs or wvhs' });
-        }
-
-        const formattedDate = formatDate(date);
-        const client = await activePool.connect();
-
-        const result = await client.query(`
-            INSERT INTO events (school, date, title, department, time, description)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id, school, date, title, department, time, description, created_at, updated_at
-        `, [school, formattedDate, title, department || null, time || null, description || '']);
-
-        client.release();
-
-        const event = {
-            ...result.rows[0],
-            date: formatDate(result.rows[0].date)
-        };
-
-        res.json(event);
-    } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.put('/api/events/:id', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { id } = req.params;
-        const { title, department, time, description } = req.body;
-
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required' });
-        }
-
-        const client = await activePool.connect();
-
-        const result = await client.query(`
-            UPDATE events 
-            SET title = $1, department = $2, time = $3, description = $4, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $5
-            RETURNING id, school, date, title, department, time, description, created_at, updated_at
-        `, [title, department || null, time || null, description || '', id]);
-
-        client.release();
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Event not found' });
-        }
-
-        const event = {
-            ...result.rows[0],
-            date: formatDate(result.rows[0].date)
-        };
-
-        res.json(event);
-    } catch (error) {
-        console.error('Error updating event:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.delete('/api/events/:id', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { id } = req.params;
-        const client = await activePool.connect();
-
-        const result = await client.query('DELETE FROM events WHERE id = $1 RETURNING id', [id]);
-        client.release();
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Event not found' });
-        }
-
-        res.json({ success: true, id: parseInt(id) });
-    } catch (error) {
-        console.error('Error deleting event:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Materials Routes
-app.get('/api/materials', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { school } = req.query;
-
-        if (!school) {
-            return res.status(400).json({ error: 'School parameter is required' });
-        }
-
-        if (!['wlhs', 'wvhs'].includes(school)) {
-            return res.status(400).json({ error: 'School must be wlhs or wvhs' });
-        }
-
-        const client = await activePool.connect();
-
-        try {
-            const result = await client.query(
-                'SELECT id, school, date, grade_level, title, link, description, password, created_at, updated_at FROM materials WHERE school = $1 ORDER BY date, grade_level, id',
-                [school]
-            );
+        function goToSchool(schoolCode) {
+            app.state.selectedSchool = schoolCode;
             
-            client.release();
-
-            const materials = result.rows.map(row => ({
-                ...row,
-                date: formatDate(row.date),
-                password: row.password || ''
-            }));
-
-            res.json(materials);
-        } catch (passwordError) {
-            // If password column doesn't exist, try without it
-            const result = await client.query(
-                'SELECT id, school, date, grade_level, title, link, description, created_at, updated_at FROM materials WHERE school = $1 ORDER BY date, grade_level, id',
-                [school]
-            );
+            // Apply school theme
+            document.body.classList.remove('district-theme', 'school-wlhs', 'school-wvhs');
+            document.body.classList.add(`school-${schoolCode}`);
             
-            client.release();
-
-            const materials = result.rows.map(row => ({
-                ...row,
-                date: formatDate(row.date),
-                password: ''
-            }));
-
-            res.json(materials);
-        }
-    } catch (error) {
-        console.error('Error fetching materials:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/materials', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { school, date, grade_level, title, link, description, password } = req.body;
-
-        if (!school || !date || !grade_level || !title || !link) {
-            return res.status(400).json({ error: 'School, date, grade_level, title, and link are required' });
-        }
-
-        if (!['wlhs', 'wvhs'].includes(school)) {
-            return res.status(400).json({ error: 'School must be wlhs or wvhs' });
-        }
-
-        if (![9, 10, 11, 12].includes(parseInt(grade_level))) {
-            return res.status(400).json({ error: 'Grade level must be 9, 10, 11, or 12' });
-        }
-
-        const formattedDate = formatDate(date);
-        const client = await activePool.connect();
-
-        try {
-            const result = await client.query(`
-                INSERT INTO materials (school, date, grade_level, title, link, description, password)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
-                RETURNING id, school, date, grade_level, title, link, description, password, created_at, updated_at
-            `, [school, formattedDate, parseInt(grade_level), title, link, description || '', password || '']);
-
-            client.release();
-
-            const material = {
-                ...result.rows[0],
-                date: formatDate(result.rows[0].date)
-            };
-
-            res.json(material);
-        } catch (passwordError) {
-            // If password column doesn't exist, create without it
-            const result = await client.query(`
-                INSERT INTO materials (school, date, grade_level, title, link, description)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, school, date, grade_level, title, link, description, created_at, updated_at
-            `, [school, formattedDate, parseInt(grade_level), title, link, description || '']);
-
-            client.release();
-
-            const material = {
-                ...result.rows[0],
-                date: formatDate(result.rows[0].date),
-                password: ''
-            };
-
-            res.json(material);
-        }
-    } catch (error) {
-        console.error('Error creating material:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.put('/api/materials/:id', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { id } = req.params;
-        const { title, link, description, password } = req.body;
-
-        if (!title || !link) {
-            return res.status(400).json({ error: 'Title and link are required' });
-        }
-
-        const client = await activePool.connect();
-
-        try {
-            const result = await client.query(`
-                UPDATE materials 
-                SET title = $1, link = $2, description = $3, password = $4, updated_at = CURRENT_TIMESTAMP
-                WHERE id = $5
-                RETURNING id, school, date, grade_level, title, link, description, password, created_at, updated_at
-            `, [title, link, description || '', password || '', id]);
-
-            client.release();
-
-            if (result.rows.length === 0) {
-                return res.status(404).json({ error: 'Material not found' });
-            }
-
-            const material = {
-                ...result.rows[0],
-                date: formatDate(result.rows[0].date)
-            };
-
-            res.json(material);
-        } catch (passwordError) {
-            // If password column doesn't exist, update without it
-            const result = await client.query(`
-                UPDATE materials 
-                SET title = $1, link = $2, description = $3, updated_at = CURRENT_TIMESTAMP
-                WHERE id = $4
-                RETURNING id, school, date, grade_level, title, link, description, created_at, updated_at
-            `, [title, link, description || '', id]);
-
-            client.release();
-
-            if (result.rows.length === 0) {
-                return res.status(404).json({ error: 'Material not found' });
-            }
-
-            const material = {
-                ...result.rows[0],
-                date: formatDate(result.rows[0].date),
-                password: ''
-            };
-
-            res.json(material);
-        }
-    } catch (error) {
-        console.error('Error updating material:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.delete('/api/materials/:id', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const { id } = req.params;
-        const client = await activePool.connect();
-
-        const result = await client.query('DELETE FROM materials WHERE id = $1 RETURNING id', [id]);
-        client.release();
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Material not found' });
-        }
-
-        res.json({ success: true, id: parseInt(id) });
-    } catch (error) {
-        console.error('Error deleting material:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Admin Routes
-app.delete('/api/clear-all', async (req, res) => {
-    try {
-        const activePool = ensurePoolExists();
-        const client = await activePool.connect();
-
-        await client.query('DELETE FROM materials');
-        await client.query('DELETE FROM events');
-        await client.query('DELETE FROM day_schedules');
-        await client.query('DELETE FROM day_types');
-
-        client.release();
-
-        res.json({ success: true, message: 'All data cleared' });
-    } catch (error) {
-        console.error('Error clearing data:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-    });
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ 
-        error: 'Not found',
-        path: req.path,
-        method: req.method
-    });
-});
-
-// Graceful shutdown
-let server;
-
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully');
-    if (server) {
-        server.close(() => {
-            console.log('HTTP server closed');
-            if (pool && !pool.ended) {
-                pool.end().then(() => {
-                    console.log('Database pool closed');
-                    process.exit(0);
-                }).catch(err => {
-                    console.error('Error closing pool:', err);
-                    process.exit(1);
-                });
+            // Update school display
+            const schoolIcon = document.getElementById('schoolIcon');
+            const schoolName = document.getElementById('schoolName');
+            const schoolSelect = document.getElementById('schoolSelect');
+            
+            if (schoolCode === 'wlhs') {
+                if (schoolIcon) schoolIcon.textContent = '🦁';
+                if (schoolName) schoolName.textContent = 'West Linn High School';
+                if (schoolSelect) schoolSelect.value = 'wlhs';
             } else {
-                process.exit(0);
+                if (schoolIcon) schoolIcon.textContent = '🐱';
+                if (schoolName) schoolName.textContent = 'Wilsonville High School';
+                if (schoolSelect) schoolSelect.value = 'wvhs';
             }
-        });
-    } else {
-        process.exit(0);
-    }
-});
+            
+            showNotification(`Switched to ${schoolCode === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
+            showScreen('calendar');
+        }
 
-process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully');
-    if (server) {
-        server.close(() => {
-            console.log('HTTP server closed');
-            if (pool && !pool.ended) {
-                pool.end().then(() => {
-                    console.log('Database pool closed');
-                    process.exit(0);
-                }).catch(err => {
-                    console.error('Error closing pool:', err);
-                    process.exit(1);
+        async function testConnection() {
+            showNotification('Testing connection...');
+            setLoading(true);
+
+            try {
+                const data = await apiCall('/health');
+                app.state.connected = true;
+                updateConnectionStatus(true, 'Connected successfully!');
+                showNotification('✅ Connection successful!');
+            } catch (error) {
+                app.state.connected = false;
+                updateConnectionStatus(false, 'Connection failed: ' + error.message);
+                showNotification('❌ Connection failed: ' + error.message, true);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function handleSetup(event) {
+            event.preventDefault();
+            showNotification('Initializing database...');
+            setLoading(true);
+
+            const dbUrl = document.getElementById('dbUrl').value;
+            const requestBody = dbUrl ? { dbUrl: dbUrl } : {};
+
+            try {
+                const data = await apiCall('/init', {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody)
                 });
-            } else {
-                process.exit(0);
+                
+                showNotification('✅ Database initialized successfully!');
+                app.state.connected = true;
+                updateConnectionStatus(true, 'Database connected');
+                
+                // Fetch initial data after successful setup
+                await fetchTodayStats();
+                
+                setTimeout(() => showScreen('calendar'), 1500);
+            } catch (error) {
+                showNotification('❌ Setup failed: ' + error.message, true);
+                updateConnectionStatus(false, 'Failed to initialize database');
+            } finally {
+                setLoading(false);
             }
-        });
-    } else {
-        process.exit(0);
-    }
-});
+        }
 
-// Start server
-server = app.listen(PORT, () => {
-    console.log(`🚀 WLWV Calendar API running on port ${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`💾 Database: ${pool ? 'Connected' : 'Not configured'}`);
-    console.log(`🌐 Health check: /api/health`);
-});
+        function initializeDatabase() {
+            return handleSetup({ preventDefault: () => {} });
+        }
 
-module.exports = app;
+        function updateConnectionStatus(connected, message) {
+            const status = document.getElementById('connectionStatus');
+            if (status) {
+                status.className = `connection-status ${connected ? 'connected' : 'disconnected'}`;
+                status.innerHTML = `
+                    <span>${connected ? '🟢' : '🔴'}</span>
+                    <span>${message}</span>
+                `;
+            }
+
+            const dbStatus = document.getElementById('dbStatus');
+            if (dbStatus) {
+                dbStatus.innerHTML = connected ? 
+                    `✅ ${message}` : 
+                    `❌ ${message}`;
+            }
+        }
+
+        function setLoading(loading) {
+            app.state.loading = loading;
+            document.body.classList.toggle('loading', loading);
+        }
+
+        function toggleAdminMode() {
+            app.state.adminMode = !app.state.adminMode;
+
+            const button = document.getElementById('adminToggle');
+            if (button) {
+                button.textContent = `Admin Mode: ${app.state.adminMode ? 'ON' : 'OFF'}`;
+                if (app.state.adminMode) {
+                    button.classList.add('active');
+                    document.body.classList.add('admin-active');
+                } else {
+                    button.classList.remove('active');
+                    document.body.classList.remove('admin-active');
+                }
+            }
+
+            showNotification(`Admin mode ${app.state.adminMode ? 'enabled' : 'disabled'}`);
+            renderCalendar(); // Re-render to show/hide admin controls
+        }
+
+        function changeMonth(direction) {
+            app.state.currentDate.setMonth(app.state.currentDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function changeSchool() {
+            const select = document.getElementById('schoolSelect');
+            app.state.selectedSchool = select.value;
+            
+            document.body.classList.remove('school-wlhs', 'school-wvhs');
+            document.body.classList.add(`school-${select.value}`);
+
+            // Update school display
+            const schoolIcon = document.getElementById('schoolIcon');
+            const schoolName = document.getElementById('schoolName');
+            
+            if (select.value === 'wlhs') {
+                if (schoolIcon) schoolIcon.textContent = '🦁';
+                if (schoolName) schoolName.textContent = 'West Linn High School';
+            } else {
+                if (schoolIcon) schoolIcon.textContent = '🐱';
+                if (schoolName) schoolName.textContent = 'Wilsonville High School';
+            }
+
+            showNotification(`Switched to ${select.value === 'wlhs' ? 'West Linn HS' : 'Wilsonville HS'}`);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+
+            const year = app.state.currentDate.getFullYear();
+            const month = app.state.currentDate.getMonth();
+
+            const monthDisplay = document.getElementById('currentMonth');
+            if (monthDisplay) {
+                monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                }).format(app.state.currentDate);
+            }
+
+            grid.innerHTML = '';
+
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.dataset.date = currentDate.toISOString().split('T')[0];
+
+                const isToday = currentDate.toDateString() === new Date().toDateString();
+                if (isToday) dayElement.classList.add('today');
+
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = currentDate.getDate();
+
+                dayElement.appendChild(dayNumber);
+                
+                // Add click handler placeholder
+                dayElement.addEventListener('click', () => {
+                    const dateStr = dayElement.dataset.date;
+                    showNotification(`Clicked on ${dateStr} - Modal coming in Phase 3!`);
+                });
+                
+                grid.appendChild(dayElement);
+            }
+        }
+
+        // Initialize Application
+        async function initializeApp() {
+            setApiUrl();
+            
+            // Apply district theme initially
+            document.body.classList.add('district-theme');
+            
+            // Test connection
+            try {
+                await apiCall('/health');
+                app.state.connected = true;
+                updateConnectionStatus(true, 'Connected to database');
+                
+                // Fetch initial data
+                await fetchTodayStats();
+                renderCalendar();
+                showNotification('Calendar loaded successfully!');
+            } catch (error) {
+                app.state.connected = false;
+                updateConnectionStatus(false, 'Database connection failed');
+                showNotification('Please set up database connection', true);
+                renderCalendar(); // Still render calendar even if disconnected
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
