@@ -464,13 +464,9 @@
             position: relative;
         }
 
-        .admin-controls {
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .calendar-day.admin-mode:hover .admin-controls {
-            opacity: 1;
+        /* Show controls when in admin mode */
+        .calendar-day.admin-mode .admin-controls {
+            display: block;
         }
 
         .admin-plus {
@@ -492,6 +488,12 @@
             justify-content: center;
             box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
             transition: all 0.2s ease;
+            opacity: 0;
+            z-index: 15;
+        }
+
+        .calendar-day.admin-mode:hover .admin-plus {
+            opacity: 1;
         }
 
         .admin-plus:hover {
@@ -505,6 +507,7 @@
             top: 8px;
             right: 8px;
             cursor: pointer;
+            z-index: 10;
         }
 
         .ab-dropdown {
@@ -521,11 +524,12 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.2s ease;
-            z-index: 100;
+            z-index: 200;
             min-width: 80px;
         }
 
-        .ab-schedule-admin:hover .ab-dropdown {
+        .ab-schedule-admin:hover .ab-dropdown,
+        .ab-dropdown:hover {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
@@ -570,6 +574,7 @@
             left: 50%;
             transform: translateX(-50%);
             cursor: pointer;
+            z-index: 10;
         }
 
         .day-type-dropdown {
@@ -587,11 +592,12 @@
             visibility: hidden;
             transform: translateX(-50%) translateY(10px);
             transition: all 0.2s ease;
-            z-index: 100;
+            z-index: 200;
             min-width: 180px;
         }
 
-        .day-type-admin:hover .day-type-dropdown {
+        .day-type-admin:hover .day-type-dropdown,
+        .day-type-dropdown:hover {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(0);
@@ -1487,11 +1493,15 @@
                 if (app.state.adminMode) {
                     // Admin mode - interactive dropdown
                     const abAdmin = document.createElement('div');
-                    abAdmin.className = 'ab-schedule-admin admin-controls';
+                    abAdmin.className = 'ab-schedule-admin';
                     
                     const abDisplay = document.createElement('div');
                     abDisplay.className = `ab-schedule-display ${schedule ? `schedule-${schedule.schedule.toLowerCase()}` : ''}`;
                     abDisplay.textContent = schedule ? schedule.schedule : '+';
+                    if (!schedule) {
+                        abDisplay.style.background = '#e5e7eb';
+                        abDisplay.style.color = '#6b7280';
+                    }
                     
                     const dropdown = document.createElement('div');
                     dropdown.className = 'ab-dropdown';
@@ -1515,7 +1525,7 @@
                 // Add admin plus button
                 if (app.state.adminMode) {
                     const plusBtn = document.createElement('button');
-                    plusBtn.className = 'admin-plus admin-controls';
+                    plusBtn.className = 'admin-plus';
                     plusBtn.textContent = '+';
                     plusBtn.onclick = (e) => {
                         e.stopPropagation();
@@ -1529,7 +1539,7 @@
                 if (app.state.adminMode) {
                     // Admin mode - interactive dropdown
                     const dayTypeAdmin = document.createElement('div');
-                    dayTypeAdmin.className = 'day-type-admin admin-controls';
+                    dayTypeAdmin.className = 'day-type-admin';
                     
                     const typeDisplay = document.createElement('div');
                     if (dayType) {
