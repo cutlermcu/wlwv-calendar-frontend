@@ -1389,7 +1389,7 @@
                             <option value="wlhs">🦁 West Linn HS</option>
                             <option value="wvhs">🐱 Wilsonville HS</option>
                         </select>
-                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode()">
+                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode(event)">
                             Admin Mode: OFF
                         </button>
                     </div>
@@ -2700,18 +2700,29 @@
             document.body.classList.toggle('loading', loading);
         }
 
-        function toggleAdminMode() {
+        function toggleAdminMode(event) {
+            if (event) event.preventDefault();
+            
+            console.log('Toggle admin mode called, current state:', app.state.adminMode);
+            
             // If turning on admin mode, require password
             if (!app.state.adminMode) {
-                const password = prompt('Enter admin password:');
-                console.log('Password entered:', password);
+                const password = window.prompt('Enter admin password:');
+                console.log('Password prompt shown');
+                if (password === null) {
+                    console.log('Password cancelled');
+                    return;
+                }
                 if (password !== 'wlwv') {
+                    console.log('Incorrect password');
                     showNotification('Incorrect password', true);
                     return;
                 }
+                console.log('Correct password');
             }
             
             app.state.adminMode = !app.state.adminMode;
+            console.log('Admin mode now:', app.state.adminMode);
 
             const button = document.getElementById('adminToggle');
             if (button) {
