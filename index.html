@@ -313,7 +313,7 @@
         }
 
         .current-month {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 600;
             min-width: 150px;
             text-align: center;
@@ -1377,7 +1377,7 @@
                 <div class="calendar-header">
                     <div>
                         <button class="nav-btn" onclick="showScreen('home')">🏠 Home</button>
-                        <span style="margin-left: 20px; font-size: 1.5rem; font-weight: 700;">
+                        <span style="margin-left: 20px; font-size: 1.7rem; font-weight: 700;">
                             <span id="schoolIcon">🦁</span> <span id="schoolName">West Linn High School</span>
                         </span>
                     </div>
@@ -2620,6 +2620,13 @@
 
         // Reset database by dropping and recreating tables
         async function resetDatabase() {
+            // First require password
+            const password = prompt('Enter database reset password:');
+            if (password !== 'lions2025') {
+                showNotification('Incorrect password', true);
+                return;
+            }
+            
             if (!confirm('This will DELETE ALL DATA and recreate the tables. Are you sure?')) {
                 return;
             }
@@ -2694,6 +2701,15 @@
         }
 
         function toggleAdminMode() {
+            // If turning on admin mode, require password
+            if (!app.state.adminMode) {
+                const password = prompt('Enter admin password:');
+                if (password !== 'wlwv') {
+                    showNotification('Incorrect password', true);
+                    return;
+                }
+            }
+            
             app.state.adminMode = !app.state.adminMode;
 
             const button = document.getElementById('adminToggle');
