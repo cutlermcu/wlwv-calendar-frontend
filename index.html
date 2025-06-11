@@ -1488,42 +1488,43 @@
 
             // Only add data elements if it's the current month
             if (isCurrentMonth) {
-                // Add A/B schedule
+                // Get data
                 const schedule = calendarCache.schedules[dateStr];
+                const dayType = calendarCache.dayTypes[dateStr];
+                const events = calendarCache.events[school]?.[dateStr];
+
                 if (app.state.adminMode) {
-                    // Admin mode - interactive dropdown
+                    // Admin mode - add all interactive elements
+                    console.log('Creating admin controls for', dateStr);
+                    
+                    // A/B Schedule dropdown
                     const abAdmin = document.createElement('div');
                     abAdmin.className = 'ab-schedule-admin';
                     
                     const abDisplay = document.createElement('div');
-                    abDisplay.className = `ab-schedule-display ${schedule ? `schedule-${schedule.schedule.toLowerCase()}` : ''}`;
-                    abDisplay.textContent = schedule ? schedule.schedule : '+';
-                    if (!schedule) {
+                    if (schedule) {
+                        abDisplay.className = `ab-schedule-display schedule-${schedule.schedule.toLowerCase()}`;
+                        abDisplay.textContent = schedule.schedule;
+                    } else {
+                        abDisplay.className = 'ab-schedule-display';
                         abDisplay.style.background = '#e5e7eb';
                         abDisplay.style.color = '#6b7280';
+                        abDisplay.textContent = '+';
                     }
                     
-                    const dropdown = document.createElement('div');
-                    dropdown.className = 'ab-dropdown';
-                    dropdown.innerHTML = `
+                    const abDropdown = document.createElement('div');
+                    abDropdown.className = 'ab-dropdown';
+                    abDropdown.innerHTML = `
                         <div class="ab-option option-a" data-date="${dateStr}" data-schedule="A">A</div>
                         <div class="ab-option option-b" data-date="${dateStr}" data-schedule="B">B</div>
                         <div class="ab-option option-clear" data-date="${dateStr}" data-schedule="clear">Clear</div>
                     `;
                     
                     abAdmin.appendChild(abDisplay);
-                    abAdmin.appendChild(dropdown);
+                    abAdmin.appendChild(abDropdown);
                     dayElement.appendChild(abAdmin);
-                } else if (schedule) {
-                    // User mode - display only
-                    const abDisplay = document.createElement('div');
-                    abDisplay.className = `ab-schedule-display schedule-${schedule.schedule.toLowerCase()}`;
-                    abDisplay.textContent = schedule.schedule;
-                    dayElement.appendChild(abDisplay);
-                }
 
-                // Add admin plus button
-                if (app.state.adminMode) {
+                    // Plus button
                     const plusBtn = document.createElement('button');
                     plusBtn.className = 'admin-plus';
                     plusBtn.textContent = '+';
@@ -1532,12 +1533,8 @@
                         handleDayClick(dateStr);
                     };
                     dayElement.appendChild(plusBtn);
-                }
 
-                // Add day type
-                const dayType = calendarCache.dayTypes[dateStr];
-                if (app.state.adminMode) {
-                    // Admin mode - interactive dropdown
+                    // Day type dropdown
                     const dayTypeAdmin = document.createElement('div');
                     dayTypeAdmin.className = 'day-type-admin';
                     
@@ -1553,9 +1550,9 @@
                         typeDisplay.textContent = '+ Day Type';
                     }
                     
-                    const dropdown = document.createElement('div');
-                    dropdown.className = 'day-type-dropdown';
-                    dropdown.innerHTML = `
+                    const typeDropdown = document.createElement('div');
+                    typeDropdown.className = 'day-type-dropdown';
+                    typeDropdown.innerHTML = `
                         <div class="day-type-option" data-date="${dateStr}" data-type="ACCESS">ACCESS</div>
                         <div class="day-type-option" data-date="${dateStr}" data-type="GRADING">GRADING</div>
                         <div class="day-type-option" data-date="${dateStr}" data-type="FINALS">FINALS</div>
@@ -1568,19 +1565,27 @@
                     `;
                     
                     dayTypeAdmin.appendChild(typeDisplay);
-                    dayTypeAdmin.appendChild(dropdown);
+                    dayTypeAdmin.appendChild(typeDropdown);
                     dayElement.appendChild(dayTypeAdmin);
-                } else if (dayType) {
+                } else {
                     // User mode - display only
-                    const typeDisplay = document.createElement('div');
-                    const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
-                    typeDisplay.className = `day-type-display type-${typeClass}`;
-                    typeDisplay.textContent = dayType.type;
-                    dayElement.appendChild(typeDisplay);
+                    if (schedule) {
+                        const abDisplay = document.createElement('div');
+                        abDisplay.className = `ab-schedule-display schedule-${schedule.schedule.toLowerCase()}`;
+                        abDisplay.textContent = schedule.schedule;
+                        dayElement.appendChild(abDisplay);
+                    }
+
+                    if (dayType) {
+                        const typeDisplay = document.createElement('div');
+                        const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
+                        typeDisplay.className = `day-type-display type-${typeClass}`;
+                        typeDisplay.textContent = dayType.type;
+                        dayElement.appendChild(typeDisplay);
+                    }
                 }
 
                 // Add event indicator (both modes)
-                const events = calendarCache.events[school]?.[dateStr];
                 if (events && events.length > 0) {
                     const eventIndicator = document.createElement('div');
                     eventIndicator.className = 'event-title-indicator';
