@@ -1389,7 +1389,7 @@
                             <option value="wlhs">🦁 West Linn HS</option>
                             <option value="wvhs">🐱 Wilsonville HS</option>
                         </select>
-                        <button class="admin-toggle" id="adminToggle" onclick="toggleAdminMode(event)">
+                        <button class="admin-toggle" id="adminToggle">
                             Admin Mode: OFF
                         </button>
                     </div>
@@ -2800,7 +2800,15 @@
         }
 
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            
+            // Add event listener for admin toggle
+            const adminToggle = document.getElementById('adminToggle');
+            if (adminToggle) {
+                adminToggle.addEventListener('click', toggleAdminMode);
+            }
+        });
 
         // Handle clicks for admin dropdowns
         document.addEventListener('click', function(e) {
