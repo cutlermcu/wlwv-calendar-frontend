@@ -66,23 +66,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-/* Admin visibility */
-.admin-only {
-            display: none;
-        }
 
-body.admin-active .admin-only {
-            display: block;
-        }
-
-.grade-tab {
-        transition: all 0.2s ease;
-    }
-
-.grade-tab:hover:not(.active) {
-    background: #e5e7eb !important;
-    color: #374151 !important;
-}
         /* Show tabs only when admin mode is active */
         body.admin-active .tabs {
             display: flex;
@@ -448,13 +432,6 @@ body.admin-active .admin-only {
             pointer-events: none;
         }
 
-        .ab-badge {
-            font-size: 1rem;
-            font-weight: 700;
-            min-width: 30px;
-            text-align: center;
-        
-
         .day-type-display {
             position: absolute;
             bottom: 8px;
@@ -471,8 +448,14 @@ body.admin-active .admin-only {
             overflow: hidden;
             text-overflow: ellipsis;
             pointer-events: none;
-}
-
+        }
+        .ab-badge {
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
+        }
+        
         .notification {
             position: fixed;
             top: 20px;
@@ -505,26 +488,27 @@ body.admin-active .admin-only {
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+            z-index: 3000;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
         }
 
-       .modal.show {
+        .modal.show {
             opacity: 1;
             visibility: visible;
-        }    
-        
+        }
+
         .modal-content {
             background: white;
             border-radius: 15px;
-            width: 90%;
-            max-height: 90vh;
+            max-width: 1400px;
+            width: 98%;
+            max-height: 85vh;
             overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             transform: translateY(-20px);
             transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         .modal.show .modal-content {
@@ -626,7 +610,7 @@ body.admin-active .admin-only {
         }
 
         .item-card {
-            background: #f9fafb;
+            background: #f9fafb !important;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
             padding: 12px;
@@ -638,7 +622,7 @@ body.admin-active .admin-only {
         }
 
         .item-card:hover {
-            background: #f3f4f6 !important;
+            background: #f3f4f6;
         }
 
         /* Department color coding for events */
@@ -1183,7 +1167,24 @@ body.admin-active .admin-only {
             background: #a01729;
             transform: translate(-50%, -50%) scale(1.1);
         }
+    /* Admin visibility */
+        .admin-only {
+            display: none;
+        }
 
+        body.admin-active .admin-only {
+            display: block;
+        }
+
+        .grade-tab {
+            transition: all 0.2s ease;
+        }
+
+        .grade-tab:hover:not(.active) {
+            background: #e5e7eb !important;
+            color: #374151 !important;
+        }
+        
         /* Show plus button on hover in admin mode */
         body.admin-active .calendar-day:hover .admin-plus {
             opacity: 1;
@@ -1204,15 +1205,18 @@ body.admin-active .admin-only {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(99, 102, 241, 0.9);
             color: white;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            min-width: 20px;
+            min-width: 24px;
             text-align: center;
-            pointer-events: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+            display: none; /* Hidden by default, shown when schedule exists */
+        }
 
         .ab-schedule-display.schedule-a {
             background: rgba(59, 130, 246, 0.9);
