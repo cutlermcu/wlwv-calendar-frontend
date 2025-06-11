@@ -2704,6 +2704,7 @@
             // If turning on admin mode, require password
             if (!app.state.adminMode) {
                 const password = prompt('Enter admin password:');
+                console.log('Password entered:', password);
                 if (password !== 'wlwv') {
                     showNotification('Incorrect password', true);
                     return;
