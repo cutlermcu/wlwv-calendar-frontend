@@ -1496,9 +1496,9 @@
                     const dropdown = document.createElement('div');
                     dropdown.className = 'ab-dropdown';
                     dropdown.innerHTML = `
-                        <div class="ab-option option-a" onclick="setABSchedule('${dateStr}', 'A')">A</div>
-                        <div class="ab-option option-b" onclick="setABSchedule('${dateStr}', 'B')">B</div>
-                        <div class="ab-option option-clear" onclick="setABSchedule('${dateStr}', null)">Clear</div>
+                        <div class="ab-option option-a" data-date="${dateStr}" data-schedule="A">A</div>
+                        <div class="ab-option option-b" data-date="${dateStr}" data-schedule="B">B</div>
+                        <div class="ab-option option-clear" data-date="${dateStr}" data-schedule="clear">Clear</div>
                     `;
                     
                     abAdmin.appendChild(abDisplay);
@@ -1546,15 +1546,15 @@
                     const dropdown = document.createElement('div');
                     dropdown.className = 'day-type-dropdown';
                     dropdown.innerHTML = `
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'ACCESS')">ACCESS</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'GRADING')">GRADING</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'FINALS')">FINALS</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'HOLIDAY')">HOLIDAY</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'FURLOUGH')">FURLOUGH</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'STAFF DEVELOPMENT')">STAFF DEVELOPMENT</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'EARLY RELEASE')">EARLY RELEASE</div>
-                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'SNOW DAY')">SNOW DAY</div>
-                        <div class="day-type-option clear" onclick="setDayType('${dateStr}', null)">Clear</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="ACCESS">ACCESS</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="GRADING">GRADING</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="FINALS">FINALS</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="HOLIDAY">HOLIDAY</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="FURLOUGH">FURLOUGH</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="STAFF DEVELOPMENT">STAFF DEVELOPMENT</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="EARLY RELEASE">EARLY RELEASE</div>
+                        <div class="day-type-option" data-date="${dateStr}" data-type="SNOW DAY">SNOW DAY</div>
+                        <div class="day-type-option clear" data-date="${dateStr}" data-type="clear">Clear</div>
                     `;
                     
                     dayTypeAdmin.appendChild(typeDisplay);
@@ -1633,6 +1633,27 @@
                 showNotification('Failed to update day type', true);
             }
         }
+
+        // Event delegation for dropdown clicks
+        document.addEventListener('click', function(e) {
+            // Handle A/B schedule options
+            if (e.target.classList.contains('ab-option')) {
+                e.stopPropagation();
+                e.preventDefault();
+                const dateStr = e.target.dataset.date;
+                const schedule = e.target.dataset.schedule;
+                setABSchedule(dateStr, schedule === 'clear' ? null : schedule);
+            }
+            
+            // Handle day type options
+            if (e.target.classList.contains('day-type-option')) {
+                e.stopPropagation();
+                e.preventDefault();
+                const dateStr = e.target.dataset.date;
+                const type = e.target.dataset.type;
+                setDayType(dateStr, type === 'clear' ? null : type);
+            }
+        });
 
         // Enhanced calendar rendering with data
         async function renderCalendar() {
