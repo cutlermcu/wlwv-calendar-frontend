@@ -1800,4 +1800,329 @@
                     const updatedEvent = await response.json();
                     const index = crudState.events.findIndex(e => e.id === eventId);
                     if (index !== -1) {
-                        crudState.events[index] = up
+                        crudState.events[index] = updatedEvent;
+                    }
+                    renderEventsList();
+                    clearEventForm();
+                    updateCalendarDisplay();
+                    showNotification('Event updated successfully');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to update event');
+                }
+            } catch (error) {
+                console.error('Error updating event:', error);
+                showNotification('Failed to update event: ' + error.message, true);
+            }
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+            
+            try {
+                const response = await fetch(`${app.config.apiUrl}/events/${eventId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    crudState.events = crudState.events.filter(e => e.id !== eventId);
+                    renderEventsList();
+                    updateCalendarDisplay();
+                    showNotification('Event deleted successfully');
+                } else {
+                    throw new Error('Failed to delete event');
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showNotification('Failed to delete event', true);
+            }
+        }
+
+        function clearEventForm() {
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventDepartment').value = '';
+            document.getElementById('eventDescription').value = '';
+            
+            // Reset add button
+            const addButton = document.querySelector('#addEventForm .btn-add');
+            addButton.textContent = 'Add Event';
+            addButton.onclick = addEvent;
+        }
+
+        // ========================================
+        // MATERIAL CRUD FUNCTIONS
+        // ========================================
+
+        async function addMaterial() {
+            const title = document.getElementById('materialTitle').value.trim();
+            const link = document.getElementById('materialLink').value.trim();
+            const password = document.getElementById('materialPassword').value.trim();
+            const description = document.getElementById('materialDescription').value.trim();
+            
+            if (!title || !link) {
+                showNotification('Material title and link are required', true);
+                return;
+            }
+            
+            // Basic URL validation
+            try {
+                new URL(link);
+            } catch {
+                showNotification('Please enter a valid URL', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: crudState.selectedDate,
+                        grade_level: crudState.selectedGrade,
+                        title,
+                        link,
+                        password: password || '',
+                        description: description || ''
+                    })
+                });
+                
+                if (response.ok) {
+                    const newMaterial = await response.json();
+                    crudState.materials.push(newMaterial);
+                    renderMaterialsList();
+                    clearMaterialForm();
+                    updateCalendarDisplay();
+                    showNotification('Material added successfully');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to add material');
+                }
+            } catch (error) {
+                console.error('Error adding material:', error);
+                showNotification('Failed to add material: ' + error.message, true);
+            }
+        }
+
+        async function editMaterial(materialId) {
+            const material = crudState.materials.find(m => m.id === materialId);
+            if (!material) return;
+            
+            // Switch to the correct grade tab
+            selectGrade(material.grade_level);
+            
+            // Populate form with material data
+            document.getElementById('materialTitle').value = material.title;
+            document.getElementById('materialLink').value = material.link;
+            document.getElementById('materialPassword').value = material.password || '';
+            document.getElementById('materialDescription').value = material.description || '';
+            
+            // Change add button to update button
+            const addButton = document.querySelector('#addMaterialForm .btn-add');
+            addButton.textContent = 'Update Material';
+            addButton.onclick = () => updateMaterial(materialId);
+            
+            showNotification('Editing material - modify fields and click Update');
+        }
+
+        async function updateMaterial(materialId) {
+            const title = document.getElementById('materialTitle').value.trim();
+            const link = document.getElementById('materialLink').value.trim();
+            const password = document.getElementById('materialPassword').value.trim();
+            const description = document.getElementById('materialDescription').value.trim();
+            
+            if (!title || !link) {
+                showNotification('Material title and link are required', true);
+                return;
+            }
+            
+            // Basic URL validation
+            try {
+                new URL(link);
+            } catch {
+                showNotification('Please enter a valid URL', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                        link,
+                        password: password || '',
+                        description: description || ''
+                    })
+                });
+                
+                if (response.ok) {
+                    const updatedMaterial = await response.json();
+                    const index = crudState.materials.findIndex(m => m.id === materialId);
+                    if (index !== -1) {
+                        crudState.materials[index] = updatedMaterial;
+                    }
+                    renderMaterialsList();
+                    clearMaterialForm();
+                    updateCalendarDisplay();
+                    showNotification('Material updated successfully');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to update material');
+                }
+            } catch (error) {
+                console.error('Error updating material:', error);
+                showNotification('Failed to update material: ' + error.message, true);
+            }
+        }
+
+        async function deleteMaterial(materialId) {
+            if (!confirm('Are you sure you want to delete this material?')) return;
+            
+            try {
+                const response = await fetch(`${app.config.apiUrl}/materials/${materialId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    crudState.materials = crudState.materials.filter(m => m.id !== materialId);
+                    renderMaterialsList();
+                    updateCalendarDisplay();
+                    showNotification('Material deleted successfully');
+                } else {
+                    throw new Error('Failed to delete material');
+                }
+            } catch (error) {
+                console.error('Error deleting material:', error);
+                showNotification('Failed to delete material', true);
+            }
+        }
+
+        function accessMaterial(link, password, title) {
+            if (password) {
+                const userPassword = prompt(`Enter password for "${title}":`);
+                if (userPassword !== password) {
+                    showNotification('Incorrect password', true);
+                    return;
+                }
+            }
+            
+            // Open material in new tab
+            window.open(link, '_blank');
+            showNotification('Opening material...');
+        }
+
+        function clearMaterialForm() {
+            document.getElementById('materialTitle').value = '';
+            document.getElementById('materialLink').value = '';
+            document.getElementById('materialPassword').value = '';
+            document.getElementById('materialDescription').value = '';
+            
+            // Reset add button
+            const addButton = document.querySelector('#addMaterialForm .btn-add');
+            addButton.textContent = 'Add Material';
+            addButton.onclick = addMaterial;
+        }
+
+        // ========================================
+        // GRADE SELECTION FUNCTIONS
+        // ========================================
+
+        function selectGrade(grade) {
+            crudState.selectedGrade = grade;
+            
+            // Update tab styling
+            document.querySelectorAll('.grade-tab').forEach(tab => {
+                if (parseInt(tab.dataset.grade) === grade) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Re-render materials list for selected grade
+            renderMaterialsList();
+        }
+
+        // ========================================
+        // INITIALIZATION AND STARTUP
+        // ========================================
+
+        function initializeCRUD() {
+            // Load initial data
+            loadDaySchedules();
+            loadDayTypes();
+        }
+
+        // Main initialization function
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Set up API URL
+                setApiUrl();
+                
+                // Apply district theme initially
+                document.body.classList.add('district-theme');
+                
+                // Initialize CRUD functionality
+                initializeCRUD();
+                
+                // Render initial calendar
+                renderCalendar();
+                
+                // Test connection on startup
+                setTimeout(() => {
+                    testConnection();
+                }, 1000);
+                
+                showNotification('Calendar loaded successfully!');
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showNotification('Failed to initialize calendar', true);
+            }
+        });
+
+        // ========================================
+        // WINDOW EVENT HANDLERS
+        // ========================================
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('dayModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal with escape key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('dayModal');
+                if (modal.classList.contains('show')) {
+                    closeModal();
+                }
+            }
+        });
+
+        // ========================================
+        // DEBUG AND DEVELOPMENT HELPERS
+        // ========================================
+
+        // Expose functions to global scope for debugging
+        window.app = app;
+        window.crudState = crudState;
+        window.debugFunctions = {
+            showScreen,
+            goToSchool,
+            testConnection,
+            renderCalendar,
+            openDayModal,
+            closeModal
+        };
+
+        console.log('🎓 WLWV Calendar initialized successfully!');
+        console.log('Debug: window.app and window.debugFunctions available');
+    </script>
+</body>
+</html>
