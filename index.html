@@ -335,6 +335,8 @@
             background: #e2e8f0;
             margin: 1px;
             flex: 1;
+            position: relative;
+            z-index: 1;
         }
 
         .day-header {
@@ -354,6 +356,7 @@
             cursor: pointer;
             display: flex;
             flex-direction: column;
+            overflow: visible; /* Changed from hidden */
         }
 
         .calendar-day:hover {
@@ -507,7 +510,12 @@
             top: 8px;
             right: 8px;
             cursor: pointer;
-            z-index: 10;
+            z-index: 50;
+        }
+
+        .ab-schedule-display {
+            position: relative;
+            z-index: 2;
         }
 
         .ab-dropdown {
@@ -521,7 +529,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             padding: 4px;
             display: none;
-            z-index: 200;
+            z-index: 1000;
             min-width: 80px;
         }
 
@@ -568,7 +576,12 @@
             left: 50%;
             transform: translateX(-50%);
             cursor: pointer;
-            z-index: 10;
+            z-index: 50;
+        }
+
+        .day-type-display {
+            position: relative;
+            z-index: 2;
         }
 
         .day-type-dropdown {
@@ -583,7 +596,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             padding: 8px;
             display: none;
-            z-index: 200;
+            z-index: 1000;
             min-width: 180px;
         }
 
@@ -2569,12 +2582,16 @@
 
         // Handle clicks for admin dropdowns
         document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target);
+            
             // Handle A/B schedule badge click
             if (e.target.closest('.ab-schedule-display') && e.target.closest('.ab-schedule-admin')) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('AB schedule clicked');
                 const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
                 if (dropdown) {
+                    console.log('Found AB dropdown, toggling...');
                     // Close all other dropdowns
                     document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
                         if (d !== dropdown) d.classList.remove('show');
@@ -2587,8 +2604,10 @@
             if (e.target.closest('.day-type-display') && e.target.closest('.day-type-admin')) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('Day type clicked');
                 const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
                 if (dropdown) {
+                    console.log('Found day type dropdown, toggling...');
                     // Close all other dropdowns
                     document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
                         if (d !== dropdown) d.classList.remove('show');
