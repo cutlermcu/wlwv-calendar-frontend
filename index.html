@@ -520,21 +520,13 @@
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             padding: 4px;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
+            display: none;
             z-index: 200;
             min-width: 80px;
         }
 
-        .ab-schedule-admin:hover .ab-dropdown,
-        .ab-dropdown:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            transform: translateY(0);
+        .ab-dropdown.show {
+            display: block;
         }
 
         .ab-option {
@@ -590,21 +582,13 @@
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             padding: 8px;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transform: translateX(-50%) translateY(10px);
-            transition: all 0.2s ease;
+            display: none;
             z-index: 200;
             min-width: 180px;
         }
 
-        .day-type-admin:hover .day-type-dropdown,
-        .day-type-dropdown:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            transform: translateX(-50%) translateY(0);
+        .day-type-dropdown.show {
+            display: block;
         }
 
         .day-type-option {
@@ -2583,52 +2567,41 @@
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        // Add hover functionality for admin dropdowns
-        document.addEventListener('mouseover', function(e) {
-            // Handle A/B schedule hover
-            if (e.target.closest('.ab-schedule-admin')) {
+        // Handle clicks for admin dropdowns
+        document.addEventListener('click', function(e) {
+            // Handle A/B schedule badge click
+            if (e.target.closest('.ab-schedule-display') && e.target.closest('.ab-schedule-admin')) {
+                e.preventDefault();
+                e.stopPropagation();
                 const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
                 if (dropdown) {
-                    dropdown.style.opacity = '1';
-                    dropdown.style.visibility = 'visible';
-                    dropdown.style.pointerEvents = 'auto';
-                    dropdown.style.transform = 'translateY(0)';
+                    // Close all other dropdowns
+                    document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
+                        if (d !== dropdown) d.classList.remove('show');
+                    });
+                    dropdown.classList.toggle('show');
                 }
             }
             
-            // Handle day type hover
-            if (e.target.closest('.day-type-admin')) {
+            // Handle day type badge click
+            if (e.target.closest('.day-type-display') && e.target.closest('.day-type-admin')) {
+                e.preventDefault();
+                e.stopPropagation();
                 const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
                 if (dropdown) {
-                    dropdown.style.opacity = '1';
-                    dropdown.style.visibility = 'visible';
-                    dropdown.style.pointerEvents = 'auto';
-                    dropdown.style.transform = 'translateX(-50%) translateY(0)';
-                }
-            }
-        });
-
-        document.addEventListener('mouseout', function(e) {
-            // Handle A/B schedule hover out
-            if (e.target.closest('.ab-schedule-admin') && !e.relatedTarget?.closest('.ab-schedule-admin')) {
-                const dropdown = e.target.closest('.ab-schedule-admin').querySelector('.ab-dropdown');
-                if (dropdown) {
-                    dropdown.style.opacity = '0';
-                    dropdown.style.visibility = 'hidden';
-                    dropdown.style.pointerEvents = 'none';
-                    dropdown.style.transform = 'translateY(-10px)';
+                    // Close all other dropdowns
+                    document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
+                        if (d !== dropdown) d.classList.remove('show');
+                    });
+                    dropdown.classList.toggle('show');
                 }
             }
             
-            // Handle day type hover out
-            if (e.target.closest('.day-type-admin') && !e.relatedTarget?.closest('.day-type-admin')) {
-                const dropdown = e.target.closest('.day-type-admin').querySelector('.day-type-dropdown');
-                if (dropdown) {
-                    dropdown.style.opacity = '0';
-                    dropdown.style.visibility = 'hidden';
-                    dropdown.style.pointerEvents = 'none';
-                    dropdown.style.transform = 'translateX(-50%) translateY(10px)';
-                }
+            // Close dropdowns when clicking elsewhere
+            if (!e.target.closest('.ab-schedule-admin') && !e.target.closest('.day-type-admin')) {
+                document.querySelectorAll('.ab-dropdown.show, .day-type-dropdown.show').forEach(d => {
+                    d.classList.remove('show');
+                });
             }
         });
     </script>
