@@ -459,45 +459,206 @@
             pointer-events: none;
         }
 
-        /* Day type color coding */
-        .day-type-display.type-no-school {
-            background: #ef4444;
+        /* Admin Calendar Controls */
+        .calendar-day.admin-mode {
+            position: relative;
         }
 
-        .day-type-display.type-early-release {
-            background: #f59e0b;
+        .admin-controls {
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
-        .day-type-display.type-late-start {
-            background: #10b981;
+        .calendar-day.admin-mode:hover .admin-controls {
+            opacity: 1;
         }
 
-        .day-type-display.type-half-day {
-            background: #8b5cf6;
+        .admin-plus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            background: #c41e3a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+            transition: all 0.2s ease;
         }
 
-        .day-type-display.type-access {
+        .admin-plus:hover {
+            background: #a01729;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* A/B Schedule Dropdown */
+        .ab-schedule-admin {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            cursor: pointer;
+        }
+
+        .ab-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 80px;
+        }
+
+        .ab-schedule-admin:hover .ab-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .ab-option {
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2px;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .ab-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .ab-option.option-a {
             background: #3b82f6;
         }
 
-        .day-type-display.type-grading {
-            background: #8b5cf6;
-        }
-
-        .day-type-display.type-staff-development {
-            background: #06b6d4;
-        }
-
-        .day-type-display.type-holiday {
+        .ab-option.option-b {
             background: #ef4444;
         }
 
-        .day-type-display.type-furlough {
-            background: #f59e0b;
+        .ab-option.option-clear {
+            background: #6b7280;
         }
 
-        .day-type-display.type-finals {
-            background: #10b981;
+        .ab-option:hover {
+            opacity: 0.8;
+        }
+
+        /* Day Type Dropdown */
+        .day-type-admin {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+
+        .day-type-dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 4px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            min-width: 180px;
+        }
+
+        .day-type-admin:hover .day-type-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .day-type-option {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.1s ease;
+            white-space: nowrap;
+        }
+
+        .day-type-option:hover {
+            background: #f3f4f6;
+        }
+
+        .day-type-option.clear {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 4px;
+            padding-top: 12px;
+            color: #6b7280;
+        }
+
+        /* Department color coding */
+        .dept-asb {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .dept-life {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .dept-athletics {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .dept-art-theater {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-color: #8b5cf6;
+            color: #5b21b6;
+        }
+
+        .dept-counseling {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: #06b6d4;
+            color: #0e7490;
+        }
+
+        .dept-testing {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .dept-staff {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-color: #64748b;
+            color: #334155;
         }
 
         .calendar-day.other-month {
@@ -1308,6 +1469,11 @@
             const isToday = date.toDateString() === new Date().toDateString();
             if (isToday) dayElement.classList.add('today');
 
+            // Add admin mode class if needed
+            if (app.state.adminMode && isCurrentMonth) {
+                dayElement.classList.add('admin-mode');
+            }
+
             // Add day number
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
@@ -1316,18 +1482,86 @@
 
             // Only add data elements if it's the current month
             if (isCurrentMonth) {
-                // Add A/B schedule if exists
+                // Add A/B schedule
                 const schedule = calendarCache.schedules[dateStr];
-                if (schedule) {
+                if (app.state.adminMode) {
+                    // Admin mode - interactive dropdown
+                    const abAdmin = document.createElement('div');
+                    abAdmin.className = 'ab-schedule-admin admin-controls';
+                    
+                    const abDisplay = document.createElement('div');
+                    abDisplay.className = `ab-schedule-display ${schedule ? `schedule-${schedule.schedule.toLowerCase()}` : ''}`;
+                    abDisplay.textContent = schedule ? schedule.schedule : '+';
+                    
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'ab-dropdown';
+                    dropdown.innerHTML = `
+                        <div class="ab-option option-a" onclick="setABSchedule('${dateStr}', 'A')">A</div>
+                        <div class="ab-option option-b" onclick="setABSchedule('${dateStr}', 'B')">B</div>
+                        <div class="ab-option option-clear" onclick="setABSchedule('${dateStr}', null)">Clear</div>
+                    `;
+                    
+                    abAdmin.appendChild(abDisplay);
+                    abAdmin.appendChild(dropdown);
+                    dayElement.appendChild(abAdmin);
+                } else if (schedule) {
+                    // User mode - display only
                     const abDisplay = document.createElement('div');
                     abDisplay.className = `ab-schedule-display schedule-${schedule.schedule.toLowerCase()}`;
                     abDisplay.textContent = schedule.schedule;
                     dayElement.appendChild(abDisplay);
                 }
 
-                // Add day type if exists
+                // Add admin plus button
+                if (app.state.adminMode) {
+                    const plusBtn = document.createElement('button');
+                    plusBtn.className = 'admin-plus admin-controls';
+                    plusBtn.textContent = '+';
+                    plusBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        handleDayClick(dateStr);
+                    };
+                    dayElement.appendChild(plusBtn);
+                }
+
+                // Add day type
                 const dayType = calendarCache.dayTypes[dateStr];
-                if (dayType) {
+                if (app.state.adminMode) {
+                    // Admin mode - interactive dropdown
+                    const dayTypeAdmin = document.createElement('div');
+                    dayTypeAdmin.className = 'day-type-admin admin-controls';
+                    
+                    const typeDisplay = document.createElement('div');
+                    if (dayType) {
+                        const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
+                        typeDisplay.className = `day-type-display type-${typeClass}`;
+                        typeDisplay.textContent = dayType.type;
+                    } else {
+                        typeDisplay.className = 'day-type-display';
+                        typeDisplay.style.background = '#e5e7eb';
+                        typeDisplay.style.color = '#6b7280';
+                        typeDisplay.textContent = '+ Day Type';
+                    }
+                    
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'day-type-dropdown';
+                    dropdown.innerHTML = `
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'ACCESS')">ACCESS</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'GRADING')">GRADING</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'FINALS')">FINALS</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'HOLIDAY')">HOLIDAY</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'FURLOUGH')">FURLOUGH</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'STAFF DEVELOPMENT')">STAFF DEVELOPMENT</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'EARLY RELEASE')">EARLY RELEASE</div>
+                        <div class="day-type-option" onclick="setDayType('${dateStr}', 'SNOW DAY')">SNOW DAY</div>
+                        <div class="day-type-option clear" onclick="setDayType('${dateStr}', null)">Clear</div>
+                    `;
+                    
+                    dayTypeAdmin.appendChild(typeDisplay);
+                    dayTypeAdmin.appendChild(dropdown);
+                    dayElement.appendChild(dayTypeAdmin);
+                } else if (dayType) {
+                    // User mode - display only
                     const typeDisplay = document.createElement('div');
                     const typeClass = dayType.type.toLowerCase().replace(/\s+/g, '-');
                     typeDisplay.className = `day-type-display type-${typeClass}`;
@@ -1335,7 +1569,7 @@
                     dayElement.appendChild(typeDisplay);
                 }
 
-                // Add event indicator if events exist
+                // Add event indicator (both modes)
                 const events = calendarCache.events[school]?.[dateStr];
                 if (events && events.length > 0) {
                     const eventIndicator = document.createElement('div');
@@ -1348,10 +1582,56 @@
                 }
             }
 
-            // Add click handler
-            dayElement.addEventListener('click', () => handleDayClick(dateStr));
+            // Add click handler (only in user mode, admin mode uses plus button)
+            if (!app.state.adminMode) {
+                dayElement.addEventListener('click', () => handleDayClick(dateStr));
+            }
 
             return dayElement;
+        }
+
+        // Set A/B Schedule
+        async function setABSchedule(dateStr, schedule) {
+            try {
+                await apiCall('/day-schedules', {
+                    method: 'POST',
+                    body: JSON.stringify({ date: dateStr, schedule })
+                });
+                
+                // Update cache
+                if (schedule) {
+                    calendarCache.schedules[dateStr] = { date: dateStr, schedule };
+                } else {
+                    delete calendarCache.schedules[dateStr];
+                }
+                
+                renderCalendar();
+                showNotification(schedule ? `Set ${schedule} day` : 'Cleared schedule');
+            } catch (error) {
+                showNotification('Failed to update schedule', true);
+            }
+        }
+
+        // Set Day Type
+        async function setDayType(dateStr, type) {
+            try {
+                await apiCall('/day-types', {
+                    method: 'POST',
+                    body: JSON.stringify({ date: dateStr, type })
+                });
+                
+                // Update cache
+                if (type) {
+                    calendarCache.dayTypes[dateStr] = { date: dateStr, type };
+                } else {
+                    delete calendarCache.dayTypes[dateStr];
+                }
+                
+                renderCalendar();
+                showNotification(type ? `Set day type: ${type}` : 'Cleared day type');
+            } catch (error) {
+                showNotification('Failed to update day type', true);
+            }
         }
 
         // Enhanced calendar rendering with data
@@ -1569,9 +1849,346 @@
 
         // Open admin modal (CRUD operations)
         function openAdminModal(dateStr, formattedDate) {
-            // For now, show a coming soon message
-            showNotification('Admin modal coming soon! For now, you can see the user view.');
-            openUserModal(dateStr, formattedDate);
+            const modal = document.getElementById('dayModal');
+            const modalDate = document.getElementById('modalDate');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalBody = document.getElementById('modalBody');
+            const modalABSchedule = document.getElementById('modalABSchedule');
+            
+            // Set header
+            modalDate.textContent = formattedDate;
+            modalHeader.className = `modal-header school-${app.state.selectedSchool}`;
+            
+            // Show A/B schedule if exists
+            const schedule = calendarCache.schedules[dateStr];
+            if (schedule) {
+                modalABSchedule.textContent = schedule.schedule;
+                modalABSchedule.className = `ab-badge schedule-${schedule.schedule.toLowerCase()}`;
+                modalABSchedule.style.display = 'block';
+            } else {
+                modalABSchedule.style.display = 'none';
+            }
+            
+            // Build admin modal content
+            const school = app.state.selectedSchool;
+            const events = calendarCache.events[school]?.[dateStr] || [];
+            const materials = calendarCache.materials[school]?.[dateStr] || [];
+            
+            let content = `
+                <div class="modal-section">
+                    <div class="section-header">
+                        📅 Events
+                    </div>
+                    <div class="section-content">
+                        <div class="existing-items">
+            `;
+            
+            // List existing events
+            events.forEach(event => {
+                const timeStr = event.time ? new Date('2000-01-01T' + event.time).toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit' 
+                }) : '';
+                const deptClass = event.department ? `dept-${event.department.toLowerCase().replace(/[\/\s]+/g, '-')}` : '';
+                
+                content += `
+                    <div class="admin-item-card ${deptClass}">
+                        <div class="admin-item-info">
+                            <div class="admin-item-title">${event.title}</div>
+                            <div class="admin-item-details">
+                                ${timeStr}
+                                ${event.department ? ' • ' + event.department : ''}
+                                ${event.description ? ' • ' + event.description : ''}
+                            </div>
+                        </div>
+                        <div class="admin-item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editEvent(${event.id})">Edit</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteEvent(${event.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (events.length === 0) {
+                content += '<p style="color: #6b7280; text-align: center;">No events scheduled</p>';
+            }
+            
+            content += `
+                        </div>
+                        <div class="add-form">
+                            <form onsubmit="addEvent(event, '${dateStr}'); return false;">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 2;">
+                                        <label class="form-label">Event Title</label>
+                                        <input type="text" class="form-input" name="title" required>
+                                    </div>
+                                    <div class="form-group" style="flex: 0 0 120px;">
+                                        <label class="form-label">Time</label>
+                                        <input type="time" class="form-input" name="time">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 0 0 160px;">
+                                        <label class="form-label">Department</label>
+                                        <select class="form-input" name="department">
+                                            <option value="">None</option>
+                                            <option value="ASB">ASB</option>
+                                            <option value="Life">Life</option>
+                                            <option value="Athletics">Athletics</option>
+                                            <option value="Art/Theater">Art/Theater</option>
+                                            <option value="Counseling">Counseling</option>
+                                            <option value="Testing">Testing</option>
+                                            <option value="Staff">Staff</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label class="form-label">Description (Optional)</label>
+                                        <input type="text" class="form-input" name="description">
+                                    </div>
+                                    <div class="form-group" style="flex: 0 0 100px; align-self: flex-end;">
+                                        <button type="submit" class="btn btn-add" style="width: 100%;">Add Event</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <div class="section-header">
+                        📚 Materials
+                    </div>
+                    <div class="section-content">
+                        <div class="grade-tabs">
+                            <button class="grade-tab active" onclick="showAdminGrade(9, this)">Grade 9</button>
+                            <button class="grade-tab" onclick="showAdminGrade(10, this)">Grade 10</button>
+                            <button class="grade-tab" onclick="showAdminGrade(11, this)">Grade 11</button>
+                            <button class="grade-tab" onclick="showAdminGrade(12, this)">Grade 12</button>
+                        </div>
+            `;
+            
+            // Materials by grade
+            for (let grade = 9; grade <= 12; grade++) {
+                const gradeMaterials = materials.filter(m => m.grade_level === grade);
+                const display = grade === 9 ? 'block' : 'none';
+                
+                content += `<div id="admin-grade-${grade}" style="display: ${display};">`;
+                content += '<div class="existing-items">';
+                
+                gradeMaterials.forEach(material => {
+                    content += `
+                        <div class="admin-item-card">
+                            <div class="admin-item-info">
+                                <div class="admin-item-title">${material.title}</div>
+                                <div class="admin-item-details">
+                                    ${material.description || 'No description'}
+                                    ${material.password ? ' • 🔒 Protected' : ''}
+                                </div>
+                            </div>
+                            <div class="admin-item-actions">
+                                <button class="btn btn-sm btn-edit" onclick="editMaterial(${material.id})">Edit</button>
+                                <button class="btn btn-sm btn-delete" onclick="deleteMaterial(${material.id})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (gradeMaterials.length === 0) {
+                    content += '<p style="color: #6b7280; text-align: center;">No materials for this grade</p>';
+                }
+                
+                content += '</div>';
+                
+                // Add form for this grade
+                content += `
+                    <div class="add-form">
+                        <form onsubmit="addMaterial(event, '${dateStr}', ${grade}); return false;">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Material Title</label>
+                                    <input type="text" class="form-input" name="title" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Link/URL</label>
+                                    <input type="url" class="form-input" name="link" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label">Description (Optional)</label>
+                                    <input type="text" class="form-input" name="description">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label">Password (Optional)</label>
+                                    <input type="text" class="form-input" name="password" placeholder="Leave empty for public">
+                                </div>
+                                <div class="form-group" style="flex: 0 0 120px; align-self: flex-end;">
+                                    <button type="submit" class="btn btn-add" style="width: 100%;">Add Material</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                
+                content += '</div>';
+            }
+            
+            content += `
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = content;
+            modal.classList.add('show');
+        }
+
+        // Show specific grade in admin modal
+        function showAdminGrade(grade, button) {
+            // Update active tab
+            document.querySelectorAll('.grade-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Show/hide grade content
+            for (let g = 9; g <= 12; g++) {
+                const element = document.getElementById(`admin-grade-${g}`);
+                if (element) {
+                    element.style.display = g === grade ? 'block' : 'none';
+                }
+            }
+        }
+
+        // Add event
+        async function addEvent(e, dateStr) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            try {
+                const newEvent = await apiCall('/events', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: dateStr,
+                        title: formData.get('title'),
+                        department: formData.get('department') || null,
+                        time: formData.get('time') || null,
+                        description: formData.get('description') || ''
+                    })
+                });
+                
+                // Update cache
+                if (!calendarCache.events[app.state.selectedSchool]) {
+                    calendarCache.events[app.state.selectedSchool] = {};
+                }
+                if (!calendarCache.events[app.state.selectedSchool][dateStr]) {
+                    calendarCache.events[app.state.selectedSchool][dateStr] = [];
+                }
+                calendarCache.events[app.state.selectedSchool][dateStr].push(newEvent);
+                
+                // Refresh modal and calendar
+                openAdminModal(dateStr, document.getElementById('modalDate').textContent);
+                renderCalendar();
+                showNotification('Event added successfully!');
+                form.reset();
+            } catch (error) {
+                showNotification('Failed to add event', true);
+            }
+        }
+
+        // Delete event
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+            
+            try {
+                await apiCall(`/events/${eventId}`, { method: 'DELETE' });
+                
+                // Update cache
+                const school = app.state.selectedSchool;
+                Object.keys(calendarCache.events[school] || {}).forEach(date => {
+                    calendarCache.events[school][date] = calendarCache.events[school][date].filter(e => e.id !== eventId);
+                });
+                
+                // Find the date and refresh modal
+                const modalDate = document.getElementById('modalDate').textContent;
+                const dateStr = new Date(modalDate).toISOString().split('T')[0];
+                openAdminModal(dateStr, modalDate);
+                renderCalendar();
+                showNotification('Event deleted successfully!');
+            } catch (error) {
+                showNotification('Failed to delete event', true);
+            }
+        }
+
+        // Add material
+        async function addMaterial(e, dateStr, gradeLevel) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            try {
+                const newMaterial = await apiCall('/materials', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        school: app.state.selectedSchool,
+                        date: dateStr,
+                        grade_level: gradeLevel,
+                        title: formData.get('title'),
+                        link: formData.get('link'),
+                        description: formData.get('description') || '',
+                        password: formData.get('password') || ''
+                    })
+                });
+                
+                // Update cache
+                if (!calendarCache.materials[app.state.selectedSchool]) {
+                    calendarCache.materials[app.state.selectedSchool] = {};
+                }
+                if (!calendarCache.materials[app.state.selectedSchool][dateStr]) {
+                    calendarCache.materials[app.state.selectedSchool][dateStr] = [];
+                }
+                calendarCache.materials[app.state.selectedSchool][dateStr].push(newMaterial);
+                
+                // Refresh modal
+                openAdminModal(dateStr, document.getElementById('modalDate').textContent);
+                showNotification('Material added successfully!');
+                form.reset();
+            } catch (error) {
+                showNotification('Failed to add material', true);
+            }
+        }
+
+        // Delete material
+        async function deleteMaterial(materialId) {
+            if (!confirm('Are you sure you want to delete this material?')) return;
+            
+            try {
+                await apiCall(`/materials/${materialId}`, { method: 'DELETE' });
+                
+                // Update cache
+                const school = app.state.selectedSchool;
+                Object.keys(calendarCache.materials[school] || {}).forEach(date => {
+                    calendarCache.materials[school][date] = calendarCache.materials[school][date].filter(m => m.id !== materialId);
+                });
+                
+                // Find the date and refresh modal
+                const modalDate = document.getElementById('modalDate').textContent;
+                const dateStr = new Date(modalDate).toISOString().split('T')[0];
+                openAdminModal(dateStr, modalDate);
+                showNotification('Material deleted successfully!');
+            } catch (error) {
+                showNotification('Failed to delete material', true);
+            }
+        }
+
+        // Placeholder for edit functions
+        function editEvent(eventId) {
+            showNotification('Edit functionality coming soon!');
+        }
+
+        function editMaterial(materialId) {
+            showNotification('Edit functionality coming soon!');
         }
 
         // Close modal
